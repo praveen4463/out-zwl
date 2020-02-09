@@ -7,4 +7,6 @@ public class IllegalIdentifierException extends EvalException {
   public IllegalIdentifierException(String msg) {
     super(msg);
   }
+  
+  public IllegalIdentifierException(String msg, Throwable cause) {super(msg, cause);}
 }

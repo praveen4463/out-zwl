@@ -46,8 +46,6 @@ public class Exists extends AbstractFunction {
   }
   
   private boolean exists(ZwlValue val) {
-    Objects.requireNonNull(val, "exists check can't be done on null values.");
-    
     return !val.getNothingValue().isPresent();
   }
 }

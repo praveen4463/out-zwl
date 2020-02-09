@@ -7,4 +7,8 @@ public class IndexOutOfRangeException extends EvalException {
   public IndexOutOfRangeException(String msg) {
     super(msg);
   }
+  
+  public IndexOutOfRangeException(String msg, Throwable cause) {
+    super(msg, cause);
+  }
 }

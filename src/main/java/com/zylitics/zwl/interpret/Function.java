@@ -5,6 +5,10 @@ import com.zylitics.zwl.datatype.ZwlValue;
 import java.util.List;
 import java.util.function.Supplier;
 
+/**
+ * !!! All {@link Function} objects should remain fully stateless because they get initialized only
+ * once for entire application.
+ */
 public interface Function {
   
   String getName();

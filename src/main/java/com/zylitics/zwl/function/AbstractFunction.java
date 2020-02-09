@@ -1,15 +1,17 @@
 package com.zylitics.zwl.function;
 
-import com.zylitics.zwl.datatype.NothingZwlValue;
-import com.zylitics.zwl.datatype.VoidZwlValue;
-import com.zylitics.zwl.datatype.ZwlValue;
+import com.zylitics.zwl.datatype.*;
 import com.zylitics.zwl.exception.EvalException;
+import com.zylitics.zwl.exception.InvalidRegexPatternException;
 import com.zylitics.zwl.exception.InvalidTypeException;
 import com.zylitics.zwl.interpret.Function;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
+import java.util.stream.Collectors;
 
 public abstract class AbstractFunction implements Function {
   
@@ -43,6 +45,14 @@ public abstract class AbstractFunction implements Function {
         "contains an invalid number that exceeds the availability.", getName(), argsCount));
   }
   
+  protected List<ZwlValue> tryCastList(int argIndex, ZwlValue val) {
+    Optional<List<ZwlValue>> l = val.getListValue();
+    if (!l.isPresent()) {
+      throwWrongTypeException(val, "List", argIndex);
+    }
+    return l.get();
+  }
+  
   protected Double tryCastDouble(int argIndex, ZwlValue val) {
     Optional<Double> d = val.getDoubleValue();
     if (!d.isPresent()) {
@@ -70,6 +80,24 @@ public abstract class AbstractFunction implements Function {
   private void throwWrongTypeException(ZwlValue val, String type, int argIndex) {
     throw new InvalidTypeException(String.format("Given value: %s at argument: %s, isn't of type" +
             " '%s'.", val, argIndex, type));
+  }
+  
+  protected ListZwlValue getListZwlValue(List<String> stringsList) {
+    return new ListZwlValue(stringsList.stream().map(StringZwlValue::new)
+        .collect(Collectors.toList()));
+  }
+  
+  protected Pattern getPattern(String regex) {
+    Pattern pattern;
+    try {
+      // if we can't interpret the pattern, raise exception.
+      // Note that this handles most errors in pattern, such as duplicate group names, invalid use
+      // of flags etc.
+      pattern = Pattern.compile(regex);
+    } catch (PatternSyntaxException pse) {
+      throw new InvalidRegexPatternException(pse.getMessage(), pse);
+    }
+    return pattern;
   }
   
   @Override

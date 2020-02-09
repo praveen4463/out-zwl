@@ -1,20 +1,17 @@
-package com.zylitics.zwl.function.debugging;
+package com.zylitics.zwl.function.string;
 
+import com.zylitics.zwl.datatype.StringZwlValue;
 import com.zylitics.zwl.datatype.ZwlValue;
 import com.zylitics.zwl.function.AbstractFunction;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Supplier;
 
-// should write into a stream that is accessible from outside, once read the read content is deleted
-// to free up space. when dry running, we will read in the end and when running on runner, we can
-// read in time splits.
-public class Print extends AbstractFunction {
+public class Upper extends AbstractFunction {
   
   @Override
   public String getName() {
-    return "print";
+    return "upper";
   }
   
   @Override
@@ -34,16 +31,13 @@ public class Print extends AbstractFunction {
     int argsCount = args.size();
     
     if (argsCount == 1) {
-      print(args.get(0).toString());
-      return _void;
+      return new StringZwlValue(upper(tryCastString(0, args.get(0))));
     }
-  
+    
     throw unexpectedEndOfFunctionOverload(argsCount);
   }
   
-  private void print(String message) {
-    // The default implementation writes to std out, other implementations may write to different
-    // streams.
-    System.out.println(message);
+  private String upper(String s) {
+    return s.toUpperCase();
   }
 }
