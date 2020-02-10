@@ -11,6 +11,8 @@ import java.util.stream.Collectors;
 /**
  * RemoveEmpty takes a list of elements of any supported type. It removes any element that is
  * non existing or empty from list and returns the modified list.
+ * Note that RemoveEmpty is not recursive, so any list or map contained within the list that are
+ * non empty won't be further taken for empty removal.
  */
 public class RemoveEmpty extends AbstractFunction {
   

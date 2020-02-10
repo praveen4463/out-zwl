@@ -45,6 +45,14 @@ public abstract class AbstractFunction implements Function {
         "contains an invalid number that exceeds the availability.", getName(), argsCount));
   }
   
+  protected Map<String, ZwlValue> tryCastMap(int argIndex, ZwlValue val) {
+    Optional<Map<String, ZwlValue>> m = val.getMapValue();
+    if (!m.isPresent()) {
+      throwWrongTypeException(val, "Map", argIndex);
+    }
+    return m.get();
+  }
+  
   protected List<ZwlValue> tryCastList(int argIndex, ZwlValue val) {
     Optional<List<ZwlValue>> l = val.getListValue();
     if (!l.isPresent()) {
@@ -77,6 +85,12 @@ public abstract class AbstractFunction implements Function {
     return s.get();
   }
   
+  // Note: This exception is worded for function arguments specifically, sometimes when user sends
+  // arguments in form of array (if function supports), this function becomes slightly wrong due to
+  // using "at argument" whereas it should say "at list index". We can list this in documentation so
+  // that it doesn't confuse them. For example we could say: When functions accepts a list in place
+  // of arguments, that list is expanded to arguments internally and if some element was invalid,
+  // we'll report it as if it was an argument.
   private void throwWrongTypeException(ZwlValue val, String type, int argIndex) {
     throw new InvalidTypeException(String.format("Given value: %s at argument: %s, isn't of type" +
             " '%s'.", val, argIndex, type));

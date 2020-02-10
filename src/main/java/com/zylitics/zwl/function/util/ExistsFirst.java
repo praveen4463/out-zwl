@@ -8,11 +8,11 @@ import java.util.List;
 import java.util.function.Supplier;
 
 /**
- * <p>Return the first argument that exists. It either accepts a list or any number of arguments.
- * </p><p>When a list is given, it's first element that is existing will be returned and when
- * multiple arguments are given, the first argument that is existing is returned.</p>
- * <p>If an existing value is not found, nothing is returned which can be checked using
+ * <p>ExistsFirst accepts one or more arguments of any supported type.
+ * It returns the first argument that exists.
+ * <p>If a non empty value is not found, nothing is returned which can be checked using
  * {@link Exists}</p>
+ * <p>A list can also be given as argument which will be expanded internally into arguments.</p>
  */
 public class ExistsFirst extends AbstractFunction {
   

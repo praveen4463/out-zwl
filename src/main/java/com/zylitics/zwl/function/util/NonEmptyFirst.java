@@ -2,20 +2,20 @@ package com.zylitics.zwl.function.util;
 
 import com.zylitics.zwl.datatype.NothingZwlValue;
 import com.zylitics.zwl.datatype.ZwlValue;
-import com.zylitics.zwl.exception.EvalException;
 import com.zylitics.zwl.function.AbstractFunction;
 
 import java.util.List;
 import java.util.function.Supplier;
 
 /**
- * <p>NonEmptyFirst accepts either a list or any number of arguments of any supported type that
- * can be mixed. It returns the first list element or first argument that exists and is non empty.
+ * <p>NonEmptyFirst accepts one or more arguments of any supported type.
+ * It returns the first argument that exists and is non empty.
  * A Boolean or Number are considered non empty if they exist. A String is considered non empty
  * if after trimming whitespaces its length > 0. A List and Map is considered non empty if their
  * size > 0 which means they have at least one element or key-value pair.</p>
  * <p>If a non empty value is not found, nothing is returned which can be checked using
  * {@link Exists}</p>
+ * <p>A list can also be given as argument which will be expanded internally into arguments.</p>
  */
 public class NonEmptyFirst extends AbstractFunction {
   
@@ -47,6 +47,7 @@ public class NonEmptyFirst extends AbstractFunction {
   }
   
   private ZwlValue nonEmptyFirst(List<ZwlValue> l) {
+    //noinspection OptionalGetWithoutIsPresent
     return l.stream().filter(z -> !z.getNothingValue().isPresent()
         && (z.getBooleanValue().isPresent() || z.getDoubleValue().isPresent()
         || z.getStringValue().isPresent() ? z.getStringValue().get().trim().length() > 0
