@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 
 public class StringUtil {
   
-  public static List<String> getRegexAllCaptureGroupNames(String regexToSearch) {
+  public static List<String> getAllCaptureGroupNamesInRegex(String regexToSearch) {
     List<String> groups = new ArrayList<>();
     // https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html#groupname
     String regexToFindNames = "\\(\\?<([a-zA-Z][a-zA-Z0-9]*)>";

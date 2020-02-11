@@ -27,7 +27,7 @@ public class StartsWith extends AbstractFunction {
   @Override
   public ZwlValue invoke(List<ZwlValue> args, Supplier<ZwlValue> defaultValue,
                          Supplier<String> lineNColumn) {
-    assertArgs(args);
+    super.invoke(args, defaultValue, lineNColumn);
     int argsCount = args.size();
     
     if (argsCount == 2) {

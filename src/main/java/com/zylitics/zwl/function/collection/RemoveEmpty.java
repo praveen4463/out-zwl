@@ -1,4 +1,4 @@
-package com.zylitics.zwl.function.util;
+package com.zylitics.zwl.function.collection;
 
 import com.zylitics.zwl.datatype.ListZwlValue;
 import com.zylitics.zwl.datatype.ZwlValue;
@@ -34,7 +34,7 @@ public class RemoveEmpty extends AbstractFunction {
   @Override
   public ZwlValue invoke(List<ZwlValue> args, Supplier<ZwlValue> defaultValue,
                          Supplier<String> lineNColumn) {
-    assertArgs(args);
+    super.invoke(args, defaultValue, lineNColumn);
     int argsCount = args.size();
   
     if (argsCount == 1) {

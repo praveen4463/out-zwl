@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class RestrictedKeywords {
+public class ReservedKeywords {
   
-  public static final List<String> RESERVED = Collections.unmodifiableList(getReserved());
+  public static final List<String> RESERVED_KEYWORDS = Collections.unmodifiableList(get());
   
-  private static List<String> getReserved() {
+  private static List<String> get() {
     List<String> reserved = new ArrayList<>();
     reserved.add("Nothing");
     reserved.add("Void");

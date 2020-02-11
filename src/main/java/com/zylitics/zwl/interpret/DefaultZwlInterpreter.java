@@ -1,6 +1,5 @@
 package com.zylitics.zwl.interpret;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.zylitics.zwl.api.ZwlInterpreter;
 import com.zylitics.zwl.api.ZwlInterpreterVisitor;
 import com.zylitics.zwl.antlr4.ZwlLexer;
@@ -14,24 +13,22 @@ import com.zylitics.zwl.exception.InvalidTypeException;
 import com.zylitics.zwl.internal.Variables;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
-import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
 import java.util.function.BinaryOperator;
 
-import static com.zylitics.zwl.internal.RestrictedKeywords.RESERVED;
+import static com.zylitics.zwl.internal.ReservedKeywords.RESERVED_KEYWORDS;
 
 public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
     implements ZwlInterpreter {
   
   private static final Logger LOG = LoggerFactory.getLogger(DefaultZwlInterpreter.class);
-  
-  private static final List<Function> BUILT_IN_FUNCTIONS = FunctionList.get();
   
   private final List<String> readOnlyVars = new ArrayList<>();
   private final ZwlValue _void = new VoidZwlValue();
@@ -39,23 +36,15 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
   private final Variables vars;
   private final List<Function> functions;
   
-  private DefaultZwlInterpreter() {
-    this(new ArrayList<>(), new Variables());
-    functions.addAll(BUILT_IN_FUNCTIONS);
+  public DefaultZwlInterpreter() {
+    long start = System.nanoTime();
+    // added function list should be constructed new, each request should use it's own set of
+    // function objects.
+    this.functions = new ArrayList<>(BuiltInFunction.get());
+    LOG.debug("time to create built-in function list: {}", TimeUnit.NANOSECONDS.toMicros(System.nanoTime() - start));
+    this.vars = new Variables();
   }
   
-  @VisibleForTesting
-  DefaultZwlInterpreter(List<Function> functions, Variables vars) {
-    this.functions = functions;
-    this.vars = vars;
-  }
-  
-  @Override
-  public ZwlValue visitParseTree(ParseTree tree) {
-    return visit(tree);
-  }
-  
-  @Override
   public void accept(ZwlInterpreterVisitor visitor) {
     visitor.visit(this);
   }
@@ -84,7 +73,7 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
   
   @Override
   public void setFunction(Function function) {
-    Objects.requireNonNull(functions, "function can't be null");
+    Objects.requireNonNull(function, "function can't be null");
     
     functions.removeIf(f -> f.equals(function));
     functions.add(function);
@@ -124,12 +113,13 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
     
     try {
       val = matched.get().invoke(params,
-          () -> visit(ctx.defaultVal().expression()),
+          () -> ctx.defaultVal() != null ? visit(ctx.defaultVal().expression())
+              : new NothingZwlValue(),
           () -> lineNColumn(ctx.Identifier()));
       // we expect all returned values to have one of the specified ZwlValue type and not 'null',
       // thus skipping a null check on function returned values.
-    } catch (EvalException e) {
-      throw new EvalException(e.getMessage() + " " + lineNColumn(ctx.Identifier()), e);
+    } catch (EvalException eval) {
+      throw eval;
     } catch (Throwable e) {
       throw new RuntimeException(e.getMessage() + " " + lineNColumn(ctx.Identifier()), e);
     }
@@ -518,7 +508,7 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
   /*
    TODO: Currently I am only interpreting BMP characters from string since java chars are UTF16
     encoded. For unicode chars in other planes with more than 4 hex digits, those will need to be
-    converted into UTF16 before they could be interpreted by java, for example the 😀 \u+1F600 will
+    converted into UTF16 before they could be interpreted by java, for example the 😀 \\u+1F600 will
     need to converted into UTF16's \ud83d\ude00 (surrogate pair) first.
     Let's ask users to use raw strings for such chars for now and learn how to interpret all unicode
     chars later.
@@ -621,17 +611,9 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
       throw new IllegalIdentifierException("Read only identifier: " + id + " can't be assigned. " +
           lineNColumn(identifier));
     }
-    if (RESERVED.contains((idLower))) {
+    if (RESERVED_KEYWORDS.contains((idLower))) {
       throw new IllegalIdentifierException("Restricted keyword: " + id + " can't be used as an" +
           " identifier. " + lineNColumn(identifier));
-    }
-  }
-  
-  public static class Factory implements ZwlInterpreter.Factory {
-  
-    @Override
-    public ZwlInterpreter create() {
-      return new DefaultZwlInterpreter();
     }
   }
 }

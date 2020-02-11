@@ -1,6 +1,5 @@
 package com.zylitics.zwl.function.collection;
 
-import com.zylitics.zwl.datatype.BooleanZwlValue;
 import com.zylitics.zwl.datatype.DoubleZwlValue;
 import com.zylitics.zwl.datatype.ZwlValue;
 import com.zylitics.zwl.exception.EvalException;
@@ -29,7 +28,7 @@ public class Size extends AbstractFunction {
   @Override
   public ZwlValue invoke(List<ZwlValue> args, Supplier<ZwlValue> defaultValue,
                          Supplier<String> lineNColumn) {
-    assertArgs(args);
+    super.invoke(args, defaultValue, lineNColumn);
     int argsCount = args.size();
   
     if (args.size() != 1) {
@@ -38,7 +37,7 @@ public class Size extends AbstractFunction {
   
     ZwlValue val = args.get(0);
     if (!(val.getMapValue().isPresent() || val.getListValue().isPresent())) {
-      throw new EvalException(getName() + " works for only Map and List types.");
+      throw new EvalException(withLineNCol(getName() + " works for only Map and List types."));
     }
     return new DoubleZwlValue(val.getListValue().isPresent()
         ? val.getListValue().get().size()

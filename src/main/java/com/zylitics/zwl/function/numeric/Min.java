@@ -29,7 +29,7 @@ public class Min extends AbstractFunction {
   @Override
   public ZwlValue invoke(List<ZwlValue> args, Supplier<ZwlValue> defaultValue,
                          Supplier<String> lineNColumn) {
-    assertArgs(args);
+    super.invoke(args, defaultValue, lineNColumn);
     Optional<Double> min = IntStream.range(0, args.size())
         .mapToObj(i -> tryCastDouble(i, args.get(i))).min(Double::compareTo);
     if (min.isPresent()) {

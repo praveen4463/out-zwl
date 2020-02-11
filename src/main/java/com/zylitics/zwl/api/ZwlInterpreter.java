@@ -9,22 +9,9 @@ import java.util.List;
 
 public interface ZwlInterpreter {
   
-  ZwlValue visitParseTree(ParseTree tree);
-  
-  void accept(ZwlInterpreterVisitor visitor);
-  
   void setReadOnlyVariable(String identifier, ZwlValue value);
   
   void setFunctions(List<Function> functions);
   
   void setFunction(Function function);
-  
-  interface Factory {
-    
-    static Factory getDefault() {
-      return new DefaultZwlInterpreter.Factory();
-    }
-    
-    ZwlInterpreter create();
-  }
 }

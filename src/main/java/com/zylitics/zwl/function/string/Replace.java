@@ -1,6 +1,5 @@
 package com.zylitics.zwl.function.string;
 
-import com.zylitics.zwl.datatype.BooleanZwlValue;
 import com.zylitics.zwl.datatype.StringZwlValue;
 import com.zylitics.zwl.datatype.ZwlValue;
 import com.zylitics.zwl.function.AbstractFunction;
@@ -28,7 +27,7 @@ public class Replace extends AbstractFunction {
   @Override
   public ZwlValue invoke(List<ZwlValue> args, Supplier<ZwlValue> defaultValue,
                          Supplier<String> lineNColumn) {
-    assertArgs(args);
+    super.invoke(args, defaultValue, lineNColumn);
     int argsCount = args.size();
   
     if (argsCount == 3) {

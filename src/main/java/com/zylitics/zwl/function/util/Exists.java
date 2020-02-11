@@ -6,7 +6,6 @@ import com.zylitics.zwl.function.AbstractFunction;
 import com.zylitics.zwl.datatype.NothingZwlValue;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Supplier;
 
 /**
@@ -35,7 +34,7 @@ public class Exists extends AbstractFunction {
   @Override
   public ZwlValue invoke(List<ZwlValue> args, Supplier<ZwlValue> defaultValue,
                          Supplier<String> lineNColumn) {
-    assertArgs(args);
+    super.invoke(args, defaultValue, lineNColumn);
     int argsCount = args.size();
     
     if (argsCount == 1) {

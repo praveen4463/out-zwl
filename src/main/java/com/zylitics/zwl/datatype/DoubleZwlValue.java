@@ -36,6 +36,10 @@ public class DoubleZwlValue implements ZwlValue {
   
   @Override
   public String toString() {
+    String v = String.valueOf(value);
+    if (v.endsWith(stringToTrim)) {
+      s = s.substring(0, s.lastIndexOf(stringToTrim));
+    }
     return String.valueOf(value);
   }
 }

@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
@@ -19,13 +20,24 @@ public abstract class AbstractFunction implements Function {
   
   protected final ZwlValue _void = new VoidZwlValue();
   
+  protected Supplier<String> lineNColumn;
+  
+  @Override
+  public ZwlValue invoke(List<ZwlValue> args, Supplier<ZwlValue> defaultValue
+      , Supplier<String> lineNColumn) {
+    assertArgs(args);
+    
+    this.lineNColumn = lineNColumn;
+    return _void;
+  }
+  
   protected void assertArgs(List<ZwlValue> args) {
     Objects.requireNonNull(args, "arguments can't be null");
     int argsCount = args.size();
     
     if (argsCount < minParamsCount() || argsCount > maxParamsCount()) {
       throw new EvalException(String.format("function: %s with parameters count: %s isn't " +
-          "defined.", getName(), argsCount));
+          "defined. %s", getName(), argsCount, lineNColumn.get()));
     }
     
     // TODO: remove this after no such warning in logs.
@@ -69,6 +81,7 @@ public abstract class AbstractFunction implements Function {
     return d.get();
   }
   
+  @SuppressWarnings("SameParameterValue")
   protected Boolean tryCastBoolean(int argIndex, ZwlValue val) {
     Optional<Boolean> b = val.getBooleanValue();
     if (!b.isPresent()) {
@@ -93,7 +106,7 @@ public abstract class AbstractFunction implements Function {
   // we'll report it as if it was an argument.
   private void throwWrongTypeException(ZwlValue val, String type, int argIndex) {
     throw new InvalidTypeException(String.format("Given value: %s at argument: %s, isn't of type" +
-            " '%s'.", val, argIndex, type));
+            " '%s'. %s", val, argIndex, type, lineNColumn.get()));
   }
   
   protected ListZwlValue getListZwlValue(List<String> stringsList) {
@@ -109,15 +122,19 @@ public abstract class AbstractFunction implements Function {
       // of flags etc.
       pattern = Pattern.compile(regex);
     } catch (PatternSyntaxException pse) {
-      throw new InvalidRegexPatternException(pse.getMessage(), pse);
+      throw new InvalidRegexPatternException(withLineNCol(pse.getMessage()), pse);
     }
     return pattern;
+  }
+  
+  protected String withLineNCol(String s) {
+    return s + " " + lineNColumn.get();
   }
   
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (o == null || !getClass().getSimpleName().equals(o.getClass().getSimpleName())) return false;
     AbstractFunction that = (AbstractFunction) o;
     return getName().equals(that.getName()) && minParamsCount() == that.minParamsCount()
         && maxParamsCount() == that.maxParamsCount();

@@ -1,17 +1,20 @@
 package com.zylitics.zwl.api;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.zylitics.zwl.antlr4.ZwlLexer;
 import com.zylitics.zwl.antlr4.ZwlParser;
 import com.zylitics.zwl.exception.EvalException;
 import com.zylitics.zwl.antlr4.BailErrorStrategy;
 import com.zylitics.zwl.antlr4.BailZwlLexer;
+import com.zylitics.zwl.interpret.DefaultZwlInterpreter;
 import com.zylitics.zwl.interpret.Function;
 import com.zylitics.zwl.exception.*;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.DiagnosticErrorListener;
+import org.antlr.v4.runtime.atn.PredictionMode;
 import org.antlr.v4.runtime.tree.ParseTree;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
@@ -68,15 +71,26 @@ public final class Main {
    */
   public void interpret(ZwlInterpreterVisitor interpreterVisitor) throws EvalException {
     ParseTree tree = getParser(lexer).compilationUnit();
-    interpret(tree, interpreterVisitor);
+    DefaultZwlInterpreter interpreter = new DefaultZwlInterpreter();
+    interpreter.accept(interpreterVisitor);
+    interpreter.visit(tree);
   }
   
-  @VisibleForTesting
-  void interpret(ParseTree tree, ZwlInterpreterVisitor interpreterVisitor)
+  /**
+   * Gets interpreter that additionally detects ambiguity in grammar.
+   */
+  void interpretDevOnly(@Nullable ZwlInterpreterVisitor interpreterVisitor)
       throws EvalException {
-    ZwlInterpreter interpreter = ZwlInterpreter.Factory.getDefault().create();
-    interpreter.accept(interpreterVisitor);
-    interpreter.visitParseTree(tree);
+    ZwlParser parser = getParser(lexer);
+    parser.removeErrorListeners();
+    parser.addErrorListener(new DiagnosticErrorListener());
+    parser.getInterpreter().setPredictionMode(PredictionMode.LL_EXACT_AMBIG_DETECTION);
+  
+    DefaultZwlInterpreter interpreter = new DefaultZwlInterpreter();
+    if (interpreterVisitor != null) {
+      interpreter.accept(interpreterVisitor);
+    }
+    interpreter.visit(parser.compilationUnit());
   }
   
   private ZwlLexer getLexer(String code) {

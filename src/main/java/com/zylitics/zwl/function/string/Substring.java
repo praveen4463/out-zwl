@@ -33,7 +33,7 @@ public class Substring extends AbstractFunction {
   @Override
   public ZwlValue invoke(List<ZwlValue> args, Supplier<ZwlValue> defaultValue,
                          Supplier<String> lineNColumn) {
-    assertArgs(args);
+    super.invoke(args, defaultValue, lineNColumn);
     int argsCount = args.size();
     
     String substring;
@@ -58,7 +58,7 @@ public class Substring extends AbstractFunction {
     try {
       return s.substring(beginIndex);
     } catch (IndexOutOfBoundsException i) {
-      throw new IndexOutOfRangeException(i.getMessage(), i);
+      throw new IndexOutOfRangeException(withLineNCol(i.getMessage()), i);
     }
   }
   
@@ -66,7 +66,7 @@ public class Substring extends AbstractFunction {
     try {
       return s.substring(beginIndex, endIndex);
     } catch (IndexOutOfBoundsException i) {
-      throw new IndexOutOfRangeException(i.getMessage(), i);
+      throw new IndexOutOfRangeException(withLineNCol(i.getMessage()), i);
     }
   }
 }

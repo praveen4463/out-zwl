@@ -39,7 +39,7 @@ public class Merge extends AbstractFunction {
   @Override
   public ZwlValue invoke(List<ZwlValue> args, Supplier<ZwlValue> defaultValue,
                          Supplier<String> lineNColumn) {
-    assertArgs(args);
+    super.invoke(args, defaultValue, lineNColumn);
     
     if (args.size() == 1) {
       return new MapZwlValue(merge(tryCastList(0, args.get(0))));
@@ -50,7 +50,8 @@ public class Merge extends AbstractFunction {
   
   private Map<String, ZwlValue> merge(List<ZwlValue> listOfMaps) {
     if (listOfMaps.size() < 2) {
-      throw new InsufficientArgumentsException(getName() + " requires at least two values.");
+      throw new InsufficientArgumentsException(
+          withLineNCol(getName() + " requires at least two values."));
     }
     
     return IntStream.range(0, listOfMaps.size())

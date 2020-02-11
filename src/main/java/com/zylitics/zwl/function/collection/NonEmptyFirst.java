@@ -1,8 +1,9 @@
-package com.zylitics.zwl.function.util;
+package com.zylitics.zwl.function.collection;
 
 import com.zylitics.zwl.datatype.NothingZwlValue;
 import com.zylitics.zwl.datatype.ZwlValue;
 import com.zylitics.zwl.function.AbstractFunction;
+import com.zylitics.zwl.function.util.Exists;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -37,7 +38,7 @@ public class NonEmptyFirst extends AbstractFunction {
   @Override
   public ZwlValue invoke(List<ZwlValue> args, Supplier<ZwlValue> defaultValue,
                          Supplier<String> lineNColumn) {
-    assertArgs(args);
+    super.invoke(args, defaultValue, lineNColumn);
   
     if (args.size() == 1) {
       return nonEmptyFirst(tryCastList(0, args.get(0)));

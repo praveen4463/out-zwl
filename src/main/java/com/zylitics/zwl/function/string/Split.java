@@ -2,13 +2,11 @@ package com.zylitics.zwl.function.string;
 
 import com.google.common.base.Splitter;
 import com.zylitics.zwl.datatype.ListZwlValue;
-import com.zylitics.zwl.datatype.StringZwlValue;
 import com.zylitics.zwl.datatype.ZwlValue;
 import com.zylitics.zwl.function.AbstractFunction;
 
 import java.util.*;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 /**
  * Split requires two arguments, a separator and value need to be split, both should be of type
@@ -35,7 +33,7 @@ public class Split extends AbstractFunction {
   @Override
   public ZwlValue invoke(List<ZwlValue> args, Supplier<ZwlValue> defaultValue,
                          Supplier<String> lineNColumn) {
-    assertArgs(args);
+    super.invoke(args, defaultValue, lineNColumn);
     int argsCount = args.size();
   
     if (argsCount == 2) {

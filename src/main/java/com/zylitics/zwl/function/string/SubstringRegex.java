@@ -64,7 +64,7 @@ public class SubstringRegex extends AbstractFunction {
   @Override
   public ZwlValue invoke(List<ZwlValue> args, Supplier<ZwlValue> defaultValue,
                          Supplier<String> lineNColumn) {
-    assertArgs(args);
+    super.invoke(args, defaultValue, lineNColumn);
     int argsCount = args.size();
     
     if (argsCount == 2) {
@@ -103,12 +103,12 @@ public class SubstringRegex extends AbstractFunction {
     existence of a key before accessing map's value. Each map is put into a list that is finally
     returned.
      */
-    List<String> captureGroupNames = StringUtil.getRegexAllCaptureGroupNames(regex);
+    List<String> captureGroupNames = StringUtil.getAllCaptureGroupNamesInRegex(regex);
     if (captureGroupNames.size() > 0) {
       if (groupCount != captureGroupNames.size()) {
         throw new InvalidRegexPatternException(String.format("Pattern contains both named and " +
             "unnamed capture groups which is not valid. Total named groups: %d, Total " +
-            "unnamed groups: %d", captureGroupNames.size(), groupCount));
+            "unnamed groups: %d. %s", captureGroupNames.size(), groupCount, lineNColumn.get()));
       }
       List<ZwlValue> listOfMaps = new ArrayList<>();
       while (matcher.find()) {

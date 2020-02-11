@@ -3,6 +3,7 @@ package com.zylitics.zwl.function.string;
 import com.zylitics.zwl.datatype.StringZwlValue;
 import com.zylitics.zwl.datatype.ZwlValue;
 import com.zylitics.zwl.exception.EvalException;
+import com.zylitics.zwl.exception.IllegalStringFormatException;
 import com.zylitics.zwl.function.AbstractFunction;
 
 import java.util.IllegalFormatException;
@@ -41,18 +42,18 @@ public class Format extends AbstractFunction {
   @Override
   public ZwlValue invoke(List<ZwlValue> args, Supplier<ZwlValue> defaultValue,
                          Supplier<String> lineNColumn) {
-    assertArgs(args);
+    super.invoke(args, defaultValue, lineNColumn);
   
     String formatString = tryCastString(0, args.get(0));
     Object[] formatArgs = args.stream().skip(1).toArray();
     return new StringZwlValue(format(formatString, formatArgs));
   }
   
-  private String format(String s, Object... args) {
+  protected String format(String s, Object... args) {
     try {
       return String.format(s, args);
     } catch (IllegalFormatException i) {
-      throw new EvalException(i.getMessage(), i);
+      throw new IllegalStringFormatException(withLineNCol(i.getMessage()), i);
     }
   }
 }

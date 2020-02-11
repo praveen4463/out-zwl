@@ -29,7 +29,7 @@ public class Max extends AbstractFunction {
   @Override
   public ZwlValue invoke(List<ZwlValue> args, Supplier<ZwlValue> defaultValue,
                          Supplier<String> lineNColumn) {
-    assertArgs(args);
+    super.invoke(args, defaultValue, lineNColumn);
     Optional<Double> max = IntStream.range(0, args.size())
         .mapToObj(i -> tryCastDouble(i, args.get(i))).max(Double::compareTo);
     if (max.isPresent()) {

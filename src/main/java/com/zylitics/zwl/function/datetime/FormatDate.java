@@ -3,6 +3,8 @@ package com.zylitics.zwl.function.datetime;
 import com.google.common.base.Strings;
 import com.zylitics.zwl.datatype.StringZwlValue;
 import com.zylitics.zwl.datatype.ZwlValue;
+import com.zylitics.zwl.exception.DateTimeFormatException;
+import com.zylitics.zwl.exception.UnknownDateTimeException;
 import com.zylitics.zwl.exception.EvalException;
 import com.zylitics.zwl.function.AbstractFunction;
 
@@ -37,7 +39,7 @@ public class FormatDate extends AbstractFunction {
   @Override
   public ZwlValue invoke(List<ZwlValue> args, Supplier<ZwlValue> defaultValue,
                          Supplier<String> lineNColumn) {
-    assertArgs(args);
+    super.invoke(args, defaultValue, lineNColumn);
     int argsCount = args.size();
   
     if (args.size() == 2) {
@@ -50,7 +52,8 @@ public class FormatDate extends AbstractFunction {
   
   private String formatDate(String date, String format) {
     if (Strings.isNullOrEmpty(date) || Strings.isNullOrEmpty(format)) {
-      throw new EvalException(getName() + " requires date and format both should be non empty");
+      throw new EvalException(
+          withLineNCol(getName() + " requires date and format both should be non empty"));
     }
   
     ZonedDateTime dateTime;
@@ -58,8 +61,10 @@ public class FormatDate extends AbstractFunction {
     try {
       dateTime = ZonedDateTime.parse(date, DateTimeFormatter.ISO_DATE_TIME);
       formatter = DateTimeFormatter.ofPattern(format);
-    } catch (DateTimeParseException | IllegalArgumentException ex ) {
-      throw new EvalException(ex.getMessage(), ex);
+    } catch (DateTimeParseException d ) {
+      throw new UnknownDateTimeException(withLineNCol(d.getMessage()), d);
+    } catch (IllegalArgumentException i) {
+      throw new DateTimeFormatException(withLineNCol(i.getMessage()), i);
     }
     
     return dateTime.format(formatter);

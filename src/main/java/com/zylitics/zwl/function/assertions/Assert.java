@@ -33,7 +33,7 @@ public class Assert extends AbstractFunction {
   @Override
   public ZwlValue invoke(List<ZwlValue> args, Supplier<ZwlValue> defaultValue,
                          Supplier<String> lineNColumn) {
-    assertArgs(args);
+    super.invoke(args, defaultValue, lineNColumn);
     int argsCount = args.size();
     
     switch (argsCount) {
@@ -61,7 +61,8 @@ public class Assert extends AbstractFunction {
   
   private void assertTrue(boolean condition, @Nullable String message) {
     if (!condition) {
-      throw new AssertionFailedException(message != null ? message : "Assertion was failed.");
+      throw new AssertionFailedException(
+          withLineNCol(message != null ? message : "Assertion was failed."));
     }
   }
 }

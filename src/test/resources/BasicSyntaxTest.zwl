@@ -1,0 +1,119 @@
+# Tests the syntax of ZWL.
+
+# Assignments **************************************************************************************
+
+a = 100
+assert(a == 100)
+
+b = a + 1
+assert(b == 101)
+
+c = a + b + 100
+assert(c == 301)
+
+# Function invocation ******************************************************************************
+
+a = format("Hi %s, how are you? Are you free around %s in the evening?", "praveen", 7)
+assert(a == "Hi praveen, how are you? Are you free around 7 in the evening?")
+
+regex = "around (?<time>[6-9]) in the evening"
+b = substringRegex(a, regex)[0].time
+assert(b == 7, "substringRegex assertion failed")
+
+# if statement *************************************************************************************
+
+a = 123
+if a > 200 {
+  assert(false)
+}
+
+if a < 100 {
+  assert(false)
+} else if a > 124 {
+  assert(false)
+} else if a < 124 {
+  assert(true)
+} else {
+  assert(false)
+}
+
+if false {
+  assert(false)
+} else {
+  assert(true)
+}
+
+# for statements ***********************************************************************************
+
+# for-in with list
+c = ""
+a = ["are we", "going there", "on monday", "at", 9, "?"]
+for e in a {
+  c = format("%s %s", c, e)
+}
+assert(trim(c) == "are we going there on monday at 9 ?", "for-list assertion failed")
+
+# for-in with map
+c = ""
+m = {
+  event = "party",
+  when = "at " + 9
+}
+for k, v in m {
+  c = format("%s %s: %s,", c, k, v)
+}
+assert(trimEnd(trim(c), ",") == "event: party, at: 9", "for-map assertion failed")
+
+# for-to
+a = 0
+for i = 1 to 10 {
+  a = a + i
+}
+assert(a == (1+2+3+4+5+6+7+8+9+10))
+
+# while statement **********************************************************************************
+
+b = -10
+c = 0
+while b < 0 {
+  c = c + b
+  b = b + 1
+}
+assert(c == -(1+2+3+4+5+6+7+8+9+10))
+
+# increment/decrement ******************************************************************************
+
+inc++
+assert(inc == 1)
+
+dec--
+assert(dec == -1)
+
+inc_exists = 2
+inc_exists++
+assert(inc_exists == 3)
+
+dec_exists = 2
+dec_exists--
+assert(dec_exists == 1)
+
+a = 0
+b = 0
+a = b++
+assert(a == 0)
+assert(b == 1)
+
+a = -1
+b = -1
+a = b--
+assert(a == -1)
+assert(b == -2)
+
+# identifier index and dot notation ****************************************************************
+
+a = [[
+  {
+    age = 89
+  }
+]]
+assert(a[0][0].age == 89)
