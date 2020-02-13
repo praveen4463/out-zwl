@@ -17,4 +17,8 @@ public class StringUtil {
     }
     return groups;
   }
+  
+  public static String getPlatformLineSeparator() {
+    return System.getProperty("line.separator");
+  }
 }

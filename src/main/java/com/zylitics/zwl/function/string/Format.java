@@ -2,7 +2,6 @@ package com.zylitics.zwl.function.string;
 
 import com.zylitics.zwl.datatype.StringZwlValue;
 import com.zylitics.zwl.datatype.ZwlValue;
-import com.zylitics.zwl.exception.EvalException;
 import com.zylitics.zwl.exception.IllegalStringFormatException;
 import com.zylitics.zwl.function.AbstractFunction;
 
@@ -12,15 +11,11 @@ import java.util.function.Supplier;
 
 /**
  * <p>
- * Format returns a formatted string using the specified format string and arguments. A String can
- * be given with any number of %s verb into it, which will be replaced by the arguments appearing at
- * same position as the %s verb. If any argument is not of type string, it will be converted using
- * the type's string representation. For example, 33 will converted into "33" and true to "true".
- * </p>
- * <p>Example: {@code format("Are you coming to %s's party at %s today?", "John", 9)} will
- * produce string {@code "Are you coming to John's party at 9 today"}</p>
- * <p>If the arguments are more than the number of verbs in string, extra arguments will be
- * ignored. To use literal % inside string, use %% to escape it.</p>
+ * Format returns a formatted string using the specified format string and arguments. The
+ * specification is same as defined in
+ * <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Formatter.html#detail">Formatter</a>
+ * Try giving format options to some limit as specified in
+ * <a href="https://www.terraform.io/docs/configuration/functions/format.html">format</a></p>
  */
 public class Format extends AbstractFunction {
   

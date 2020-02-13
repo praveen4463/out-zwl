@@ -82,9 +82,11 @@ public final class Main {
   void interpretDevOnly(@Nullable ZwlInterpreterVisitor interpreterVisitor)
       throws EvalException {
     ZwlParser parser = getParser(lexer);
+    // Turned off following as it causes no parser error to report until a fix is applied.
+    /*
     parser.removeErrorListeners();
     parser.addErrorListener(new DiagnosticErrorListener());
-    parser.getInterpreter().setPredictionMode(PredictionMode.LL_EXACT_AMBIG_DETECTION);
+    parser.getInterpreter().setPredictionMode(PredictionMode.LL_EXACT_AMBIG_DETECTION);*/
   
     DefaultZwlInterpreter interpreter = new DefaultZwlInterpreter();
     if (interpreterVisitor != null) {

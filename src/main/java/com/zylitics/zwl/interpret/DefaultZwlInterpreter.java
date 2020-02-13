@@ -6,11 +6,9 @@ import com.zylitics.zwl.antlr4.ZwlLexer;
 import com.zylitics.zwl.antlr4.ZwlParser.*;
 import com.zylitics.zwl.antlr4.ZwlParserBaseVisitor;
 import com.zylitics.zwl.datatype.*;
-import com.zylitics.zwl.exception.EvalException;
-import com.zylitics.zwl.exception.IllegalIdentifierException;
-import com.zylitics.zwl.exception.IndexOutOfRangeException;
-import com.zylitics.zwl.exception.InvalidTypeException;
+import com.zylitics.zwl.exception.*;
 import com.zylitics.zwl.internal.Variables;
+import com.zylitics.zwl.util.StringUtil;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -191,7 +189,7 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
             " 'List' type is required. " + lineNColumn(ec));
       }
       
-      int i = processNumberExpr(ec).intValue();
+      int i = parseNumberExpr(ec).intValue();
       if (i < 0 || i >= list.get().size()) {
         throw new IndexOutOfRangeException(String.format("The specified index isn't within " +
             "the range of this List. Index given: %s, List size: %s %s", i, list.get().size(),
@@ -205,13 +203,13 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
   
   @Override
   public ZwlValue visitIfStatement(IfStatementContext ctx) {
-    if (processBooleanExpr(ctx.ifBlock().expression())) {
+    if (parseBooleanExpr(ctx.ifBlock().expression())) {
       return visit(ctx.ifBlock().block());
     }
     
     if (ctx.elseIfBlock() != null) {
       for (ElseIfBlockContext elseif : ctx.elseIfBlock()) {
-        if (processBooleanExpr(elseif.expression())) {
+        if (parseBooleanExpr(elseif.expression())) {
           return visit(elseif.block());
         }
       }
@@ -291,7 +289,7 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
   public ZwlValue visitWhileStatement(WhileStatementContext ctx) {
     long iterations = 0;
     long forLoopMaxItr = getForLoopMaxIterations();
-    while (processBooleanExpr(ctx.expression())) {
+    while (parseBooleanExpr(ctx.expression())) {
       visit(ctx.block());
       iterations++;
       if (forLoopMaxItr > -1 && iterations > forLoopMaxItr) {
@@ -310,8 +308,8 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
               " assigned in outer scope.%nVariable: %s, %s",
           id, lineNColumn(ctx.assignment().Identifier())));
     }
-    Double start = processNumberExpr(ctx.assignment().expression());
-    Double stop = processNumberExpr(ctx.expression());
+    Double start = parseNumberExpr(ctx.assignment().expression());
+    Double stop = parseNumberExpr(ctx.expression());
     
     for (int i = start.intValue(); i <= stop.intValue(); i++) {
       vars.assign(id, new DoubleZwlValue(i));
@@ -359,6 +357,67 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
   }
   
   @Override
+  public ZwlValue visitAssertThrowsFunc(AssertThrowsFuncContext ctx) {
+    // assertThrows accepts two or three arguments, 1) simple name of exception class,
+    // 2) expression to evaluate, 3) message when assertion fails
+    if (ctx.expressionList().expression().size() < 2) {
+      throw new EvalException("assertThrows requires at least two arguments");
+    }
+    String exception = visit(ctx.expressionList().expression(0)).toString();
+    String customMessage = null;
+    if (ctx.expressionList().expression(2) != null) {
+      customMessage = visit(ctx.expressionList().expression(2)).toString();
+    }
+    String thrownException = null;
+    try {
+      visit(ctx.expressionList().expression(1));
+    } catch (Throwable t) {
+      thrownException = t.getClass().getSimpleName();
+    }
+    
+    if (exception.equals(thrownException)) {
+      return _void;
+    }
+    
+    String message = thrownException == null ? "No exception was thrown. "
+        : "Expected exception was: " + exception + " but actual exception thrown was " +
+            thrownException;
+    message = message + lineNColumn(ctx.ASSERT_THROWS());
+    
+    throw new AssertionFailedException(customMessage == null
+        ? message : customMessage + StringUtil.getPlatformLineSeparator() + message);
+  }
+  
+  @Override
+  public ZwlValue visitAssertDoesNotThrowFunc(AssertDoesNotThrowFuncContext ctx) {
+    // assertDoesNotThrow accepts one or two arguments,
+    // 1) expression to evaluate, 2) message when assertion fails
+    if (ctx.expressionList().expression().size() < 1) {
+      throw new EvalException("assertDoesNotThrow requires two arguments");
+    }
+  
+    String customMessage = null;
+    if (ctx.expressionList().expression(1) != null) {
+      customMessage = visit(ctx.expressionList().expression(1)).toString();
+    }
+  
+    String thrownException = null;
+    try {
+      visit(ctx.expressionList().expression(0));
+    } catch (Throwable t) {
+      thrownException = t.getClass().getSimpleName();
+    }
+    
+    if (thrownException == null) {
+      return _void;
+    }
+    String message = "Expected no exception but " + thrownException + " was thrown. " +
+        lineNColumn(ctx.ASSERT_DOES_NOT_THROW());
+    throw new AssertionFailedException(customMessage == null
+        ? message : customMessage + StringUtil.getPlatformLineSeparator() + message);
+  }
+  
+  @Override
   public ZwlValue visitListLiteral(ListLiteralContext ctx) {
     List<ZwlValue> list = new ArrayList<>();
     if (ctx.expressionList() != null) {
@@ -382,13 +441,13 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
   
   @Override
   public ZwlValue visitUnaryMinusExpression(UnaryMinusExpressionContext ctx) {
-    Double val = processNumberExpr(ctx.expression());
+    Double val = parseNumberExpr(ctx.expression());
     return new DoubleZwlValue(-1 * val);
   }
   
   @Override
   public ZwlValue visitNotExpression(NotExpressionContext ctx) {
-    return new BooleanZwlValue(!processBooleanExpr(ctx.expression()));
+    return new BooleanZwlValue(!parseBooleanExpr(ctx.expression()));
   }
   
   @Override
@@ -423,22 +482,31 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
   
   private ZwlValue add(ExpressionContext eLeft, ExpressionContext eRight) {
     LOG.debug("in addition, eLeft: {}, eRight: {}", eLeft.getText(), eRight.getText());
-    ZwlValue left = visit(eLeft);
-    ZwlValue right = visit(eRight);
+    // add operation first tries converting both operands into number.
+    ZwlValue left = tryConvertNumber(visit(eLeft));
+    ZwlValue right = tryConvertNumber(visit(eRight));
     
-    Optional<Double> dLeft = left.getDoubleValue();
-    Optional<Double> dRight = right.getDoubleValue();
-    LOG.debug("in addition, left: {}, right: {}", dLeft, dRight);
-    if (dLeft.isPresent() && dRight.isPresent()) {
-      return new DoubleZwlValue(dLeft.get() + dRight.get());
+    if (left.getDoubleValue().isPresent() && right.getDoubleValue().isPresent()) {
+      return new DoubleZwlValue(left.getDoubleValue().get() + right.getDoubleValue().get());
     }
-    
+    // if arithmetic add wasn't possible, treat both of them as string and concat.
     return new StringZwlValue(left + "" + right);
+  }
+  
+  private ZwlValue tryConvertNumber(ZwlValue val) {
+    if (val.getStringValue().isPresent()) {
+      try {
+        return new DoubleZwlValue(Double.parseDouble(val.getStringValue().get()));
+      } catch (NumberFormatException ignore) {
+        // ignore
+      }
+    }
+    return val;
   }
   
   private ZwlValue binaryOpArithmetic(ExpressionContext left, ExpressionContext right,
                                       BinaryOperator<Double> operation) {
-    return new DoubleZwlValue(operation.apply(processNumberExpr(left), processNumberExpr(right)));
+    return new DoubleZwlValue(operation.apply(parseNumberExpr(left), parseNumberExpr(right)));
   }
   
   @Override
@@ -461,14 +529,35 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
   
   private ZwlValue binaryOpBoolean(ExpressionContext left, ExpressionContext right,
                                    BiFunction<Double, Double, Boolean> operation) {
-    return new BooleanZwlValue(operation.apply(processNumberExpr(left), processNumberExpr(right)));
+    return new BooleanZwlValue(operation.apply(parseNumberExpr(left), parseNumberExpr(right)));
   }
   
+  @SuppressWarnings("OptionalGetWithoutIsPresent")
   @Override
   public ZwlValue visitEqExpression(EqExpressionContext ctx) {
     ZwlValue left = visit(ctx.expression(0));
     ZwlValue right = visit(ctx.expression(1));
-    return new BooleanZwlValue((ctx.op.getType() == ZwlLexer.EQUAL) == left.equals(right));
+    boolean eqOp = ctx.op.getType() == ZwlLexer.EQUAL;
+    if (left.getClass() == right.getClass()) {
+      return new BooleanZwlValue(eqOp == left.equals(right));
+    }
+    // if left and right needs to be equal, it doesn't matter which side should convert to other,
+    // both the sides should be convertible to each other to be able to equalize. For example,
+    // to prove, 5 == "5" we can convert either left to right or right to left, both should become
+    // of same type.
+    switch (left.getType()) {
+      case Types.STRING:
+        return new BooleanZwlValue(eqOp == left.toString().equals(right.toString()));
+      case Types.BOOLEAN:
+        return new BooleanZwlValue(
+            eqOp == left.getBooleanValue().get().equals(parseBooleanExpr(right, ctx)));
+      case Types.NUMBER:
+        return new BooleanZwlValue(
+            eqOp == left.getDoubleValue().get().equals(parseNumberExpr(right, ctx)));
+      default:
+        throw new InvalidTypeException("Can't convert type " + right.getType() + " to " +
+            left.getType() + " and vice-versa.");
+    }
   }
   
   @Override
@@ -477,7 +566,7 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
         ctx.expression(0).getClass().getSimpleName(), ctx.expression(1).getText(),
         ctx.expression(1).getClass().getSimpleName());
     return new BooleanZwlValue(
-        processBooleanExpr(ctx.expression(0)) && processBooleanExpr(ctx.expression(1)));
+        parseBooleanExpr(ctx.expression(0)) && parseBooleanExpr(ctx.expression(1)));
   }
   
   @Override
@@ -487,7 +576,7 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
         ctx.expression(1).getClass().getSimpleName());
     // if first call to processBooleanExpr yields a true, second call is not made.
     return new BooleanZwlValue(
-        processBooleanExpr(ctx.expression(0)) || processBooleanExpr(ctx.expression(1)));
+        parseBooleanExpr(ctx.expression(0)) || parseBooleanExpr(ctx.expression(1)));
   }
   
   @Override
@@ -537,27 +626,50 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
     return new StringZwlValue(s.substring(1, s.length() - 1));
   }
   
-  private Double processNumberExpr(ExpressionContext exp) {
-    ZwlValue z = visit(exp);
-    Optional<Double> val = z.getDoubleValue();
-    if (!val.isPresent()) {
-      throw new InvalidTypeException("Expression of type " + z.getType() + " couldn't be " +
-          "converted to a 'Number'. " + lineNColumn(exp));
+  private Double parseNumberExpr(ZwlValue z, ExpressionContext exp) {
+    // first try converting to a number if it's not, then check if we've something to return.
+    z = tryConvertNumber(z);
+    if (z.getDoubleValue().isPresent()) {
+      return z.getDoubleValue().get();
     }
-    return val.get();
+    
+    throw new InvalidTypeException("Expression of type " + z.getType() + " couldn't be " +
+        "converted to a 'Number'. " + lineNColumn(exp));
   }
   
-  private Boolean processBooleanExpr(ExpressionContext exp) {
-    LOG.debug("on enter processBooleanExpr, exp class: {}", exp.getClass().getSimpleName());
+  private Double parseNumberExpr(ExpressionContext exp) {
+    
     ZwlValue z = visit(exp);
+    return parseNumberExpr(z, exp);
+  }
+  
+  private Boolean parseBooleanExpr(ZwlValue z, ExpressionContext exp) {
+    LOG.debug("on enter processBooleanExpr, exp class: {}", exp.getClass().getSimpleName());
     LOG.debug("processBooleanExpr, class: {}, exp: {}, visit res: {}",
         exp.getClass().getSimpleName(), exp.getText(), z);
-    Optional<Boolean> val = z.getBooleanValue();
-    if (!val.isPresent()) {
-      throw new InvalidTypeException("Expression of type " + z.getType() + " couldn't be " +
-          "converted to a 'Boolean'. " + lineNColumn(exp));
+  
+    if (z.getBooleanValue().isPresent()) {
+      return z.getBooleanValue().get();
     }
-    return val.get();
+  
+    if (z.getStringValue().isPresent()) {
+      String s = z.getStringValue().get();
+      // parseBoolean doesn't throw exception if the string is other than true/false, thus we check
+      // when we get a false result, whether the string represent a "false". If not we don't return
+      // any result cause the string isn't a convertible boolean. We need 'type' exception thrown.
+      boolean parsed = Boolean.parseBoolean(s);
+      if (parsed || s.equalsIgnoreCase("false")) {
+        return parsed;
+      }
+    }
+  
+    throw new InvalidTypeException("Expression of type " + z.getType() + " couldn't be " +
+        "converted to a 'Boolean'. " + lineNColumn(exp));
+  }
+  
+  private Boolean parseBooleanExpr(ExpressionContext exp) {
+    ZwlValue z = visit(exp);
+    return parseBooleanExpr(z, exp);
   }
   
   private String lineNColumn(TerminalNode node) {

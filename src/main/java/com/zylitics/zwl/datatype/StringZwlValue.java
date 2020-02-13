@@ -20,7 +20,7 @@ public class StringZwlValue implements ZwlValue {
   
   @Override
   public String getType() {
-    return "String";
+    return Types.STRING;
   }
   
   @Override

@@ -1,5 +1,6 @@
 package com.zylitics.zwl.datatype;
 
+import java.text.DecimalFormat;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -18,7 +19,7 @@ public class DoubleZwlValue implements ZwlValue {
   
   @Override
   public String getType() {
-    return "Number";
+    return Types.NUMBER;
   }
   
   @Override
@@ -36,10 +37,8 @@ public class DoubleZwlValue implements ZwlValue {
   
   @Override
   public String toString() {
-    String v = String.valueOf(value);
-    if (v.endsWith(stringToTrim)) {
-      s = s.substring(0, s.lastIndexOf(stringToTrim));
-    }
-    return String.valueOf(value);
+    // 2 hashes after decimal rounds the number of 2 after a decimal point and 0's are ignored, so
+    // 1.00 will be printed as 1 and 1.01 will remain as is.
+    return new DecimalFormat("#.##").format(value);
   }
 }

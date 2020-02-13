@@ -35,7 +35,7 @@ public class NothingZwlValue implements ZwlValue {
   
   @Override
   public String getType() {
-    return "Nothing";
+    return Types.NOTHING;
   }
   
   @Override
@@ -48,11 +48,11 @@ public class NothingZwlValue implements ZwlValue {
   
   @Override
   public int hashCode() {
-    return Objects.hash("Nothing");
+    return Objects.hash(Types.VOID);
   }
   
   @Override
   public String toString() {
-    return "Nothing";
+    return Types.VOID;
   }
 }

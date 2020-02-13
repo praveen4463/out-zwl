@@ -120,7 +120,7 @@
           <groupId>org.antlr</groupId>
           <artifactId>antlr4-maven-plugin</artifactId>
           <version>${antlr.version}</version>
-          <configuration><!--https://www.antlr.org/api/maven-plugin/latest/antlr4-mojo.html#listener-->
+          <configuration><!--https://www.amvnntlr.org/api/maven-plugin/latest/antlr4-mojo.html#listener-->
             <visitor>true</visitor>
             <listener>false</listener>
           </configuration>

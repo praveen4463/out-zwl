@@ -6,16 +6,16 @@ public class VoidZwlValue implements ZwlValue {
   
   @Override
   public String getType() {
-    return "Void";
+    return Types.VOID;
   }
   
   @Override
   public int hashCode() {
-    return Objects.hash("Void");
+    return Objects.hash(Types.VOID);
   }
   
   @Override
   public String toString() {
-    return "Void";
+    return Types.VOID;
   }
 }

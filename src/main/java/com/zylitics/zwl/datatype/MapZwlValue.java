@@ -20,7 +20,7 @@ public class MapZwlValue implements ZwlValue {
   
   @Override
   public String getType() {
-    return "Map";
+    return Types.MAP;
   }
   
   @Override

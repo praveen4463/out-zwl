@@ -20,7 +20,7 @@ public class ListZwlValue implements ZwlValue {
   
   @Override
   public String getType() {
-    return "List";
+    return Types.LIST;
   }
   
   @Override

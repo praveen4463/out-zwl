@@ -60,7 +60,7 @@ public abstract class AbstractFunction implements Function {
   protected Map<String, ZwlValue> tryCastMap(int argIndex, ZwlValue val) {
     Optional<Map<String, ZwlValue>> m = val.getMapValue();
     if (!m.isPresent()) {
-      throwWrongTypeException(val, "Map", argIndex);
+      throwWrongTypeException(val, Types.MAP, argIndex);
     }
     return m.get();
   }
@@ -68,7 +68,7 @@ public abstract class AbstractFunction implements Function {
   protected List<ZwlValue> tryCastList(int argIndex, ZwlValue val) {
     Optional<List<ZwlValue>> l = val.getListValue();
     if (!l.isPresent()) {
-      throwWrongTypeException(val, "List", argIndex);
+      throwWrongTypeException(val, Types.LIST, argIndex);
     }
     return l.get();
   }
@@ -76,7 +76,7 @@ public abstract class AbstractFunction implements Function {
   protected Double tryCastDouble(int argIndex, ZwlValue val) {
     Optional<Double> d = val.getDoubleValue();
     if (!d.isPresent()) {
-      throwWrongTypeException(val, "Double", argIndex);
+      throwWrongTypeException(val, Types.NUMBER, argIndex);
     }
     return d.get();
   }
@@ -85,7 +85,7 @@ public abstract class AbstractFunction implements Function {
   protected Boolean tryCastBoolean(int argIndex, ZwlValue val) {
     Optional<Boolean> b = val.getBooleanValue();
     if (!b.isPresent()) {
-      throwWrongTypeException(val, "Boolean", argIndex);
+      throwWrongTypeException(val, Types.BOOLEAN, argIndex);
     }
     return b.get();
   }
@@ -93,7 +93,7 @@ public abstract class AbstractFunction implements Function {
   protected String tryCastString(int argIndex, ZwlValue val) {
     Optional<String> s = val.getStringValue();
     if (!s.isPresent()) {
-      throwWrongTypeException(val, "String", argIndex);
+      throwWrongTypeException(val, Types.STRING, argIndex);
     }
     return s.get();
   }

@@ -12,4 +12,16 @@ public class AllTests {
     Main main = new Main("resources/BasicSyntaxTest.zwl", Charsets.UTF_8);
     main.interpretDevOnly(null);
   }
+  
+  @Test
+  void typeConversionTest() throws Exception {
+    Main main = new Main("resources/TypeConversionTest.zwl", Charsets.UTF_8);
+    main.interpretDevOnly(null);
+  }
+  
+  @Test
+  void syntaxValidationTest() throws Exception {
+    Main main = new Main("resources/SyntaxValidationTest.zwl", Charsets.UTF_8);
+    main.interpretDevOnly(null);
+  }
 }

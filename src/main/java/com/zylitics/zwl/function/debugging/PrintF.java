@@ -7,8 +7,8 @@ import com.zylitics.zwl.function.string.Format;
 import java.util.IllegalFormatException;
 
 /**
- * PrintF prints the given string using the given format. It accepts the same parameters as in
- * {@link Format}.
+ * PrintF prints the given string using the given format and a line break. It accepts the same
+ * parameters as in {@link Format}.
  */
 public class PrintF extends Format {
   

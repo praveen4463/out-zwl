@@ -76,10 +76,9 @@ public class SubstringRegex extends AbstractFunction {
   
   private ZwlValue substringRegex(String s, String regex) {
     Matcher matcher = getPattern(regex).matcher(s);
-    // if the given pattern can't match anything, result is an empty string.
-    if (!matcher.matches()) {
-      return new ListZwlValue(new ArrayList<>(0));
-    }
+    // Note: don't check whether there is a match (invoking find()) because it will advance the
+    // matcher in input, we have find() in while loop in every situation, and if find returned false
+    //, we always send an empty list.
     
     int groupCount = matcher.groupCount();
     

@@ -7,6 +7,8 @@ FOR : 'for';
 WHILE : 'while';
 IN : 'in';
 TO : 'to';
+ASSERT_THROWS : 'assertThrows';
+ASSERT_DOES_NOT_THROW : 'assertDoesNotThrow';
 
 // Separators
 LBRACE : '{';
@@ -43,7 +45,8 @@ MOD : '%';
 // If number value is given inside quotes, it will not be converted into number but interpreted
 // literally as a string.
 NumberLiteral
-  : Integer ( DOT DIGIT* )?
+  : Integer ( DOT DIGIT+ )?
+  | DOT DIGIT+
   ;
 
 fragment

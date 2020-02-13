@@ -7,6 +7,10 @@ import com.zylitics.zwl.function.AbstractFunction;
 import java.util.List;
 import java.util.function.Supplier;
 
+/**
+ * Matches match the given regex pattern against the entire input sequence, it returns true only if
+ * the pattern matches entire input and not a part of it. To match a subsequence use {@link Find}.
+ */
 public class Matches extends AbstractFunction {
   
   @Override
@@ -38,7 +42,7 @@ public class Matches extends AbstractFunction {
     throw unexpectedEndOfFunctionOverload(argsCount);
   }
   
-  private boolean matches(String s, String regex) {
+  protected boolean matches(String s, String regex) {
     return getPattern(regex).matcher(s).matches();
   }
 }

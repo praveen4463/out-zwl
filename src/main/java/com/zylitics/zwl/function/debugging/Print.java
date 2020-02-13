@@ -10,6 +10,11 @@ import java.util.function.Supplier;
 // should write into a stream that is accessible from outside, once read the read content is deleted
 // to free up space. when dry running, we will read in the end and when running on runner, we can
 // read in time splits.
+
+/**
+ * Prints given message and a line break on the console. To print just a line break, send empty
+ * string.
+ */
 public class Print extends AbstractFunction {
   
   @Override

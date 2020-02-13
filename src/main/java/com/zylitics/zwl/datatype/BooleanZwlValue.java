@@ -18,7 +18,7 @@ public class BooleanZwlValue implements ZwlValue {
   
   @Override
   public String getType() {
-    return "Boolean";
+    return Types.BOOLEAN;
   }
   
   @Override

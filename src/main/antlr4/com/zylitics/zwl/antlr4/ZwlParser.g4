@@ -24,6 +24,7 @@ statement
   | whileStatement
   | increment
   | decrement
+  | builtInLanguageFunction
   ;
 
 assignment
@@ -93,6 +94,11 @@ increment
 
 decrement
   : Identifier DEC
+  ;
+
+builtInLanguageFunction
+  : ASSERT_THROWS LPAREN expressionList RPAREN         #assertThrowsFunc
+  | ASSERT_DOES_NOT_THROW LPAREN expressionList RPAREN #assertDoesNotThrowFunc
   ;
 
 listLiteral

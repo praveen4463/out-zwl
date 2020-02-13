@@ -1,6 +1,7 @@
 package com.zylitics.zwl.api;
 
 import com.zylitics.zwl.datatype.ZwlValue;
+import com.zylitics.zwl.util.StringUtil;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -10,7 +11,7 @@ public class FunctionDefaultValTest {
 
   @Test
   void defaultValueTest() {
-    String code = String.join(System.getProperty("line.separator"),
+    String code = String.join(StringUtil.getPlatformLineSeparator(),
         "a = \"Hi there\"",
         "a = lower(a)??{\"a_default_value_instead\"}",
         "assert(a == \"a_default_value_instead\")");

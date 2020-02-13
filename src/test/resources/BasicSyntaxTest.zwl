@@ -18,6 +18,7 @@ assert(a == "Hi praveen, how are you? Are you free around 7 in the evening?")
 
 regex = "around (?<time>[6-9]) in the evening"
 b = substringRegex(a, regex)[0].time
+printF("b is: %s", b)
 assert(b == 7, "substringRegex assertion failed")
 
 # if statement *************************************************************************************
@@ -62,7 +63,7 @@ m = {
 for k, v in m {
   c = format("%s %s: %s,", c, k, v)
 }
-assert(trimEnd(trim(c), ",") == "event: party, at: 9", "for-map assertion failed")
+assert(trimEnd(trim(c), ",") == "event: party, when: at 9", "for-map assertion failed")
 
 # for-to
 a = 0
