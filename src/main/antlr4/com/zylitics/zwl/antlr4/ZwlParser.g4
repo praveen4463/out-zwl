@@ -96,9 +96,10 @@ decrement
   : Identifier DEC
   ;
 
+// block | expression is important so that blocks with one single lines are not parsed as maps
 builtInLanguageFunction
-  : ASSERT_THROWS LPAREN expressionList RPAREN         #assertThrowsFunc
-  | ASSERT_DOES_NOT_THROW LPAREN expressionList RPAREN #assertDoesNotThrowFunc
+  : ASSERT_THROWS LPAREN expression COMMA (block | expression) (COMMA expression)? RPAREN      #assertThrowsFunc
+  | ASSERT_DOES_NOT_THROW LPAREN (block | expression) (COMMA expression)? RPAREN               #assertDoesNotThrowFunc
   ;
 
 listLiteral

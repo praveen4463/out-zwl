@@ -31,7 +31,7 @@ public class Floor extends AbstractFunction {
     int argsCount = args.size();
     
     if (argsCount == 1) {
-      return new DoubleZwlValue(floor(tryCastDouble(0, args.get(0))));
+      return new DoubleZwlValue(floor(parseDouble(0, args.get(0))));
     }
     
     throw unexpectedEndOfFunctionOverload(argsCount);

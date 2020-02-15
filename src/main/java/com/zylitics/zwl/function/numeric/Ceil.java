@@ -31,7 +31,7 @@ public class Ceil extends AbstractFunction {
     int argsCount = args.size();
     
     if (argsCount == 1) {
-      return new DoubleZwlValue(ceil(tryCastDouble(0, args.get(0))));
+      return new DoubleZwlValue(ceil(parseDouble(0, args.get(0))));
     }
     
     throw unexpectedEndOfFunctionOverload(argsCount);

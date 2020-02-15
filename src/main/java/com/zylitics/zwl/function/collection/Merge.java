@@ -3,6 +3,7 @@ package com.zylitics.zwl.function.collection;
 import com.zylitics.zwl.datatype.MapZwlValue;
 import com.zylitics.zwl.datatype.ZwlValue;
 import com.zylitics.zwl.exception.InsufficientArgumentsException;
+import com.zylitics.zwl.exception.InvalidTypeException;
 import com.zylitics.zwl.function.AbstractFunction;
 
 import java.util.List;
@@ -41,19 +42,25 @@ public class Merge extends AbstractFunction {
                          Supplier<String> lineNColumn) {
     super.invoke(args, defaultValue, lineNColumn);
     
-    if (args.size() == 1) {
-      return new MapZwlValue(merge(tryCastList(0, args.get(0))));
+    if (args.size() >= 2) {
+      return new MapZwlValue(merge(args));
     }
   
-    return new MapZwlValue(merge(args));
-  }
-  
-  private Map<String, ZwlValue> merge(List<ZwlValue> listOfMaps) {
-    if (listOfMaps.size() < 2) {
+    List<ZwlValue> lZ = null;
+    try {
+      lZ = tryCastList(0, args.get(0));
+    } catch (InvalidTypeException i) {
+      //ignore
+    }
+    
+    if (lZ == null || lZ.size() < 2) {
       throw new InsufficientArgumentsException(
           withLineNCol(getName() + " requires at least two values."));
     }
-    
+    return new MapZwlValue(merge(lZ));
+  }
+  
+  private Map<String, ZwlValue> merge(List<ZwlValue> listOfMaps) {
     return IntStream.range(0, listOfMaps.size())
         .mapToObj(i -> tryCastMap(i, listOfMaps.get(i)))
         .flatMap(m -> m.entrySet().stream()).collect(

@@ -8,6 +8,7 @@ import com.zylitics.zwl.antlr4.ZwlParserBaseVisitor;
 import com.zylitics.zwl.datatype.*;
 import com.zylitics.zwl.exception.*;
 import com.zylitics.zwl.internal.Variables;
+import com.zylitics.zwl.util.ParseUtil;
 import com.zylitics.zwl.util.StringUtil;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
@@ -17,7 +18,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
 import java.util.function.BinaryOperator;
 
@@ -35,12 +35,10 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
   private final List<Function> functions;
   
   public DefaultZwlInterpreter() {
-    long start = System.nanoTime();
     // added function list should be constructed new, each request should use it's own set of
     // function objects.
-    this.functions = new ArrayList<>(BuiltInFunction.get());
-    LOG.debug("time to create built-in function list: {}", TimeUnit.NANOSECONDS.toMicros(System.nanoTime() - start));
-    this.vars = new Variables();
+    functions = new ArrayList<>(BuiltInFunction.get());
+    vars = new Variables();
   }
   
   public void accept(ZwlInterpreterVisitor visitor) {
@@ -135,12 +133,17 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
     return val;
   }
   
+  // If a non-existent variable is referenced, process fails fast.
   @Override
   public ZwlValue visitIdentifierExpr(IdentifierExprContext ctx) {
     String id = ctx.Identifier().getText();
     Optional<ZwlValue> idValue = vars.resolve(id);
+    if (!idValue.isPresent()) {
+      throw new NoSuchVariableException(String.format("Variable '%s' doesn't exist. %s", id,
+          lineNColumn(ctx.Identifier())));
+    }
     LOG.debug("inside identifier exp, id: {}, val: {}", id, idValue);
-    return processResolvedIdentifier(idValue.orElse(new NothingZwlValue()), ctx);
+    return processResolvedIdentifier(idValue.get(), ctx);
   }
   
   private ZwlValue processResolvedIdentifier(ZwlValue resolvedId,
@@ -162,6 +165,8 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
     return resolvedId;
   }
   
+  // If a non-existent key is referenced through dot operator, process fail fast to detect error
+  // earlier.
   private ZwlValue resolveMapKey(ZwlValue val, IdentifierExprContext ctx) {
     String id = ctx.Identifier().getText();
     Optional<Map<String, ZwlValue>> map = val.getMapValue();
@@ -170,33 +175,44 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
           " left operand is of type " + val.getType() + ". A 'Map' type is required. " +
           lineNColumn(ctx.Identifier()));
     }
-    // users have two ways to check a key existence, using containsKey or exists
-    // This handle null handle null keys as well as null values (although there shouldn't be null
-    // value for a valid key but type Nothing)
-    return handleNull(map.get().get(id));
+    if (!map.get().containsKey(id)) {
+      throw new NoSuchMapKeyException(String.format("The given map key %s has no mapping in the " +
+              "map. %s", id, lineNColumn(ctx.Identifier())));
+    }
+    return map.get().get(id);
   }
   
-  // resolves indexes recursively for n dimensional array.
+  // If a non-existent key is referenced through index, process fail fast to detect error earlier.
+  // Same happens to list index.
+  // resolves indexes recursively for n dimensional array or n key map.
   private ZwlValue resolveIndexes(ZwlValue val, List<ExpressionContext> indexes) {
     if (indexes == null || indexes.size() == 0) {
       throw new RuntimeException("Illegally trying to resolve index when they are not given");
     }
     
     for (ExpressionContext ec : indexes) {
-      Optional<List<ZwlValue>> list = val.getListValue();
-      if (!list.isPresent()) {
+      if (!(val.getListValue().isPresent() || val.getMapValue().isPresent())) {
         throw new InvalidTypeException("Can't resolve indexes on type " + val.getType() + ". A" +
-            " 'List' type is required. " + lineNColumn(ec));
+            " 'List' or 'Map' type is required. " + lineNColumn(ec));
       }
-      
-      int i = parseNumberExpr(ec).intValue();
-      if (i < 0 || i >= list.get().size()) {
-        throw new IndexOutOfRangeException(String.format("The specified index isn't within " +
-            "the range of this List. Index given: %s, List size: %s %s", i, list.get().size(),
-            lineNColumn(ec)));
+      if (val.getListValue().isPresent()) {
+        List<ZwlValue> list = val.getListValue().get();
+        int i = parseNumberExpr(ec).intValue();
+        if (i < 0 || i >= list.size()) {
+          throw new IndexOutOfRangeException(String.format("The specified index isn't within " +
+                  "the range of this List. Index given: %s, List size: %s %s", i, list.size(),
+              lineNColumn(ec)));
+        }
+        val = list.get(i);
+      } else {
+        Map<String, ZwlValue> map = val.getMapValue().get();
+        String key = visit(ec).toString();
+        if (!map.containsKey(key)) {
+          throw new NoSuchMapKeyException(String.format("The given map key %s has no mapping in " +
+              " the map. %s", key, lineNColumn(ec)));
+        }
+        val = map.get(key);
       }
-      // no need to handle nulls as we don't expect list elements to be of type 'null'
-      val = list.get().get(i);
     }
     return val;
   }
@@ -227,8 +243,8 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
     ZwlValue z = visit(ctx.expression());
     Optional<List<ZwlValue>> list = z.getListValue();
     if (!list.isPresent()) {
-      throw new InvalidTypeException("Expression of type " + z.getType() + " couldn't be converted" +
-          " to a 'List'. " + lineNColumn(ctx.expression()));
+      throw new InvalidTypeException("Expression of type " + z.getType() + " couldn't be" +
+          " converted to a 'List'. " + lineNColumn(ctx.expression()));
     }
     LOG.debug("inside for-in, list is {}", list);
     String id = ctx.Identifier().getText();
@@ -253,8 +269,8 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
     ZwlValue z = visit(ctx.expression());
     Optional<Map<String, ZwlValue>> map = z.getMapValue();
     if (!map.isPresent()) {
-      throw new InvalidTypeException("Expression of type " + z.getType() + " couldn't be converted" +
-          " to a 'Map'. " + lineNColumn(ctx.expression()));
+      throw new InvalidTypeException("Expression of type " + z.getType() + " couldn't be" +
+          " converted to a 'Map'. " + lineNColumn(ctx.expression()));
     }
     String key = ctx.Identifier(0).getText();
     String value = ctx.Identifier(1).getText();
@@ -359,30 +375,31 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
   @Override
   public ZwlValue visitAssertThrowsFunc(AssertThrowsFuncContext ctx) {
     // assertThrows accepts two or three arguments, 1) simple name of exception class,
-    // 2) expression to evaluate, 3) message when assertion fails
-    if (ctx.expressionList().expression().size() < 2) {
-      throw new EvalException("assertThrows requires at least two arguments");
-    }
-    String exception = visit(ctx.expressionList().expression(0)).toString();
+    // 2) expression or block to evaluate, 3) message when assertion fails
+    String exception = visit(ctx.expression(0)).toString();
     String customMessage = null;
-    if (ctx.expressionList().expression(2) != null) {
-      customMessage = visit(ctx.expressionList().expression(2)).toString();
+    if (ctx.expression(2) != null) {
+      customMessage = visit(ctx.expression(2)).toString();
     }
     String thrownException = null;
+    String cause = null;
     try {
-      visit(ctx.expressionList().expression(1));
+      visit(ctx.block() != null ? ctx.block() : ctx.expression(1));
     } catch (Throwable t) {
       thrownException = t.getClass().getSimpleName();
+      if (t.getCause() != null) {
+        cause = t.getCause().getClass().getSimpleName();
+      }
     }
     
-    if (exception.equals(thrownException)) {
+    if (exception.equals(thrownException) || exception.equals(cause)) {
       return _void;
     }
-    
-    String message = thrownException == null ? "No exception was thrown. "
-        : "Expected exception was: " + exception + " but actual exception thrown was " +
-            thrownException;
-    message = message + lineNColumn(ctx.ASSERT_THROWS());
+  
+    String message = String.format("Expected exception: %s, Actual exception: %s. %s", exception,
+        thrownException == null ? "NONE"
+            : thrownException + (cause == null ? "" : ", cause: " + cause),
+        lineNColumn(ctx.ASSERT_THROWS()));
     
     throw new AssertionFailedException(customMessage == null
         ? message : customMessage + StringUtil.getPlatformLineSeparator() + message);
@@ -391,19 +408,16 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
   @Override
   public ZwlValue visitAssertDoesNotThrowFunc(AssertDoesNotThrowFuncContext ctx) {
     // assertDoesNotThrow accepts one or two arguments,
-    // 1) expression to evaluate, 2) message when assertion fails
-    if (ctx.expressionList().expression().size() < 1) {
-      throw new EvalException("assertDoesNotThrow requires two arguments");
-    }
+    // 1) expression/block to evaluate, 2) message when assertion fails
   
     String customMessage = null;
-    if (ctx.expressionList().expression(1) != null) {
-      customMessage = visit(ctx.expressionList().expression(1)).toString();
+    if (ctx.expression(1) != null) {
+      customMessage = visit(ctx.expression(1)).toString();
     }
   
     String thrownException = null;
     try {
-      visit(ctx.expressionList().expression(0));
+      visit(ctx.block() != null ? ctx.block() : ctx.expression(0));
     } catch (Throwable t) {
       thrownException = t.getClass().getSimpleName();
     }
@@ -627,14 +641,9 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
   }
   
   private Double parseNumberExpr(ZwlValue z, ExpressionContext exp) {
-    // first try converting to a number if it's not, then check if we've something to return.
-    z = tryConvertNumber(z);
-    if (z.getDoubleValue().isPresent()) {
-      return z.getDoubleValue().get();
-    }
-    
-    throw new InvalidTypeException("Expression of type " + z.getType() + " couldn't be " +
-        "converted to a 'Number'. " + lineNColumn(exp));
+    return ParseUtil.parseDouble(z,
+        new InvalidTypeException("Expression of type " + z.getType() + " couldn't be " +
+            "converted to a 'Number'. " + lineNColumn(exp)));
   }
   
   private Double parseNumberExpr(ExpressionContext exp) {
@@ -644,27 +653,12 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
   }
   
   private Boolean parseBooleanExpr(ZwlValue z, ExpressionContext exp) {
-    LOG.debug("on enter processBooleanExpr, exp class: {}", exp.getClass().getSimpleName());
     LOG.debug("processBooleanExpr, class: {}, exp: {}, visit res: {}",
         exp.getClass().getSimpleName(), exp.getText(), z);
   
-    if (z.getBooleanValue().isPresent()) {
-      return z.getBooleanValue().get();
-    }
-  
-    if (z.getStringValue().isPresent()) {
-      String s = z.getStringValue().get();
-      // parseBoolean doesn't throw exception if the string is other than true/false, thus we check
-      // when we get a false result, whether the string represent a "false". If not we don't return
-      // any result cause the string isn't a convertible boolean. We need 'type' exception thrown.
-      boolean parsed = Boolean.parseBoolean(s);
-      if (parsed || s.equalsIgnoreCase("false")) {
-        return parsed;
-      }
-    }
-  
-    throw new InvalidTypeException("Expression of type " + z.getType() + " couldn't be " +
-        "converted to a 'Boolean'. " + lineNColumn(exp));
+    return ParseUtil.parseBoolean(z,
+        new InvalidTypeException("Expression of type " + z.getType() + " couldn't be " +
+            "converted to a 'Boolean'. " + lineNColumn(exp)));
   }
   
   private Boolean parseBooleanExpr(ExpressionContext exp) {
@@ -689,7 +683,7 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
   }
   
   private long getForLoopMaxIterations() {
-    String key = "for_loop_max_iterations";
+    String key = "forLoopMaxIterations";
     Optional<Map<String, ZwlValue>> p = getPreferences();
     if (!(p.isPresent() && p.get().containsKey(key)
         && p.get().get(key).getDoubleValue().isPresent())) {
@@ -712,18 +706,17 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
     return preferences;
   }
   
-  private ZwlValue handleNull(ZwlValue val) {
-    return val != null ? val : new NothingZwlValue();
-  }
-  
   private void checkLegalIdentifierAssign(TerminalNode identifier) {
     String id = identifier.getText();
     String idLower = id.toLowerCase();
+    LOG.debug("idLower is {}", idLower);
+    LOG.debug("readOnlyVars is {}", readOnlyVars);
+    LOG.debug("RESERVED_KEYWORDS is {}", RESERVED_KEYWORDS);
     if (readOnlyVars.contains(idLower)) {
       throw new IllegalIdentifierException("Read only identifier: " + id + " can't be assigned. " +
           lineNColumn(identifier));
     }
-    if (RESERVED_KEYWORDS.contains((idLower))) {
+    if (RESERVED_KEYWORDS.contains(idLower)) {
       throw new IllegalIdentifierException("Restricted keyword: " + id + " can't be used as an" +
           " identifier. " + lineNColumn(identifier));
     }

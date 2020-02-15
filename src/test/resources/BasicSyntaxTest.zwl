@@ -118,3 +118,5 @@ a = [[
   }
 ]]
 assert(a[0][0].age == 89)
+assert(a[0][0]["age"] == 89)
+assertThrows(exceptions.noSuchMapKeyEx, a[0][0]["name"] == 89)

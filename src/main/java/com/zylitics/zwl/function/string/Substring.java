@@ -40,12 +40,12 @@ public class Substring extends AbstractFunction {
     switch (argsCount) {
       case 2:
         substring = substring(tryCastString(0, args.get(0)),
-            tryCastDouble(1, args.get(1)).intValue());
+            parseDouble(1, args.get(1)).intValue());
         break;
       case 3:
         substring = substring(tryCastString(0, args.get(0)),
-            tryCastDouble(1, args.get(1)).intValue(),
-            tryCastDouble(2, args.get(2)).intValue());
+            parseDouble(1, args.get(1)).intValue(),
+            parseDouble(2, args.get(2)).intValue());
         break;
       default:
         throw unexpectedEndOfFunctionOverload(argsCount);

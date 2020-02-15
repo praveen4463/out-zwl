@@ -7,6 +7,10 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.function.Supplier;
 
+/**
+ * Tests how function's default value work and how externally added function can overwrite existing
+ * one if they match.
+ */
 public class FunctionDefaultValTest {
 
   @Test
@@ -17,9 +21,16 @@ public class FunctionDefaultValTest {
         "assert(a == \"a_default_value_instead\")");
     
     Main main = new Main(code);
+    // set our overridden function that should overwrite the existing one.
     main.interpretDevOnly(zwlInterpreter -> zwlInterpreter.setFunction(new Lower()));
   }
   
+  /**
+   * Shows how functions can be added externally to extend ZWL functionality. Functions can support
+   * any functionality as long as they adhere to {@link com.zylitics.zwl.interpret.Function}. Added
+   * functions should preferably extend {@link com.zylitics.zwl.function.AbstractFunction} for
+   * convenience.
+   */
   public static class Lower extends com.zylitics.zwl.function.string.Lower {
   
     @Override

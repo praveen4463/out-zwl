@@ -4,6 +4,8 @@ Note: Unit tests are not written in ZWL because of extensive requirement for moc
 different parser classes which is less efficient and more error prone than writing 
 integration test as they run quickly being everything is local in ZWL.
 
+ZWL's tests are written using ZWL itself.
+
 Tests are converted into various categories so that whenever functionality are added,
 we know which part to look into for additions and removals. These are the categories
 of tests written in ZWL:

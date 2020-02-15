@@ -1,0 +1,36 @@
+# Tests advance syntax of ZWL
+
+mixed_array = [ "jackson", 345, "was", true, "micheal", "legend", 43.56, [100, 200],
+    { city = "noida", country = "india" } ]
+
+mixed_map = {
+  name = "praveen",
+  age = 456,
+  isMale = true,
+  taxLevel = 10.5,
+  address = "somewhere in Noida, India",
+  hobbies = ["reading", "exercising", "writing"],
+  relatives = { parents = "cstiwari/btiwari", wife = "tanu", pet = "bond" }
+}
+
+assertTrue(mixed_array[3], "mixed_array's third element should have been true")
+
+assertTrue(mixed_array[1] + mixed_array[6] == 388.56, "addition of numeric in mixed_array failed")
+
+assertTrue(mixed_array[4] + " " + mixed_array[0] + " " +  mixed_array[2] + " " + mixed_array[5]
+    == "micheal jackson was legend", "mixed_array string joining didn't work")
+
+assertTrue(mixed_array[7][1] == 200, "mixed_array's array couldn't be accessed")
+
+assertTrue(mixed_array[8].city == "noida", "mixed_array's map couldn't be accessed")
+
+assertTrue(mixed_map.age + mixed_map.taxLevel == 466.5, "addition of numeric in mixed_map failed")
+
+assertTrue(mixed_map.isMale, "mixed_map's bool property should have been true")
+
+assertTrue(mixed_map.name + " lives " + mixed_map.address == "praveen lives somewhere in Noida, India",
+    "mixed_map string joining didn't work")
+
+assertTrue(mixed_map.hobbies[1] == "exercising", "mixed_map's array couldn't be accessed: " + mixed_map.hobbies[1])
+
+assertTrue(mixed_map.relatives.pet == "bond", "mixed_map's map couldn't be accessed")

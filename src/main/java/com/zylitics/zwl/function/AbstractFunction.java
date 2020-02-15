@@ -5,6 +5,7 @@ import com.zylitics.zwl.exception.EvalException;
 import com.zylitics.zwl.exception.InvalidRegexPatternException;
 import com.zylitics.zwl.exception.InvalidTypeException;
 import com.zylitics.zwl.interpret.Function;
+import com.zylitics.zwl.util.ParseUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,7 +61,7 @@ public abstract class AbstractFunction implements Function {
   protected Map<String, ZwlValue> tryCastMap(int argIndex, ZwlValue val) {
     Optional<Map<String, ZwlValue>> m = val.getMapValue();
     if (!m.isPresent()) {
-      throwWrongTypeException(val, Types.MAP, argIndex);
+      throw getWrongTypeException(val, Types.MAP, argIndex);
     }
     return m.get();
   }
@@ -68,32 +69,24 @@ public abstract class AbstractFunction implements Function {
   protected List<ZwlValue> tryCastList(int argIndex, ZwlValue val) {
     Optional<List<ZwlValue>> l = val.getListValue();
     if (!l.isPresent()) {
-      throwWrongTypeException(val, Types.LIST, argIndex);
+      throw getWrongTypeException(val, Types.LIST, argIndex);
     }
     return l.get();
   }
   
-  protected Double tryCastDouble(int argIndex, ZwlValue val) {
-    Optional<Double> d = val.getDoubleValue();
-    if (!d.isPresent()) {
-      throwWrongTypeException(val, Types.NUMBER, argIndex);
-    }
-    return d.get();
+  protected Double parseDouble(int argIndex, ZwlValue val) {
+    return ParseUtil.parseDouble(val, getWrongTypeException(val, Types.NUMBER, argIndex));
   }
   
   @SuppressWarnings("SameParameterValue")
-  protected Boolean tryCastBoolean(int argIndex, ZwlValue val) {
-    Optional<Boolean> b = val.getBooleanValue();
-    if (!b.isPresent()) {
-      throwWrongTypeException(val, Types.BOOLEAN, argIndex);
-    }
-    return b.get();
+  protected Boolean parseBoolean(int argIndex, ZwlValue val) {
+    return ParseUtil.parseBoolean(val, getWrongTypeException(val, Types.BOOLEAN, argIndex));
   }
   
   protected String tryCastString(int argIndex, ZwlValue val) {
     Optional<String> s = val.getStringValue();
     if (!s.isPresent()) {
-      throwWrongTypeException(val, Types.STRING, argIndex);
+      throw getWrongTypeException(val, Types.STRING, argIndex);
     }
     return s.get();
   }
@@ -104,8 +97,8 @@ public abstract class AbstractFunction implements Function {
   // that it doesn't confuse them. For example we could say: When functions accepts a list in place
   // of arguments, that list is expanded to arguments internally and if some element was invalid,
   // we'll report it as if it was an argument.
-  private void throwWrongTypeException(ZwlValue val, String type, int argIndex) {
-    throw new InvalidTypeException(String.format("Given value: %s at argument: %s, isn't of type" +
+  private InvalidTypeException getWrongTypeException(ZwlValue val, String type, int argIndex) {
+    return new InvalidTypeException(String.format("Given value: %s at argument: %s, isn't of type" +
             " '%s'. %s", val, argIndex, type, lineNColumn.get()));
   }
   

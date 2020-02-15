@@ -3,6 +3,7 @@ package com.zylitics.zwl.internal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ReservedKeywords {
   
@@ -12,7 +13,6 @@ public class ReservedKeywords {
     List<String> reserved = new ArrayList<>();
     reserved.add("Nothing");
     reserved.add("Void");
-    reserved.forEach(s -> s = s.toLowerCase()); // make sure all elements are lower case
-    return reserved;
+    return reserved.stream().map(String::toLowerCase).collect(Collectors.toList());
   }
 }

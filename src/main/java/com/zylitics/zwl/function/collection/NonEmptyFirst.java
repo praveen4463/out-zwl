@@ -1,9 +1,11 @@
 package com.zylitics.zwl.function.collection;
 
 import com.zylitics.zwl.datatype.NothingZwlValue;
+import com.zylitics.zwl.datatype.Types;
 import com.zylitics.zwl.datatype.ZwlValue;
 import com.zylitics.zwl.function.AbstractFunction;
 import com.zylitics.zwl.function.util.Exists;
+import com.zylitics.zwl.util.ParseUtil;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -48,11 +50,6 @@ public class NonEmptyFirst extends AbstractFunction {
   }
   
   private ZwlValue nonEmptyFirst(List<ZwlValue> l) {
-    //noinspection OptionalGetWithoutIsPresent
-    return l.stream().filter(z -> !z.getNothingValue().isPresent()
-        && (z.getBooleanValue().isPresent() || z.getDoubleValue().isPresent()
-        || z.getStringValue().isPresent() ? z.getStringValue().get().trim().length() > 0
-            : z.getListValue().get().size() > 0 || z.getMapValue().get().size() > 0))
-        .findFirst().orElse(new NothingZwlValue());
+    return l.stream().filter(ParseUtil::isNonEmpty).findFirst().orElse(new NothingZwlValue());
   }
 }

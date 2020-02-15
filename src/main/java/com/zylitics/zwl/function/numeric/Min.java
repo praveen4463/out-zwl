@@ -31,7 +31,7 @@ public class Min extends AbstractFunction {
                          Supplier<String> lineNColumn) {
     super.invoke(args, defaultValue, lineNColumn);
     Optional<Double> min = IntStream.range(0, args.size())
-        .mapToObj(i -> tryCastDouble(i, args.get(i))).min(Double::compareTo);
+        .mapToObj(i -> parseDouble(i, args.get(i))).min(Double::compareTo);
     if (min.isPresent()) {
       return new DoubleZwlValue(min.get());
     }

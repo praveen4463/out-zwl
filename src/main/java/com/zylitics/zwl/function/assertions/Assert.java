@@ -38,14 +38,14 @@ public class Assert extends AbstractFunction {
     
     switch (argsCount) {
       case 1:
-        assertTrue(tryCastBoolean(0, args.get(0)));
+        assertCondition(parseBoolean(0, args.get(0)));
         break;
       case 2:
         // If some parameter is optional (Nullable) and we get a Nothing for that, send null there
         // so that we don't throw cast exception on optional parameters that could be ignored.
         ZwlValue firstArg = args.get(1);
-        assertTrue(
-            tryCastBoolean(0, args.get(0)),
+        assertCondition(
+            parseBoolean(0, args.get(0)),
             firstArg.getNothingValue().isPresent() ? null : tryCastString(1, firstArg)
         );
         break;
@@ -55,11 +55,11 @@ public class Assert extends AbstractFunction {
     return _void;
   }
   
-  private void assertTrue(boolean condition) {
-    assertTrue(condition, null);
+  protected void assertCondition(boolean condition) {
+    assertCondition(condition, null);
   }
   
-  private void assertTrue(boolean condition, @Nullable String message) {
+  protected void assertCondition(boolean condition, @Nullable String message) {
     if (!condition) {
       throw new AssertionFailedException(
           withLineNCol(message != null ? message : "Assertion was failed."));

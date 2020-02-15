@@ -1,7 +1,5 @@
 # Tests the behaviour of ZWL when implicit type conversion occurs.
 
-invalidTypeEx = "InvalidTypeException"
-
 # add operation ************************************************************************************
 a = "Hi johny, how's going? Are you 13 now?"
 regex = "([1-2][0-9])"
@@ -43,16 +41,21 @@ assert(1 == "1")
 assert("1" == 1)
 
 assert(!"false")
+assertFalse("false")
 assert(!(1 == "2"))
+assertFalse("1" == "2")
+assertFalse(!"true")
 
 # failures
-assertThrows(invalidTypeEx, !"johny")
-assertThrows(invalidTypeEx, !1)
-assertThrows(invalidTypeEx, !"1")
-assertThrows(invalidTypeEx, true == "johny")
-assertThrows(invalidTypeEx, 1 == "johny")
-assertThrows(invalidTypeEx, [1, 2] == "[2, 3]")
-assertThrows(invalidTypeEx, {age = 11} == "{age = 11}")
+assertThrows(exceptions.invalidTypeEx, !"johny")
+assertThrows(exceptions.invalidTypeEx, !1)
+assertThrows(exceptions.invalidTypeEx, !"1")
+assertThrows(exceptions.invalidTypeEx, true == "johny")
+assertThrows(exceptions.invalidTypeEx, 1 == "johny")
+assertThrows(exceptions.invalidTypeEx, [1, 2] == "[2, 3]")
+assertThrows(exceptions.invalidTypeEx, {age = 11} == "{age = 11}")
+assertThrows(exceptions.invalidTypeEx, assert("falsee"))
+assertThrows(exceptions.invalidTypeEx, assert("truee"))
 
 # comparision operation ****************************************************************************
 assert(1 > "0")
@@ -72,10 +75,10 @@ assert("200" <= 299)
 assert("100" <= "100")
 
 # failures
-assertThrows(invalidTypeEx, 1 > "johny")
-assertThrows(invalidTypeEx, "1L" >= 0)
-assertThrows(invalidTypeEx, true < 500)
-assertThrows(invalidTypeEx, "hi" <= 10)
+assertThrows(exceptions.invalidTypeEx, 1 > "johny")
+assertThrows(exceptions.invalidTypeEx, "1L" >= 0)
+assertThrows(exceptions.invalidTypeEx, true < 500)
+assertThrows(exceptions.invalidTypeEx, "hi" <= 10)
 
 # arithmetic operation *****************************************************************************
 assert(2 * "8" == 16)
@@ -96,21 +99,26 @@ assert("20" - "30" == -10)
 assert(-"100" == -100)
 
 # failures
-assertThrows(invalidTypeEx, true * 5)
-assertThrows(invalidTypeEx, "100" / "2K")
-assertThrows(invalidTypeEx, "john" % 5)
-assertThrows(invalidTypeEx,  -"2L")
+assertThrows(exceptions.invalidTypeEx, true * 5)
+assertThrows(exceptions.invalidTypeEx, "100" / "2K")
+assertThrows(exceptions.invalidTypeEx, "john" % 5)
+assertThrows(exceptions.invalidTypeEx,  -"2L")
 
 # logical operation ********************************************************************************
 assert("true" && true)
 assert(!"false" && true)
 assert(true && !"false")
 assert("true" && "true")
+assertFalse("false" && false)
+assertFalse(false && "false")
+assertFalse("false" && "false")
 
 assert("false" || true)
 assert(false || ("true" || false))
 assert("false" || "true")
+assertFalse("false" || !"true")
+assertFalse(false || "false")
 
 # failures
-assertThrows(invalidTypeEx, "true" && 12)
-assertThrows(invalidTypeEx, "false" || 1)
+assertThrows(exceptions.invalidTypeEx, "true" && 12)
+assertThrows(exceptions.invalidTypeEx, "false" || 1)

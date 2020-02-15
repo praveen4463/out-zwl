@@ -1,1 +1,106 @@
-assertThrows("EvalException", (for a in [1, 2] {}))
+# Tests syntax validations in ZWL
+
+# unknown function invocation throws exception
+assertThrows(exceptions.evalEx, {
+  unknownFunction(1, 2)
+})
+
+# function invocation with wrong parameters throws
+assertThrows(exceptions.evalEx, {
+  length("string1", "string2")
+})
+
+assertThrows(exceptions.noSuchVariableEx, unknown)
+
+# resolving identifier with dot fails left side isn't a map
+list = [1, 2]
+assertThrows(exceptions.evalEx, list.id)
+
+# No existent map keys throws fast
+map = {name = "praveen"}
+assertThrows(exceptions.noSuchMapKeyEx, map.age)
+assertThrows(exceptions.noSuchMapKeyEx, map["age"])
+
+# accessing index on non list/map types throws
+a = "praveen"
+assertThrows(exceptions.invalidTypeEx, a[0])
+
+assertThrows(exceptions.indexOutOfRangeEx, list[2])
+
+# can't run for-in list on non list types
+assertThrows(exceptions.invalidTypeEx, {
+  for i in map {
+    assertTrue(false)
+  }
+})
+
+# can't run for-in map on non map types
+assertThrows(exceptions.invalidTypeEx, {
+  for key, value in list {
+    assertTrue(false)
+  }
+})
+
+# variable used in for shouldn't be one from outer scope
+a = 10
+assertThrows("EvalException", {
+  for a = 1 to 100 {
+    assert(false)
+  }
+})
+assertThrows("EvalException", {
+  for a in [1, 2] {
+    assert(false)
+  }
+})
+b = 5
+assertThrows("EvalException", {
+  for a, b in {name = "praveen"} {
+    assert(false)
+  }
+})
+assertDoesNotThrow({
+  for i = 1 to 100 {
+    # nothing to do
+  }
+  # 'i' should delete after the first loop ends, but can't use 'a' cause it's already declared in
+  # scope
+  for i = 1 to 100 {
+    # nothing to do
+  }
+})
+assertDoesNotThrow({
+  for i in [1, 2] {
+    # nothing to do
+  }
+  # 'i' should delete after the first loop ends, but can't use 'a' cause it's already declared in
+  # scope
+  for i in [1, 2] {
+    # nothing to do
+  }
+})
+assertDoesNotThrow({
+  for i, j in {name = "praveen"} {
+    # nothing to do
+  }
+  for i, j in {age = 33} {
+    # nothing to do
+  }
+})
+
+# while loop should break after max iterations
+assertThrows(exceptions.evalEx, {
+  a = 10
+  b = 9
+  while (a > b) {
+    # nothing to do
+  }
+})
+
+# read only and restricted variables can't be assigned.
+assertThrows(exceptions.illegalIdentifierEx, {
+  exceptions = [] # assigning into a read-only variable
+})
+assertThrows(exceptions.illegalIdentifierEx, {
+  nothing = "null" # assigning into a restricted keyword
+})

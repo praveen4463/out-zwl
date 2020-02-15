@@ -2,6 +2,8 @@ package com.zylitics.zwl.interpret;
 
 import com.google.common.collect.ImmutableList;
 import com.zylitics.zwl.function.assertions.Assert;
+import com.zylitics.zwl.function.assertions.AssertFalse;
+import com.zylitics.zwl.function.assertions.AssertTrue;
 import com.zylitics.zwl.function.collection.*;
 import com.zylitics.zwl.function.datetime.FormatDate;
 import com.zylitics.zwl.function.datetime.Timestamp;
@@ -24,6 +26,8 @@ public final class BuiltInFunction {
     builder.add(
         // Assertions
         new Assert(),
+        new AssertTrue(),
+        new AssertFalse(),
         
         // Collection
         new ContainsElement(),
@@ -63,6 +67,7 @@ public final class BuiltInFunction {
         new Length(),
         new Lower(),
         new Matches(),
+        new Find(),
         new Replace(),
         new ReplaceAll(),
         new ReplaceFirst(),

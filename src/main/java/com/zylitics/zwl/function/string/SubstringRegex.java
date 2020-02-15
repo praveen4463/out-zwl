@@ -1,5 +1,6 @@
 package com.zylitics.zwl.function.string;
 
+import com.google.common.base.Strings;
 import com.zylitics.zwl.datatype.ListZwlValue;
 import com.zylitics.zwl.datatype.MapZwlValue;
 import com.zylitics.zwl.datatype.StringZwlValue;
@@ -42,7 +43,11 @@ https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html#groupname
  * <p>Regular Expression pattern:</p>
  * <p>The regex pattern must be a {@link String} with no forward slashes around the pattern. Flags
  * can be given using syntax (?idmsuxU)X, named groups are written with syntax (?<name>X).</p>
- * <p>It's not valid to mix both named and unnamed capture groups in the same pattern.</p>
+ * <p>It's ok to mix both named and unnamed capture groups in the same pattern but when unnamed
+ * groups appear with named groups, result contain only named groups and matches of unnamed
+ * groups are ignored.</p>
+ * <p>named and unnamed groups those don't match, will be skipped from output, hence it is
+ * recommended to verify existence of keys or elements before accessing them.</p>
  */
 public class SubstringRegex extends AbstractFunction {
   
@@ -104,21 +109,18 @@ public class SubstringRegex extends AbstractFunction {
      */
     List<String> captureGroupNames = StringUtil.getAllCaptureGroupNamesInRegex(regex);
     if (captureGroupNames.size() > 0) {
-      if (groupCount != captureGroupNames.size()) {
-        throw new InvalidRegexPatternException(String.format("Pattern contains both named and " +
-            "unnamed capture groups which is not valid. Total named groups: %d, Total " +
-            "unnamed groups: %d. %s", captureGroupNames.size(), groupCount, lineNColumn.get()));
-      }
       List<ZwlValue> listOfMaps = new ArrayList<>();
       while (matcher.find()) {
         Map<String, ZwlValue> map = new HashMap<>();
         for (String groupName : captureGroupNames) {
           String match = matcher.group(groupName);
-          if (match != null) {
+          if (!Strings.isNullOrEmpty(match)) {
             map.put(groupName, new StringZwlValue(match));
           }
         }
-        listOfMaps.add(new MapZwlValue(map));
+        if (map.size() > 0) {
+          listOfMaps.add(new MapZwlValue(map));
+        }
       }
       return new ListZwlValue(listOfMaps);
     }
@@ -136,11 +138,13 @@ public class SubstringRegex extends AbstractFunction {
       List<ZwlValue> list = new ArrayList<>();
       for (int i = 1; i <= groupCount; i++) {
         String match = matcher.group(i);
-        if (match != null) {
+        if (!Strings.isNullOrEmpty(match)) {
           list.add(new StringZwlValue(match));
         }
       }
-      listOfLists.add(new ListZwlValue(list));
+      if (list.size() > 0) {
+        listOfLists.add(new ListZwlValue(list));
+      }
     }
     return new ListZwlValue(listOfLists);
   }

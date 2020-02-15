@@ -31,7 +31,7 @@ public class Max extends AbstractFunction {
                          Supplier<String> lineNColumn) {
     super.invoke(args, defaultValue, lineNColumn);
     Optional<Double> max = IntStream.range(0, args.size())
-        .mapToObj(i -> tryCastDouble(i, args.get(i))).max(Double::compareTo);
+        .mapToObj(i -> parseDouble(i, args.get(i))).max(Double::compareTo);
     if (max.isPresent()) {
       return new DoubleZwlValue(max.get());
     }

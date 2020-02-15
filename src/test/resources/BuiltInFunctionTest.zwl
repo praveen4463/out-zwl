@@ -1,0 +1,299 @@
+# Tests all the built-in functions in ZWL.
+# TODO: work on validations of functions when wrong types are sent.
+# Collection ***************************************************************************************
+
+# containsElement
+a = [1, 2, "praveen", false, 4, {l = 1}]
+assertTrue(containsElement(a, 4))
+assertFalse(containsElement(a, 5))
+assertTrue(containsElement(a, false))
+assertTrue(containsElement(a, "praveen"))
+assertFalse(containsElement(a, "johny"))
+assertTrue(containsElement(a, {l = 1}))
+assertThrows(exceptions.invalidTypeEx, containsElement({age = 1}, 1))
+
+# containsKey
+a = {
+  name = "johny",
+  age = 10,
+  height = 6
+}
+assertTrue(containsKey(a, "name"))
+assertFalse(containsKey(a, "school"))
+assertThrows(exceptions.invalidTypeEx, containsKey([1, 2], 1))
+
+# existsFirst
+b = testTools.Nothing # b gets a Nothing
+c = testTools.Nothing # c gets a Nothing
+d = a.name
+e = a.age
+assertTrue(existsFirst(b, c, d, e) == "johny")
+assertTrue(existsFirst(e, b, c, d) == 10)
+assertFalse(exists(existsFirst(b, c))) # nothing should return
+assertTrue(existsFirst([b, c, d, e]) == "johny")
+
+# flatten
+b =
+[
+  [
+    "praveen",
+    77,
+    [
+      [
+        "johny"
+      ],
+      "joey",
+      [
+        [
+          [
+            "toby"
+          ]
+        ]
+      ]
+    ]
+  ],
+  true
+]
+assertTrue(flatten(b) == ["praveen", 77, "johny", "joey", "toby", true])
+
+# keys
+b = keys(a)
+assertTrue(b == ["name", "age", "height"])
+
+# merge
+b = {
+  school = "high-school",
+  city = "noida",
+  age = 18
+}
+c = {
+  name = "johny",
+  age = 18,
+  height = 6,
+  school = "high-school",
+  city = "noida"
+}
+assertTrue(merge(a, b) == c)
+assertThrows(exceptions.insufficientArgsEx, merge(a))
+
+# nonEmptyFirst
+assertTrue(nonEmptyFirst({}, [], 32) == 32)
+assertTrue(nonEmptyFirst({age = 1}, [], 32) == {age = 1})
+assertTrue(nonEmptyFirst({}, [1, 2], 32) == [1, 2])
+assertFalse(exists(nonEmptyFirst({}, "", [])))
+assertTrue(nonEmptyFirst({}, [], "hi") == "hi")
+assertTrue(nonEmptyFirst({}, [], true))
+assertFalse(nonEmptyFirst(false, {}, [], true))
+assertTrue(nonEmptyFirst([{}, [], 32]) == 32)
+assertTrue(nonEmptyFirst([{}, [], "   ", 32]) == 32)
+
+# removeEmpty
+assertTrue(removeEmpty([{}, [], "   ", testTools.Nothing, 32]) == [32])
+assertTrue(removeEmpty([false, {}, [], "   ", testTools.Nothing, 32, true]) == [false, 32, true])
+
+# size
+assertTrue(size(c) == 5)
+assertTrue(size([1, 2]) == 2)
+
+# values
+d = values(c)
+# don't match values list with a manual list made of c's values as there is no guarantee the
+# ordering match (HashMap makes no guarantee of returned order of it's values)
+containsElement(d, "johny")
+containsElement(d, 18)
+containsElement(d, 6)
+containsElement(d, "high-school")
+containsElement(d, "noida")
+
+# Datetime *****************************************************************************************
+
+# formatDate
+f = "MMM-EEE-yyyy hh:mm:ss SSS a"
+assertTrue(formatDate("2020-02-14T16:28:49.454Z", f) == "Feb-Fri-2020 04:28:49 454 PM")
+assertThrows(exceptions.unknownDateTimeEx, formatDate("2020-02-14T16:28:49 454Z", f))
+assertThrows(exceptions.dateTimeFormatEx, formatDate("2020-02-14T16:28:49.454Z", "mmmm-d-yyy"))
+
+# timestamp
+t = timestamp()
+print(t)
+assertTrue(matches(t, "[2-9][0-9]{3}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(.[0-9]{1,3})?Z\\[UTC]"))
+
+# Numeric ******************************************************************************************
+
+# abs
+assertTrue(abs(-9) == 9)
+assertTrue(abs(9) == 9)
+assertTrue(abs(0) == 0)
+
+# ceil
+assertTrue(ceil(-9) == -9)
+assertTrue(ceil(9.9) == 10)
+assertTrue(ceil(9.1) == 10)
+
+# floor
+assertTrue(floor(-9) == -9)
+assertTrue(floor(9.9) == 9)
+assertTrue(floor(9.1) == 9)
+
+# max
+assertTrue(max(89, 333, 222, 98, -98, 444) == 444)
+
+# min
+assertTrue(min(89, 333, 222, 98, -98, 444) == -98)
+
+# Util *********************************************************************************************
+
+# uuid
+u = uuid()
+assertTrue(matches(u, "[a-zA-Z0-9]{8}-?[a-zA-Z0-9]{4}-?[a-zA-Z0-9]{4}-?[a-zA-Z0-9]{4}-?[a-zA-Z0-9]{12}"))
+
+# Assertions ***************************************************************************************
+assertThrows(exceptions.assertionFailedEx, assertTrue(false))
+assertThrows(exceptions.assertionFailedEx, assertFalse(true))
+
+# String *******************************************************************************************
+
+# containsString
+assertTrue(containsString("hi there", "there"))
+assertFalse(containsString("hi there", "hii"))
+
+# endsWith
+assertTrue(endsWith("hi there", "there"))
+assertFalse(endsWith("hi there", "hi"))
+
+# equalsIgnoreCase
+assertTrue(equalsIgnoreCase("JujuBi", "jujubi"))
+assertFalse("JujuBi" == "jujubi")
+
+# find
+assertTrue(find("hey buddy is your pup now 1", "[1-2]"))
+assertFalse(find("hey buddy is your pup now 1", "[5-9]"))
+
+# format
+/*
+TODO: in second %s, there should actually be a %d and our double type should be explicitly
+ converted to an int. I think we may need to explicitly handle the format per the verb.
+ We should extend formattable in our types and implement format method.
+*/
+assertTrue(format("hey %s, do you stay at %s", "praveen", 903) == "hey praveen, do you stay at 903")
+# TODO: requires more tests based on other verbs
+assertThrows(exceptions.illegalStringFormatEx, format("hey where is %dd%", "praveen"))
+
+# indexOf
+assertTrue(indexOf("hey buddy", "ddy") == 6)
+
+# join
+assertTrue(join(",", ["apple", "banana", "mango"]) == "apple,banana,mango")
+
+# lastIndexOf
+assertTrue(lastIndexOf("how's going", "g") == 10)
+
+# length
+assertTrue(length("praveen") == 7)
+
+# lower
+assertTrue(lower("АЛЛО!") == "алло!")
+assertTrue(lower("MaN") == "man")
+
+# matches
+assertTrue(matches("98103-42156", "[9][0-9]{4}-[0-9]{5}"))
+assertThrows(exceptions.invalidRegexEx, matches("98103-42156", "[9][0-9]{4-[0-9]{5}"))
+assertTrue(find("hey buddy is your pup now 1", "[1-2]"))
+
+# replace
+assertTrue(replace("what is your name and you child's name?", "name", "hometown") ==
+    "what is your hometown and you child's hometown?")
+
+# replaceAll
+s = "have you $pent $100 on thi$ jean$? I could've bought thi$ at $50"
+pattern = "\\$(?<price>[1-9][0-9]{0,2})"
+replacement = "USD${price}"
+result = "have you $pent USD100 on thi$ jean$? I could've bought thi$ at USD50"
+assertTrue(replaceAll(s, pattern, replacement) == result)
+
+# replaceFirst
+result = "have you $pent USD100 on thi$ jean$? I could've bought thi$ at $50"
+assertTrue(replaceFirst(s, pattern, replacement) == result)
+
+# split
+assertTrue(split(",", "hi man, here is your order, 1, 2, ,") == ["hi man", "here is your order", "1", "2"])
+
+# startsWith
+assertTrue(startsWith("zakoozimikaka", "zakoozi"))
+
+# substring
+s = "zakoozimikakachipika"
+index = indexOf(s, "mikaka")
+assertTrue(substring(s, index) == "mikakachipika")
+assertTrue(substring(s, index, index + length("mikaka")) == "mikaka")
+
+# substringRegex ***************** starts
+
+# no match, yields empty list
+assertTrue(substringRegex("That's a kitten", "[0-9]+") == [])
+
+# multiple named capture group and single match
+s = "I got this phone on 9th Mar from a mall for $1000, I saved atleast 500 bucks"
+regexNamed = ".*?(?<date>[1-9][0-9]?(st|nd|rd|th)\\s[A-Z][a-z]{2}).*?\\$(?<price>[1-9][0-9]{3}).*?(?<saving>[1-9][0-9]{2,4}) bucks"
+r = substringRegex(s, regexNamed) # should get 1 map in list
+assertTrue(size(r) == 1)
+assertTrue(size(r[0]) == 3) # 3 keys
+verifyResult = format("Date: %s, spent money: %s, saved money: %s", r[0].date, r[0].price, r[0].saving)
+assertTrue(verifyResult == "Date: 9th Mar, spent money: 1000, saved money: 500")
+
+# multiple unnamed capture group and single match
+s = "Address of Indian home sec 50 A-56 noida, and Address of US home 50 Park avenue #203"
+regexUnnamed = ".*?(sec\\s[1-9][0-9]{0,2}\\s[A-Z]-[1-9][0-9]{0,2}\\s[a-zA-Z]+).*?([1-9][0-9]{0,2}\\s[a-zA-Z\\s]+\\s#[1-9][0-9]{0,2})"
+r = substringRegex(s, regexUnnamed) # should get 1 list in list
+assertTrue(size(r) == 1)
+assertTrue(size(r[0]) == 2) # 2 elements
+assertTrue(r[0][0] == "sec 50 A-56 noida")
+assertTrue(r[0][1] == "50 Park avenue #203")
+
+# single named capture group and multiple match
+s = "Praveen's phone 98165 39890, Bond's phone 45643 32111"
+regexNamed = "(?<phone>[1-9][0-9]{4}\\s[0-9]{5})"
+r = substringRegex(s, regexNamed)
+assertTrue(size(r) == 2) # should get 2 maps in list
+assertTrue(size(r[0]) == 1) # 1 key
+assertTrue(size(r[1]) == 1) # 1 key
+assertTrue(r[0].phone == "98165 39890")
+assertTrue(r[1].phone == "45643 32111")
+
+# single unnamed capture group and multiple match
+regexUnnamed = "([1-9][0-9]{4}\\s[0-9]{5})"
+r = substringRegex(s, regexUnnamed) # should get 2 lists in list
+assertTrue(size(r[0]) == 1) # 1 element
+assertTrue(size(r[1]) == 1) # 1 element
+assertTrue(r[0][0] == "98165 39890")
+assertTrue(r[1][0] == "45643 32111")
+
+# test no match doesn't add the group into list or map
+s = "I got this phone on 9th Mar from a mall for $1000, I saved atleast 500 bucks"
+regexNamed = ".*?(?<date>[1-9][0-9]?(st|nd|rd|th)\\s[A-Z][a-z]{2}).*?\\$(?<price>[1-9][0-9]{3}).*?(?<saving>[1-9]{2}|) bucks"
+r = substringRegex(s, regexNamed) # should get 1 map in list
+assertTrue(size(r) == 1)
+assertTrue(size(r[0]) == 2) # 2 keys because saving couldn't match
+verifyResult = format("Date: %s, spent money: %s", r[0].date, r[0].price)
+assertTrue(verifyResult == "Date: 9th Mar, spent money: 1000")
+assertFalse(containsKey(r[0], "saving"))
+
+# substringRegex ***************** ends
+
+# title
+assertTrue(title("praveen tiwari") == "Praveen Tiwari")
+
+# trim
+assertTrue(trim("  so true  ") == "so true")
+
+# trimEnd
+assertTrue(trimEnd("hey man,$#", ",$#") == "hey man")
+
+# trimStart
+assertTrue(trimStart(",$#hey man", ",$#") == "hey man")
+
+# upper
+assertTrue(upper("алло!") == "АЛЛО!")
+assertTrue(upper("hey") == "HEY")
+
+
