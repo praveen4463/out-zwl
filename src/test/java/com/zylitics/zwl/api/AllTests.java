@@ -1,18 +1,25 @@
 package com.zylitics.zwl.api;
 
 import com.google.common.base.Charsets;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.zylitics.zwl.datatype.*;
 import com.zylitics.zwl.util.VarUtil;
+import org.antlr.v4.runtime.ANTLRErrorListener;
+import org.antlr.v4.runtime.ConsoleErrorListener;
+import org.antlr.v4.runtime.DiagnosticErrorListener;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 /**
  * This test class also shows how to add an external variable into the interpreter.
  */
 public class AllTests {
+  public static List<ANTLRErrorListener> DEFAULT_TEST_LISTENERS =
+      ImmutableList.of(ConsoleErrorListener.INSTANCE, new DiagnosticErrorListener());
   // Important, don't make more than 1000, under test.
   public static final int FOR_LOOP_MAX_ITERATION = 1000;
   
@@ -47,9 +54,11 @@ public class AllTests {
   }
   
   private void run(String file) throws IOException {
-    Main main = new Main("resources/" + file, Charsets.UTF_8);
-    // set external variable(s) into interpreter.
-    
+    // for these tests, we'll just add console and diagnostic listener.
+    Main main = new Main("resources/" + file, Charsets.UTF_8, DEFAULT_TEST_LISTENERS);
+    // set external variable(s) into de only interpreter. It's important to use dev only so that
+    // we can detect ambiguities in grammar early, they will be shown at the top of the test
+    // result.
     main.interpretDevOnly(zwlInterpreter -> {
       // exceptions
       zwlInterpreter.setReadOnlyVariable("exceptions",

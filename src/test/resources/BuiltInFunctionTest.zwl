@@ -3,20 +3,20 @@
 # Collection ***************************************************************************************
 
 # containsElement
-a = [1, 2, "praveen", false, 4, {l = 1}]
+a = [1, 2, "praveen", false, 4, {l: 1}]
 assertTrue(containsElement(a, 4))
 assertFalse(containsElement(a, 5))
 assertTrue(containsElement(a, false))
 assertTrue(containsElement(a, "praveen"))
 assertFalse(containsElement(a, "johny"))
-assertTrue(containsElement(a, {l = 1}))
-assertThrows(exceptions.invalidTypeEx, containsElement({age = 1}, 1))
+assertTrue(containsElement(a, {l: 1}))
+assertThrows(exceptions.invalidTypeEx, containsElement({age: 1}, 1))
 
 # containsKey
 a = {
-  name = "johny",
-  age = 10,
-  height = 6
+  name: "johny",
+  age: 10,
+  height: 6
 }
 assertTrue(containsKey(a, "name"))
 assertFalse(containsKey(a, "school"))
@@ -62,23 +62,23 @@ assertTrue(b == ["name", "age", "height"])
 
 # merge
 b = {
-  school = "high-school",
-  city = "noida",
-  age = 18
+  school: "high-school",
+  city: "noida",
+  age: 18
 }
 c = {
-  name = "johny",
-  age = 18,
-  height = 6,
-  school = "high-school",
-  city = "noida"
+  name: "johny",
+  age: 18,
+  height: 6,
+  school: "high-school",
+  city: "noida"
 }
 assertTrue(merge(a, b) == c)
 assertThrows(exceptions.insufficientArgsEx, merge(a))
 
 # nonEmptyFirst
 assertTrue(nonEmptyFirst({}, [], 32) == 32)
-assertTrue(nonEmptyFirst({age = 1}, [], 32) == {age = 1})
+assertTrue(nonEmptyFirst({age: 1}, [], 32) == {age: 1})
 assertTrue(nonEmptyFirst({}, [1, 2], 32) == [1, 2])
 assertFalse(exists(nonEmptyFirst({}, "", [])))
 assertTrue(nonEmptyFirst({}, [], "hi") == "hi")

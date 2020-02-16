@@ -17,6 +17,9 @@ import java.util.function.Supplier;
  * Try giving format options to some limit as specified in
  * <a href="https://www.terraform.io/docs/configuration/functions/format.html">format</a></p>
  */
+/*
+   Note : For now only %s representation is supported. TODO: work on other verbs.
+ */
 public class Format extends AbstractFunction {
   
   @Override

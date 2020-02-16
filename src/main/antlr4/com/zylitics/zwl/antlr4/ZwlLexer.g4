@@ -41,6 +41,7 @@ SUB : '-';
 MUL : '*';
 DIV : '/';
 MOD : '%';
+COLON : ':';
 
 // If number value is given inside quotes, it will not be converted into number but interpreted
 // literally as a string.

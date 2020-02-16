@@ -57,8 +57,8 @@ assert(trim(c) == "are we going there on monday at 9 ?", "for-list assertion fai
 # for-in with map
 c = ""
 m = {
-  event = "party",
-  when = "at " + 9
+  event: "party",
+  when: "at " + 9
 }
 for k, v in m {
   c = format("%s %s: %s,", c, k, v)
@@ -114,7 +114,7 @@ assert(b == -2)
 
 a = [[
   {
-    age = 89
+    age: 89
   }
 ]]
 assert(a[0][0].age == 89)

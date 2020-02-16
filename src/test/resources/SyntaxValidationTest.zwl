@@ -17,7 +17,7 @@ list = [1, 2]
 assertThrows(exceptions.evalEx, list.id)
 
 # No existent map keys throws fast
-map = {name = "praveen"}
+map = {name: "praveen"}
 assertThrows(exceptions.noSuchMapKeyEx, map.age)
 assertThrows(exceptions.noSuchMapKeyEx, map["age"])
 
@@ -55,7 +55,7 @@ assertThrows("EvalException", {
 })
 b = 5
 assertThrows("EvalException", {
-  for a, b in {name = "praveen"} {
+  for a, b in {name: "praveen"} {
     assert(false)
   }
 })
@@ -80,10 +80,10 @@ assertDoesNotThrow({
   }
 })
 assertDoesNotThrow({
-  for i, j in {name = "praveen"} {
+  for i, j in {name: "praveen"} {
     # nothing to do
   }
-  for i, j in {age = 33} {
+  for i, j in {age: 33} {
     # nothing to do
   }
 })

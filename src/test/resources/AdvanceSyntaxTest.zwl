@@ -1,16 +1,16 @@
 # Tests advance syntax of ZWL
 
 mixed_array = [ "jackson", 345, "was", true, "micheal", "legend", 43.56, [100, 200],
-    { city = "noida", country = "india" } ]
+    { city: "noida", country: "india" } ]
 
 mixed_map = {
-  name = "praveen",
-  age = 456,
-  isMale = true,
-  taxLevel = 10.5,
-  address = "somewhere in Noida, India",
-  hobbies = ["reading", "exercising", "writing"],
-  relatives = { parents = "cstiwari/btiwari", wife = "tanu", pet = "bond" }
+  name: "praveen",
+  age: 456,
+  isMale: true,
+  taxLevel: 10.5,
+  address: "somewhere in Noida, India",
+  hobbies: ["reading", "exercising", "writing"],
+  relatives: { parents: "cstiwari/btiwari", wife: "tanu", pet: "bond" }
 }
 
 assertTrue(mixed_array[3], "mixed_array's third element should have been true")

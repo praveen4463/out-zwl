@@ -53,7 +53,7 @@ assertThrows(exceptions.invalidTypeEx, !"1")
 assertThrows(exceptions.invalidTypeEx, true == "johny")
 assertThrows(exceptions.invalidTypeEx, 1 == "johny")
 assertThrows(exceptions.invalidTypeEx, [1, 2] == "[2, 3]")
-assertThrows(exceptions.invalidTypeEx, {age = 11} == "{age = 11}")
+assertThrows(exceptions.invalidTypeEx, {age: 11} == "{age: 11}")
 assertThrows(exceptions.invalidTypeEx, assert("falsee"))
 assertThrows(exceptions.invalidTypeEx, assert("truee"))
 

@@ -8,9 +8,7 @@ import com.zylitics.zwl.antlr4.BailZwlLexer;
 import com.zylitics.zwl.interpret.DefaultZwlInterpreter;
 import com.zylitics.zwl.interpret.Function;
 import com.zylitics.zwl.exception.*;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.DiagnosticErrorListener;
+import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.atn.PredictionMode;
 import org.antlr.v4.runtime.tree.ParseTree;
 
@@ -18,22 +16,29 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.util.List;
 
 // To underline offending tokens, see page 155
 // To specify common errors from grammar, see error alternatives 9.4.
 public final class Main {
   
   private final ZwlLexer lexer;
+  private final List<ANTLRErrorListener> errorListeners;
   
-  public Main(String code) {
+  public Main(String code, List<ANTLRErrorListener> errorListeners) {
+    this.errorListeners = errorListeners;
     lexer = getLexer(code);
   }
   
-  public Main(InputStream codeStream, Charset charset, long streamLength) throws IOException {
+  public Main(InputStream codeStream, Charset charset, long streamLength,
+              List<ANTLRErrorListener> errorListeners) throws IOException {
+    this.errorListeners = errorListeners;
     lexer = getLexer(codeStream, charset, streamLength);
   }
   
-  public Main(String fileName, Charset charset) throws IOException {
+  public Main(String fileName, Charset charset,
+              List<ANTLRErrorListener> errorListeners) throws IOException {
+    this.errorListeners = errorListeners;
     lexer = getLexer(fileName, charset);
   }
   
@@ -49,6 +54,10 @@ public final class Main {
    */
   public void parse() throws RuntimeException {
     getParser(lexer).compilationUnit();
+  }
+  
+  void parseDevOnly() throws RuntimeException {
+    getParserDevOnly(lexer).compilationUnit();
   }
   
   /**
@@ -81,13 +90,7 @@ public final class Main {
    */
   void interpretDevOnly(@Nullable ZwlInterpreterVisitor interpreterVisitor)
       throws EvalException {
-    ZwlParser parser = getParser(lexer);
-    // Turned off following as it causes no parser error to report until a fix is applied.
-    /*
-    parser.removeErrorListeners();
-    parser.addErrorListener(new DiagnosticErrorListener());
-    parser.getInterpreter().setPredictionMode(PredictionMode.LL_EXACT_AMBIG_DETECTION);*/
-  
+    ZwlParser parser = getParserDevOnly(lexer);
     DefaultZwlInterpreter interpreter = new DefaultZwlInterpreter();
     if (interpreterVisitor != null) {
       interpreter.accept(interpreterVisitor);
@@ -96,22 +99,40 @@ public final class Main {
   }
   
   private ZwlLexer getLexer(String code) {
-    return new BailZwlLexer(CharStreams.fromString(code));
+    ZwlLexer lexer = new BailZwlLexer(CharStreams.fromString(code));
+    addErrorListener(lexer);
+    return lexer;
   }
   
   private ZwlLexer getLexer(InputStream codeStream, Charset charset, long streamLength)
       throws IOException {
-    return new BailZwlLexer(CharStreams.fromStream(codeStream, charset, streamLength));
+    ZwlLexer lexer = new BailZwlLexer(CharStreams.fromStream(codeStream, charset, streamLength));
+    addErrorListener(lexer);
+    return lexer;
   }
   
   private ZwlLexer getLexer(String fileName, Charset charset) throws IOException {
-    return new BailZwlLexer(CharStreams.fromFileName(fileName, charset));
+    ZwlLexer lexer = new BailZwlLexer(CharStreams.fromFileName(fileName, charset));
+    addErrorListener(lexer);
+    return lexer;
   }
   
   private ZwlParser getParser(ZwlLexer lexer) {
     ZwlParser parser = new ZwlParser(new CommonTokenStream(lexer));
     parser.setBuildParseTree(true);
     parser.setErrorHandler(new BailErrorStrategy());
+    addErrorListener(parser);
     return parser;
+  }
+  
+  private ZwlParser getParserDevOnly(ZwlLexer lexer) {
+    ZwlParser parser = getParser(lexer);
+    parser.getInterpreter().setPredictionMode(PredictionMode.LL_EXACT_AMBIG_DETECTION);
+    return parser;
+  }
+  
+  private void addErrorListener(Recognizer<?, ?> recognizer) {
+    recognizer.removeErrorListeners();
+    errorListeners.forEach(recognizer::addErrorListener);
   }
 }
