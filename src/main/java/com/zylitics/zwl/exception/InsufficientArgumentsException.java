@@ -8,6 +8,7 @@ public class InsufficientArgumentsException extends EvalException {
     super(msg);
   }
   
+  @SuppressWarnings("unused")
   public InsufficientArgumentsException(String msg, Throwable cause) {
     super(msg, cause);
   }

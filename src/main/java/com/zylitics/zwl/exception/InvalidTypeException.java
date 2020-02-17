@@ -8,5 +8,6 @@ public class InvalidTypeException extends EvalException {
     super(msg);
   }
   
+  @SuppressWarnings("unused")
   public InvalidTypeException(String msg, Throwable cause) {super(msg, cause);}
 }

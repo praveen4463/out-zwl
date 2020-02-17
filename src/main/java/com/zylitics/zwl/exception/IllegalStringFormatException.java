@@ -4,6 +4,7 @@ public class IllegalStringFormatException extends EvalException {
   
   private static final long serialVersionUID = 1566793980796058597L;
   
+  @SuppressWarnings("unused")
   public IllegalStringFormatException(String msg) {
     super(msg);
   }

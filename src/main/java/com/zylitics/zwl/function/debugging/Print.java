@@ -4,7 +4,6 @@ import com.zylitics.zwl.datatype.ZwlValue;
 import com.zylitics.zwl.function.AbstractFunction;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Supplier;
 
 // should write into a stream that is accessible from outside, once read the read content is deleted

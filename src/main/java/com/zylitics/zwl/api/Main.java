@@ -30,6 +30,7 @@ public final class Main {
     lexer = getLexer(code);
   }
   
+  @SuppressWarnings("unused")
   public Main(InputStream codeStream, Charset charset, long streamLength,
               List<ANTLRErrorListener> errorListeners) throws IOException {
     this.errorListeners = errorListeners;
@@ -52,6 +53,7 @@ public final class Main {
    * encapsulated as cause field. Caller should check whether the cause field contain this exception
    * and if so, may relay back to user.
    */
+  @SuppressWarnings("unused")
   public void parse() throws RuntimeException {
     getParser(lexer).compilationUnit();
   }
@@ -78,6 +80,7 @@ public final class Main {
    *                       that back to user, else it may show a generic error because that will
    *                       likely be our own problem rather than user code's.
    */
+  @SuppressWarnings("unused")
   public void interpret(ZwlInterpreterVisitor interpreterVisitor) throws EvalException {
     ParseTree tree = getParser(lexer).compilationUnit();
     DefaultZwlInterpreter interpreter = new DefaultZwlInterpreter();

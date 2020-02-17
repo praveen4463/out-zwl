@@ -35,10 +35,12 @@ public class StoringErrorListener extends BaseErrorListener {
     this.e = e;
   }
   
+  @SuppressWarnings("unused")
   public Recognizer<?, ?> getRecognizer() {
     return recognizer;
   }
   
+  @SuppressWarnings("unused")
   public Object getOffendingSymbol() {
     return offendingSymbol;
   }

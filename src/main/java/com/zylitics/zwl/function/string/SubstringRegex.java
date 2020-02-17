@@ -5,7 +5,6 @@ import com.zylitics.zwl.datatype.ListZwlValue;
 import com.zylitics.zwl.datatype.MapZwlValue;
 import com.zylitics.zwl.datatype.StringZwlValue;
 import com.zylitics.zwl.datatype.ZwlValue;
-import com.zylitics.zwl.exception.InvalidRegexPatternException;
 import com.zylitics.zwl.function.AbstractFunction;
 import com.zylitics.zwl.util.StringUtil;
 

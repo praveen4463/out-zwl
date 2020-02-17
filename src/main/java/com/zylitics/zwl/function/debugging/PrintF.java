@@ -1,6 +1,5 @@
 package com.zylitics.zwl.function.debugging;
 
-import com.zylitics.zwl.exception.EvalException;
 import com.zylitics.zwl.exception.IllegalStringFormatException;
 import com.zylitics.zwl.function.string.Format;
 

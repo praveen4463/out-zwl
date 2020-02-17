@@ -20,7 +20,7 @@ public class FunctionDefaultValTest {
         "a = lower(a)??{\"a_default_value_instead\"}",
         "assert(a == \"a_default_value_instead\")");
     
-    Main main = new Main(code, AllTests.DEFAULT_TEST_LISTENERS);
+    Main main = new Main(code, ZwlLangTests.DEFAULT_TEST_LISTENERS);
     // set our overridden function that should overwrite the existing one.
     main.interpretDevOnly(zwlInterpreter -> zwlInterpreter.setFunction(new Lower()));
   }

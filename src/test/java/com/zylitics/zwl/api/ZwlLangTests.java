@@ -12,12 +12,11 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 /**
  * This test class also shows how to add an external variable into the interpreter.
  */
-public class AllTests {
+public class ZwlLangTests {
   public static List<ANTLRErrorListener> DEFAULT_TEST_LISTENERS =
       ImmutableList.of(ConsoleErrorListener.INSTANCE, new DiagnosticErrorListener());
   // Important, don't make more than 1000, under test.

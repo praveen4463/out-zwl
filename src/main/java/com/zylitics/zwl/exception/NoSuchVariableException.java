@@ -8,6 +8,7 @@ public class NoSuchVariableException extends EvalException {
     super(msg);
   }
   
+  @SuppressWarnings("unused")
   public NoSuchVariableException(String msg, Throwable cause) {
     super(msg, cause);
   }

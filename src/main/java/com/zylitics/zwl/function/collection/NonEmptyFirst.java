@@ -1,7 +1,6 @@
 package com.zylitics.zwl.function.collection;
 
 import com.zylitics.zwl.datatype.NothingZwlValue;
-import com.zylitics.zwl.datatype.Types;
 import com.zylitics.zwl.datatype.ZwlValue;
 import com.zylitics.zwl.function.AbstractFunction;
 import com.zylitics.zwl.function.util.Exists;

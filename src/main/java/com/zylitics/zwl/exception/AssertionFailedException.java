@@ -8,5 +8,6 @@ public class AssertionFailedException extends EvalException {
     super(msg);
   }
   
+  @SuppressWarnings("unused")
   public AssertionFailedException(String msg, Throwable cause) {super(msg, cause);}
 }

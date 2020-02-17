@@ -8,5 +8,6 @@ public class IllegalIdentifierException extends EvalException {
     super(msg);
   }
   
+  @SuppressWarnings("unused")
   public IllegalIdentifierException(String msg, Throwable cause) {super(msg, cause);}
 }
