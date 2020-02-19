@@ -13,4 +13,6 @@ public interface ZwlInterpreter {
   void setFunctions(List<Function> functions);
   
   void setFunction(Function function);
+  
+  void setLineChangeListener(InterpreterLineChangeListener lineChangeListener);
 }

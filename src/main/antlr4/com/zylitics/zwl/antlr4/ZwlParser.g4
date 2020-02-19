@@ -109,8 +109,9 @@ mapLiteral
   : LBRACE mapEntries? RBRACE
   ;
 
+// If map keys ain't a valid identifier, they should be kept in quotes.
 mapEntry
-  : Identifier COLON expression
+  : (Identifier | StringLiteral) COLON expression
   ;
 
 mapEntries

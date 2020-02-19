@@ -5,7 +5,9 @@ import com.zylitics.zwl.function.assertions.Assert;
 import com.zylitics.zwl.function.assertions.AssertFalse;
 import com.zylitics.zwl.function.assertions.AssertTrue;
 import com.zylitics.zwl.function.collection.*;
+import com.zylitics.zwl.function.datetime.Elapsed;
 import com.zylitics.zwl.function.datetime.FormatDate;
+import com.zylitics.zwl.function.datetime.Instant;
 import com.zylitics.zwl.function.datetime.Timestamp;
 import com.zylitics.zwl.function.debugging.PrintF;
 import com.zylitics.zwl.function.numeric.*;
@@ -43,6 +45,8 @@ public final class BuiltInFunction {
         // Datetime
         new FormatDate(),
         new Timestamp(),
+        new Instant(),
+        new Elapsed(),
     
         // Debugging
         new Print(),

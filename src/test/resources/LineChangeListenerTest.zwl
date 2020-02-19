@@ -1,0 +1,13 @@
+# Tests line change listener
+
+a = 10
+assertTrue(a == 5 * 2)
+assertFalse(a == 5 * 3)
+
+for i = 1 to 10 {
+  a = a + 1
+}
+
+assertTrue(a == 20)
+
+print("Going to end program")

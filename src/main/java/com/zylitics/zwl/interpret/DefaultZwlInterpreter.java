@@ -1,5 +1,6 @@
 package com.zylitics.zwl.interpret;
 
+import com.zylitics.zwl.api.InterpreterLineChangeListener;
 import com.zylitics.zwl.api.ZwlInterpreter;
 import com.zylitics.zwl.api.ZwlInterpreterVisitor;
 import com.zylitics.zwl.antlr4.ZwlLexer;
@@ -33,6 +34,10 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
   
   private final Variables vars;
   private final List<Function> functions;
+  
+  private final List<InterpreterLineChangeListener> lineChangeListeners = new ArrayList<>();
+  
+  private int currentLineInProgram = 0;
   
   public DefaultZwlInterpreter() {
     // added function list should be constructed new, each request should use it's own set of
@@ -76,7 +81,15 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
   }
   
   @Override
+  public void setLineChangeListener(InterpreterLineChangeListener lineChangeListener) {
+    Objects.requireNonNull(lineChangeListener, "lineChangeListener can't be null");
+    
+    lineChangeListeners.add(lineChangeListener);
+  }
+  
+  @Override
   public ZwlValue visitAssignment(AssignmentContext ctx) {
+    compareAndSetCurrentLineInProgram(ctx.Identifier());
     String id = ctx.Identifier().getText();
     checkLegalIdentifierAssign(ctx.Identifier());
     
@@ -91,6 +104,7 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
   // fetches argument one by one from list, converts to relevant type and invoke the actual function
   @Override
   public ZwlValue visitFunctionInvocation(FunctionInvocationContext ctx) {
+    compareAndSetCurrentLineInProgram(ctx.Identifier());
     String funcName = ctx.Identifier().getText();
     List<ZwlValue> params = new ArrayList<>();
     if (ctx.expressionList() != null) {
@@ -136,6 +150,7 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
   // If a non-existent variable is referenced, process fails fast.
   @Override
   public ZwlValue visitIdentifierExpr(IdentifierExprContext ctx) {
+    compareAndSetCurrentLineInProgram(ctx.Identifier());
     String id = ctx.Identifier().getText();
     Optional<ZwlValue> idValue = vars.resolve(id);
     if (!idValue.isPresent()) {
@@ -219,19 +234,23 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
   
   @Override
   public ZwlValue visitIfStatement(IfStatementContext ctx) {
+    // report new line change only where the condition is met.
     if (parseBooleanExpr(ctx.ifBlock().expression())) {
+      compareAndSetCurrentLineInProgram(ctx.ifBlock().IF());
       return visit(ctx.ifBlock().block());
     }
-    
+  
     if (ctx.elseIfBlock() != null) {
       for (ElseIfBlockContext elseif : ctx.elseIfBlock()) {
         if (parseBooleanExpr(elseif.expression())) {
+          compareAndSetCurrentLineInProgram(elseif.ELSE());
           return visit(elseif.block());
         }
       }
     }
-    
+  
     if (ctx.elseBlock() != null) {
+      compareAndSetCurrentLineInProgram(ctx.elseBlock().ELSE());
       return visit(ctx.elseBlock().block());
     }
     
@@ -240,6 +259,7 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
   
   @Override
   public ZwlValue visitForInListStatement(ForInListStatementContext ctx) {
+    compareAndSetCurrentLineInProgram(ctx.FOR());
     ZwlValue z = visit(ctx.expression());
     Optional<List<ZwlValue>> list = z.getListValue();
     if (!list.isPresent()) {
@@ -266,6 +286,7 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
   
   @Override
   public ZwlValue visitForInMapStatement(ForInMapStatementContext ctx) {
+    compareAndSetCurrentLineInProgram(ctx.FOR());
     ZwlValue z = visit(ctx.expression());
     Optional<Map<String, ZwlValue>> map = z.getMapValue();
     if (!map.isPresent()) {
@@ -303,6 +324,7 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
   
   @Override
   public ZwlValue visitWhileStatement(WhileStatementContext ctx) {
+    compareAndSetCurrentLineInProgram(ctx.WHILE());
     long iterations = 0;
     long forLoopMaxItr = getForLoopMaxIterations();
     while (parseBooleanExpr(ctx.expression())) {
@@ -318,6 +340,7 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
   
   @Override
   public ZwlValue visitForToStatement(ForToStatementContext ctx) {
+    compareAndSetCurrentLineInProgram(ctx.FOR());
     String id = ctx.assignment().Identifier().getText();
     if (vars.exists(id)) {
       throw new EvalException(String.format("Variable assigned in 'for' statement is already" +
@@ -339,11 +362,13 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
   
   @Override
   public ZwlValue visitIncrement(IncrementContext ctx) {
+    compareAndSetCurrentLineInProgram(ctx.Identifier());
     return incrementDecrement(ctx.Identifier(), v -> v + 1);
   }
   
   @Override
   public ZwlValue visitDecrement(DecrementContext ctx) {
+    compareAndSetCurrentLineInProgram(ctx.Identifier());
     return incrementDecrement(ctx.Identifier(), v -> v - 1);
   }
   
@@ -374,6 +399,7 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
   
   @Override
   public ZwlValue visitAssertThrowsFunc(AssertThrowsFuncContext ctx) {
+    compareAndSetCurrentLineInProgram(ctx.ASSERT_THROWS());
     // assertThrows accepts two or three arguments, 1) simple name of exception class,
     // 2) expression or block to evaluate, 3) message when assertion fails
     String exception = visit(ctx.expression(0)).toString();
@@ -407,6 +433,7 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
   
   @Override
   public ZwlValue visitAssertDoesNotThrowFunc(AssertDoesNotThrowFuncContext ctx) {
+    compareAndSetCurrentLineInProgram(ctx.ASSERT_DOES_NOT_THROW());
     // assertDoesNotThrow accepts one or two arguments,
     // 1) expression/block to evaluate, 2) message when assertion fails
   
@@ -447,7 +474,9 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
     Map<String, ZwlValue> map = new HashMap<>();
     if (ctx.mapEntries() != null) {
       for (MapEntryContext entry : ctx.mapEntries().mapEntry()) {
-        map.put(entry.Identifier().getText(), visit(entry.expression()));
+        String key = entry.Identifier() != null ? entry.Identifier().getText()
+            : processStringLiteral(entry.StringLiteral().getText());
+        map.put(key, visit(entry.expression()));
       }
     }
     return new MapZwlValue(map);
@@ -629,7 +658,12 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
     String s = ctx.getText();
     LOG.debug("Normal string: {}", s);
     // Interpret escape sequences, strip out quotes in string.
-    return new StringZwlValue(StringEscapeUtils.unescapeJava(s.substring(1, s.length() - 1)));
+    return new StringZwlValue(processStringLiteral(s));
+  }
+  
+  private String processStringLiteral(String textWithQuotes) {
+    return StringEscapeUtils.unescapeJava(textWithQuotes.substring(1,
+        textWithQuotes.length() - 1));
   }
   
   @Override
@@ -720,5 +754,18 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
       throw new IllegalIdentifierException("Restricted keyword: " + id + " can't be used as an" +
           " identifier. " + lineNColumn(identifier));
     }
+  }
+  
+  private void compareAndSetCurrentLineInProgram(TerminalNode node) {
+    int tokenLine = node.getSymbol().getLine();
+    if (currentLineInProgram == tokenLine) {
+      return;
+    }
+    currentLineInProgram = tokenLine;
+    notifyLineChangeListeners();
+  }
+  
+  private void notifyLineChangeListeners() {
+    lineChangeListeners.forEach(l -> l.onLineChange(currentLineInProgram));
   }
 }
