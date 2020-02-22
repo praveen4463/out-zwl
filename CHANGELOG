@@ -6,3 +6,10 @@ All basic support for first version done, including an api to access from outsid
 v0.1.1
 **********
 Fixed warnings in several locations.
+**********
+v0.1.2
+**********
+1. Added functions to support calculation of elapsed time in running some code block.
+2. Added support for line change listener in interpreter. Now on every line change in interpreter,
+   caller's provided listener is executed that helps doing things like, outputting current line to
+   user, checking thread interruption etc.
