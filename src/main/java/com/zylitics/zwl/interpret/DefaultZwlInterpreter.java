@@ -128,8 +128,8 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
           () -> lineNColumn(ctx.Identifier()));
       // we expect all returned values to have one of the specified ZwlValue type and not 'null',
       // thus skipping a null check on function returned values.
-    } catch (EvalException eval) {
-      throw eval;
+    } catch (ZwlLangException zlEx) {
+      throw zlEx;
     } catch (Throwable e) {
       throw new RuntimeException(e.getMessage() + " " + lineNColumn(ctx.Identifier()), e);
     }
@@ -719,12 +719,15 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
   private long getForLoopMaxIterations() {
     String key = "forLoopMaxIterations";
     Optional<Map<String, ZwlValue>> p = getPreferences();
-    if (!(p.isPresent() && p.get().containsKey(key)
-        && p.get().get(key).getDoubleValue().isPresent())) {
+    if (!(p.isPresent() && p.get().containsKey(key))) {
       LOG.warn("Preferences doesn't contain infinite loop detection key: " + key);
       return -1;
     }
-    return p.get().get(key).getDoubleValue().get().longValue();
+    ZwlValue num = tryConvertNumber(p.get().get(key));
+    if (!num.getDoubleValue().isPresent()) {
+      return -1;
+    }
+    return num.getDoubleValue().get().longValue();
   }
   
   private Optional<Map<String, ZwlValue>> getPreferences() {

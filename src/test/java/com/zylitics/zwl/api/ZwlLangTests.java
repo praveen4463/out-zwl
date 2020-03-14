@@ -62,9 +62,11 @@ public class ZwlLangTests {
       // exceptions
       zwlInterpreter.setReadOnlyVariable("exceptions",
           new MapZwlValue(VarUtil.getExceptionsVars()));
-      // preferences (test values only)
+      // preferences (test values only), note that all global variables such as preferences and
+      // globals are loaded from db as string and cast as StringZwlValue. The calling code will
+      // convert to the desired type. Emulating that rule below.
       zwlInterpreter.setReadOnlyVariable("preferences", new MapZwlValue(ImmutableMap.of(
-          "forLoopMaxIterations", new DoubleZwlValue(FOR_LOOP_MAX_ITERATION)
+          "forLoopMaxIterations", new StringZwlValue(String.valueOf(FOR_LOOP_MAX_ITERATION))
       )));
       // testTools to get custom values required for testing.
       zwlInterpreter.setReadOnlyVariable("testTools", new MapZwlValue(ImmutableMap.of(

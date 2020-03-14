@@ -1,6 +1,10 @@
 package com.zylitics.zwl.exception;
 
-public class EvalException extends RuntimeException {
+/**
+ Exceptions in a ZWL program caused during program evaluation, for example a
+ {@link DateTimeFormatException}
+ */
+public class EvalException extends ZwlLangException {
   
   private static final long serialVersionUID = -2737215880481504769L;
   
