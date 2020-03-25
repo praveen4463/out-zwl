@@ -3,8 +3,9 @@ package com.zylitics.zwl.api;
 import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.zylitics.zwl.constants.Exceptions;
 import com.zylitics.zwl.datatype.*;
-import com.zylitics.zwl.util.VarUtil;
+import com.zylitics.zwl.exception.*;
 import org.antlr.v4.runtime.ANTLRErrorListener;
 import org.antlr.v4.runtime.ConsoleErrorListener;
 import org.antlr.v4.runtime.DiagnosticErrorListener;
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This test class also shows how to add an external variable into the interpreter.
@@ -59,9 +61,11 @@ public class ZwlLangTests {
     // we can detect ambiguities in grammar early, they will be shown at the top of the test
     // result.
     main.interpretDevOnly(zwlInterpreter -> {
-      // exceptions
+      // the utility of adding things like exceptions as constants is users don't have
+      // copy paste exact string and can choose from suggestions (once we have this functionality
+      // in IDE). Also we can shorten the names this way, this is less error prone.
       zwlInterpreter.setReadOnlyVariable("exceptions",
-          new MapZwlValue(VarUtil.getExceptionsVars()));
+          new MapZwlValue(Exceptions.asMap()));
       // preferences (test values only), note that all global variables such as preferences and
       // globals are loaded from db as string and cast as StringZwlValue. The calling code will
       // convert to the desired type. Emulating that rule below.

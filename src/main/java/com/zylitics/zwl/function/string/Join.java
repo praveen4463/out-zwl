@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
  * types, the result of invoking {@link Object#toString()} will be used rather than re-evaluating
  * any contained {@link List} or {@link Map}.</p>
  * <p>It then concatenates all elements in the list separated by the given {@code separator}.</p>
+ * <p>Instead of list, arguments can be given as well.</p>
  */
 public class Join extends AbstractFunction {
   
@@ -31,7 +32,7 @@ public class Join extends AbstractFunction {
   
   @Override
   public int maxParamsCount() {
-    return 2;
+    return Integer.MAX_VALUE;
   }
   
   @Override
@@ -40,9 +41,9 @@ public class Join extends AbstractFunction {
     super.invoke(args, defaultValue, lineNColumn);
     int argsCount = args.size();
   
-    if (argsCount == 2) {
+    if (argsCount >= 2) {
       String separator = tryCastString(0, args.get(0));
-      List<ZwlValue> strings = tryCastList(1, args.get(1));
+      List<ZwlValue> strings = args.subList(1, argsCount);
       return new StringZwlValue(join(separator,
           strings.stream().map(Objects::toString).collect(Collectors.toList())));
     }

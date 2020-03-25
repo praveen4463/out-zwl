@@ -11,6 +11,7 @@ import java.util.function.Supplier;
 /**
  * <p>Flatten accepts a list and recursively flattens the contained list elements. The final result
  * is a list that contains non-list elements only.</p>
+ * <p>multiple lists can also be given as arguments.</p>
  * <p>Flatten can also be used to concatenate two or more lists. For example:</p>
  * <p>{@code a = [1, 2, 3]}</p>
  * <p>{@code b = [4, 5, 6]}</p>
@@ -19,6 +20,11 @@ import java.util.function.Supplier;
  * <p>{@code [1, 2, 3, 4, 5, 6]}</p>
  */
 public class Flatten extends AbstractFunction {
+  
+  @Override
+  protected boolean doNotExpandListToArguments() {
+    return true;
+  }
   
   @Override
   public String getName() {
@@ -32,7 +38,7 @@ public class Flatten extends AbstractFunction {
   
   @Override
   public int maxParamsCount() {
-    return 1;
+    return Integer.MAX_VALUE;
   }
   
   @Override
@@ -41,8 +47,8 @@ public class Flatten extends AbstractFunction {
     super.invoke(args, defaultValue, lineNColumn);
     int argsCount = args.size();
     
-    if (args.size() == 1) {
-      return new ListZwlValue(flatten(tryCastList(0, args.get(0))));
+    if (args.size() >= 1) {
+      return new ListZwlValue(flatten(args));
     }
     
     throw unexpectedEndOfFunctionOverload(argsCount);

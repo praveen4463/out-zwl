@@ -38,11 +38,11 @@ public class ExistsFirst extends AbstractFunction {
     super.invoke(args, defaultValue, lineNColumn);
     int argsCount = args.size();
     
-    if (argsCount == 1) {
-      return existsFirst(tryCastList(0, args.get(0)));
+    if (argsCount >= 1) {
+      return existsFirst(args);
     }
   
-    return existsFirst(args);
+    throw unexpectedEndOfFunctionOverload(argsCount);
   }
   
   private ZwlValue existsFirst(List<ZwlValue> l) {

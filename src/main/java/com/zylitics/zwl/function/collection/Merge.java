@@ -27,6 +27,9 @@ public class Merge extends AbstractFunction {
     return "merge";
   }
   
+  // min param count is 1 cause user can also send just one list containing several maps but
+  // we should check after the list expansion that args count is no less than 2, as merge requires
+  // at least two things.
   @Override
   public int minParamsCount() {
     return 1;
@@ -46,18 +49,8 @@ public class Merge extends AbstractFunction {
       return new MapZwlValue(merge(args));
     }
   
-    List<ZwlValue> lZ = null;
-    try {
-      lZ = tryCastList(0, args.get(0));
-    } catch (InvalidTypeException i) {
-      //ignore
-    }
-    
-    if (lZ == null || lZ.size() < 2) {
-      throw new InsufficientArgumentsException(
-          withLineNCol(getName() + " requires at least two values."));
-    }
-    return new MapZwlValue(merge(lZ));
+    throw new InsufficientArgumentsException(
+        withLineNCol(getName() + " requires at least two values."));
   }
   
   private Map<String, ZwlValue> merge(List<ZwlValue> listOfMaps) {

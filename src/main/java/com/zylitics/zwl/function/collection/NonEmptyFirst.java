@@ -40,12 +40,13 @@ public class NonEmptyFirst extends AbstractFunction {
   public ZwlValue invoke(List<ZwlValue> args, Supplier<ZwlValue> defaultValue,
                          Supplier<String> lineNColumn) {
     super.invoke(args, defaultValue, lineNColumn);
+    int argsCount = args.size();
   
-    if (args.size() == 1) {
-      return nonEmptyFirst(tryCastList(0, args.get(0)));
+    if (argsCount >= 1) {
+      return nonEmptyFirst(args);
     }
   
-    return nonEmptyFirst(args);
+    throw unexpectedEndOfFunctionOverload(argsCount);
   }
   
   private ZwlValue nonEmptyFirst(List<ZwlValue> l) {

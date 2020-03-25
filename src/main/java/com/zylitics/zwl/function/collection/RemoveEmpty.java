@@ -10,8 +10,8 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
- * RemoveEmpty takes a list of elements of any supported type. It removes any element that is
- * non existing or empty from list and returns the modified list.
+ * RemoveEmpty takes a list of elements (or just elements as args) of any supported type. It removes
+ * any element that is non existing or empty from list and returns the modified list.
  * Note that RemoveEmpty is not recursive, so any list or map contained within the list that are
  * non empty won't be further taken for empty removal.
  */
@@ -29,7 +29,7 @@ public class RemoveEmpty extends AbstractFunction {
   
   @Override
   public int maxParamsCount() {
-    return 1;
+    return Integer.MAX_VALUE;
   }
   
   @Override
@@ -38,8 +38,8 @@ public class RemoveEmpty extends AbstractFunction {
     super.invoke(args, defaultValue, lineNColumn);
     int argsCount = args.size();
   
-    if (argsCount == 1) {
-      return new ListZwlValue(removeEmpty(tryCastList(0, args.get(0))));
+    if (argsCount >= 1) {
+      return new ListZwlValue(removeEmpty(args));
     }
   
     throw unexpectedEndOfFunctionOverload(argsCount);

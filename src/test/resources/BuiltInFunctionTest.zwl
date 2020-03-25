@@ -201,7 +201,8 @@ assertThrows(exceptions.illegalStringFormatEx, format("hey where is %dd%", "prav
 assertTrue(indexOf("hey buddy", "ddy") == 6)
 
 # join
-assertTrue(join(",", ["apple", "banana", "mango"]) == "apple,banana,mango")
+assertTrue(join(",", ["apple", "banana", "mango"]) == "apple,banana,mango",
+    "failed, actual result was " + join(",", ["apple", "banana", "mango"]))
 
 # lastIndexOf
 assertTrue(lastIndexOf("how's going", "g") == 10)

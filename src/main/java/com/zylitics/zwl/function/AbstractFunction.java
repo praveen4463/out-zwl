@@ -15,6 +15,12 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
 
+/*
+Note:
+1. Any implementing function may save state but that will be remain same for the lifetime of the
+   build, if that function is used further in build, the same state will be used because functions
+   are instantiated only once per build.
+ */
 public abstract class AbstractFunction implements Function {
   
   private static final Logger LOG = LoggerFactory.getLogger(AbstractFunction.class);
@@ -27,7 +33,7 @@ public abstract class AbstractFunction implements Function {
   public ZwlValue invoke(List<ZwlValue> args, Supplier<ZwlValue> defaultValue
       , Supplier<String> lineNColumn) {
     assertArgs(args);
-    
+    expandListToArguments(args);
     this.lineNColumn = lineNColumn;
     return _void;
   }
@@ -41,7 +47,6 @@ public abstract class AbstractFunction implements Function {
           "defined. %s", getName(), argsCount, lineNColumn.get()));
     }
     
-    // TODO: remove this after no such warning in logs.
     // check none of the elements in list is 'null' as we don't expect them, we just expect our own
     // type 'Nothing', this is not required though since we expect all null values to be
     // Nothing.
@@ -50,6 +55,53 @@ public abstract class AbstractFunction implements Function {
           getName());
       args.replaceAll(z -> Objects.isNull(z) ? new NothingZwlValue() : z);
     }
+  }
+  
+  /**
+   * <p>Many functions in ZWL accepts varargs argument (always max 1 and last argument), users can
+   * either send them expanded or as a list.</p>
+   * <p>When it is given as list, this method expand it to arguments before the function starts so
+   * that each function can assume it always get expanded argument wherever a varargs is accepted.
+   * </p>
+   * <p>Function that wish to accept list as argument (that are not varargs), can override
+   * doNotExpandListToArguments and return 'true'.</p>
+   * <p>This method returns immediately when there are more than one list present in arguments
+   * or the single list isn't given as last argument. If a function accepts more than one varargs
+   * it may become impossible for it to differentiate between varargs arguments. If varargs not
+   * the last argument, argument that appears after it will also become part of it. In both
+   * scenarios, the correctness of arguments can't be validated.</p>
+   * @param args
+   */
+  private void expandListToArguments(List<ZwlValue> args) {
+    if (doNotExpandListToArguments()) {
+      return;
+    }
+    long listsInArgs = args.stream().filter(z -> z.getListValue().isPresent()).count();
+    if (listsInArgs == 0) {
+      return;
+    }
+    if (listsInArgs > 1) {
+      LOG.warn(getName() + " receives more than one list as argument and is not marked as" +
+          "doNotExpandListToArguments=true, this should be fixed");
+      return;
+    }
+    int lastIndex = args.size() - 1;
+    Optional<List<ZwlValue>> listFromArgs = args.get(lastIndex).getListValue();
+    if (!listFromArgs.isPresent()) {
+      LOG.warn(getName() + " has a list in arguments but it's not the last argument and thus" +
+          "shouldn't be expanded, did you mean to set doNotExpandListToArguments=true?");
+      return;
+    }
+    // first add all items from varargs as list at the end of list
+    args.addAll(listFromArgs.get());
+    // now delete the list from args, this will shift all added items left, we shouldn't delete
+    // first because then we won't be able to get list items unless copied to another list which is
+    // not free.
+    args.remove(lastIndex);
+  }
+  
+  protected boolean doNotExpandListToArguments() {
+    return false;
   }
   
   protected RuntimeException unexpectedEndOfFunctionOverload(int argsCount) {
@@ -66,7 +118,7 @@ public abstract class AbstractFunction implements Function {
     return m.get();
   }
   
-  protected List<ZwlValue> tryCastList(int argIndex, ZwlValue val) {
+  protected List<ZwlValue> tryCastList(@SuppressWarnings("SameParameterValue") int argIndex, ZwlValue val) {
     Optional<List<ZwlValue>> l = val.getListValue();
     if (!l.isPresent()) {
       throw getWrongTypeException(val, Types.LIST, argIndex);
@@ -98,8 +150,8 @@ public abstract class AbstractFunction implements Function {
   // of arguments, that list is expanded to arguments internally and if some element was invalid,
   // we'll report it as if it was an argument.
   private InvalidTypeException getWrongTypeException(ZwlValue val, String type, int argIndex) {
-    return new InvalidTypeException(String.format("Given value: %s at argument: %s, isn't of type" +
-            " '%s'. %s", val, argIndex, type, lineNColumn.get()));
+    return new InvalidTypeException(String.format("Function %s, value: %s at argument: %s, isn't" +
+            " of type '%s'. %s", getName(), val, argIndex, type, lineNColumn.get()));
   }
   
   protected ListZwlValue getListZwlValue(List<String> stringsList) {
