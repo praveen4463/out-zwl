@@ -29,11 +29,11 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
   
   private static final Logger LOG = LoggerFactory.getLogger(DefaultZwlInterpreter.class);
   
-  private final List<String> readOnlyVars = new ArrayList<>();
+  private final Set<String> readOnlyVars = new HashSet<>();
   private final ZwlValue _void = new VoidZwlValue();
   
   private final Variables vars;
-  private final List<Function> functions;
+  private final Set<Function> functions;
   
   private final List<InterpreterLineChangeListener> lineChangeListeners = new ArrayList<>();
   
@@ -42,7 +42,8 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
   public DefaultZwlInterpreter() {
     // added function list should be constructed new, each request should use it's own set of
     // function objects.
-    functions = new ArrayList<>(BuiltInFunction.get());
+    functions = new HashSet<>(BuiltInFunction.get());
+    // add readonly variables that are ZWL specific
     vars = new Variables();
   }
   
@@ -56,15 +57,14 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
     Objects.requireNonNull(value, "value can't be null");
     
     String lower = identifier.toLowerCase();
-    if (readOnlyVars.contains(lower)) {
+    if (!readOnlyVars.add(lower)) {
       return;
     }
-    readOnlyVars.add(lower);
     vars.assign(identifier, value);
   }
   
   @Override
-  public void setFunctions(List<Function> functions) {
+  public void setFunctions(Set<Function> functions) {
     Objects.requireNonNull(functions, "function list can't be null");
     
     for (Function f : functions) {
@@ -471,7 +471,8 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
   
   @Override
   public ZwlValue visitMapLiteral(MapLiteralContext ctx) {
-    Map<String, ZwlValue> map = new HashMap<>();
+    Map<String, ZwlValue> map = new LinkedHashMap<>();
+    // we need ordering as insertion order, that's why a linked list based map.
     if (ctx.mapEntries() != null) {
       for (MapEntryContext entry : ctx.mapEntries().mapEntry()) {
         String key = entry.Identifier() != null ? entry.Identifier().getText()
@@ -676,7 +677,7 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
   
   private Double parseNumberExpr(ZwlValue z, ExpressionContext exp) {
     return ParseUtil.parseDouble(z,
-        new InvalidTypeException("Expression of type " + z.getType() + " couldn't be " +
+        () -> new InvalidTypeException("Expression of type " + z.getType() + " couldn't be " +
             "converted to a 'Number'. " + lineNColumn(exp)));
   }
   
@@ -691,7 +692,7 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
         exp.getClass().getSimpleName(), exp.getText(), z);
   
     return ParseUtil.parseBoolean(z,
-        new InvalidTypeException("Expression of type " + z.getType() + " couldn't be " +
+        () -> new InvalidTypeException("Expression of type " + z.getType() + " couldn't be " +
             "converted to a 'Boolean'. " + lineNColumn(exp)));
   }
   

@@ -48,11 +48,11 @@ public class NothingZwlValue implements ZwlValue {
   
   @Override
   public int hashCode() {
-    return Objects.hash(Types.VOID);
+    return Objects.hash(Types.NOTHING);
   }
   
   @Override
   public String toString() {
-    return Types.VOID;
+    return Types.NOTHING;
   }
 }

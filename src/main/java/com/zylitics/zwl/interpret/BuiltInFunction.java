@@ -1,6 +1,6 @@
 package com.zylitics.zwl.interpret;
 
-import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.zylitics.zwl.function.assertions.Assert;
 import com.zylitics.zwl.function.assertions.AssertFalse;
 import com.zylitics.zwl.function.assertions.AssertTrue;
@@ -14,16 +14,17 @@ import com.zylitics.zwl.function.numeric.*;
 import com.zylitics.zwl.function.string.*;
 import com.zylitics.zwl.function.util.Exists;
 import com.zylitics.zwl.function.debugging.Print;
+import com.zylitics.zwl.function.util.NonEmpty;
 import com.zylitics.zwl.function.util.Uuid;
 
-import java.util.List;
+import java.util.Set;
 
 public final class BuiltInFunction {
   
   private BuiltInFunction() {}
   
-  public static List<Function> get() {
-    ImmutableList.Builder<Function> builder = ImmutableList.builder();
+  public static Set<Function> get() {
+    ImmutableSet.Builder<Function> builder = ImmutableSet.builder();
     builder.add(
         // Assertions
         new Assert(),
@@ -86,6 +87,7 @@ public final class BuiltInFunction {
         
         // Util
         new Exists(),
+        new NonEmpty(),
         new Uuid()
     );
     return builder.build();

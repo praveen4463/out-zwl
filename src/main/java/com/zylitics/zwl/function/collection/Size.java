@@ -34,18 +34,16 @@ public class Size extends AbstractFunction {
   public ZwlValue invoke(List<ZwlValue> args, Supplier<ZwlValue> defaultValue,
                          Supplier<String> lineNColumn) {
     super.invoke(args, defaultValue, lineNColumn);
-    int argsCount = args.size();
-  
-    if (args.size() == 1) {
-      ZwlValue val = args.get(0);
-      if (!(val.getMapValue().isPresent() || val.getListValue().isPresent())) {
-        throw new EvalException(withLineNCol(getName() + " works for only Map and List types."));
-      }
-      return new DoubleZwlValue(val.getListValue().isPresent()
-          ? val.getListValue().get().size()
-          : val.getMapValue().get().size());
+    
+    if (args.size() == 0) {
+      throw unexpectedEndOfFunctionOverload(args.size());
     }
-  
-    throw unexpectedEndOfFunctionOverload(argsCount);
+    ZwlValue val = args.get(0);
+    if (!(val.getMapValue().isPresent() || val.getListValue().isPresent())) {
+      throw new EvalException(withLineNCol(getName() + " works for only Map and List types."));
+    }
+    return new DoubleZwlValue(val.getListValue().isPresent()
+        ? val.getListValue().get().size()
+        : val.getMapValue().get().size());
   }
 }

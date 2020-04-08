@@ -2,54 +2,30 @@ package com.zylitics.zwl.exception;
 
 /**
  * <p>Superclass of all exceptions raised in a ZWL program. Exceptions that don't subclass this,</p>
- * <p>should use constructor with 'wrapped' parameter so that the actual exception could be
- * retrieved.</p>
- * <p>Usage:</p>
- * <pre>{@code
- *  Throwable actual = null;
- *  String msg;
- *  try {
- *    // operation
- *  } catch (ZwlLangException zlEx) {
- *    if (zlEx.getWrapped() != null) {
- *      actual = zlEx.getWrapped();
- *    } else {
- *      actual = zlEx;
- *    }
- *    // actual now contains an exception directly derived from ZwlLangException, or from one of
- *    // it's subclass (such as a DateTimeFormatException). Directly derived exceptions may have
- *    // a wrapped exception which is the 'actual' exception raised. An example of a wrapped
- *    // exception may be the one raised in one of injected functions (such as a WebdriverException)
- *    msg = zlEx.getMessage();
- *    // should contain the line number and actual message that can be relayed as is.
- *  }
- * }</pre>
+ * <p>should use constructor with 'cause' parameter so that the actual exception could be retrieved.
+ * </p>
+ * <p>When logging, full exception trace must be logged. When relaying to user, we should compose an
+ * exception trace that doesn't reveal class details but still display the entire exception chain.
+ * The real cause of the exception should be the deepest cause, thus we should write it in the
+ * beginning of the message. Grab the deepest cause, take it's message, associated line no, the
+ * exception's name and build a message. After that for each cause in the trace, grab it's message,
+ * removing any ZWL specific class names etc and show together with exception name, this way user
+ * gets the detail of the problem.</p>
  */
 public class ZwlLangException extends RuntimeException {
   
   private static final long serialVersionUID = -8954182436250699689L;
   
-  private Throwable wrapped;
-  
   public ZwlLangException(String msg) {
     super(msg);
   }
   
-  public ZwlLangException(String msg, Throwable cause) {
-    super(msg, cause);
-  }
-  
-  public ZwlLangException(Throwable wrapped, String msg) {
-    super(msg);
-    this.wrapped = wrapped;
-  }
-  
-  public ZwlLangException(Throwable wrapped, String msg, Throwable cause) {
-    super(msg, cause);
-    this.wrapped = wrapped;
-  }
-  
-  public Throwable getWrapped() {
-    return wrapped;
+  /**
+   * Should be used when a thrown exception needs to be wrapped in a {@link ZwlLangException}.
+   * @param lineNColumn the ZWL program's line and column number where the error encountered
+   * @param cause the actual exception thrown.
+   */
+  public ZwlLangException(String lineNColumn, Throwable cause) {
+    super(lineNColumn, cause);
   }
 }

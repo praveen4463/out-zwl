@@ -4,11 +4,13 @@ import com.zylitics.zwl.datatype.Types;
 import com.zylitics.zwl.datatype.ZwlValue;
 import com.zylitics.zwl.exception.InvalidTypeException;
 
+import java.util.function.Supplier;
+
 public class ParseUtil {
   
   private ParseUtil() {}
   
-  public static Double parseDouble(ZwlValue z, InvalidTypeException throwIfFailed) {
+  public static Double parseDouble(ZwlValue z, Supplier<InvalidTypeException> throwIfFailed) {
     if (z.getDoubleValue().isPresent()) {
       return z.getDoubleValue().get();
     }
@@ -21,10 +23,10 @@ public class ParseUtil {
       }
     }
     
-    throw throwIfFailed;
+    throw throwIfFailed.get();
   }
   
-  public static Boolean parseBoolean(ZwlValue z, InvalidTypeException throwIfFailed) {
+  public static Boolean parseBoolean(ZwlValue z, Supplier<InvalidTypeException> throwIfFailed) {
     if (z.getBooleanValue().isPresent()) {
       return z.getBooleanValue().get();
     }
@@ -40,7 +42,7 @@ public class ParseUtil {
       }
     }
     
-    throw throwIfFailed;
+    throw throwIfFailed.get();
   }
   
   @SuppressWarnings("OptionalGetWithoutIsPresent")

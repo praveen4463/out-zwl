@@ -70,7 +70,7 @@ public abstract class AbstractFunction implements Function {
    * it may become impossible for it to differentiate between varargs arguments. If varargs not
    * the last argument, argument that appears after it will also become part of it. In both
    * scenarios, the correctness of arguments can't be validated.</p>
-   * @param args
+   * @param args The received arguments from Zwl
    */
   private void expandListToArguments(List<ZwlValue> args) {
     if (doNotExpandListToArguments()) {
@@ -110,7 +110,7 @@ public abstract class AbstractFunction implements Function {
         "contains an invalid number that exceeds the availability.", getName(), argsCount));
   }
   
-  protected Map<String, ZwlValue> tryCastMap(int argIndex, ZwlValue val) {
+  public Map<String, ZwlValue> tryCastMap(int argIndex, ZwlValue val) {
     Optional<Map<String, ZwlValue>> m = val.getMapValue();
     if (!m.isPresent()) {
       throw getWrongTypeException(val, Types.MAP, argIndex);
@@ -118,7 +118,7 @@ public abstract class AbstractFunction implements Function {
     return m.get();
   }
   
-  protected List<ZwlValue> tryCastList(@SuppressWarnings("SameParameterValue") int argIndex, ZwlValue val) {
+  public List<ZwlValue> tryCastList(@SuppressWarnings("SameParameterValue") int argIndex, ZwlValue val) {
     Optional<List<ZwlValue>> l = val.getListValue();
     if (!l.isPresent()) {
       throw getWrongTypeException(val, Types.LIST, argIndex);
@@ -126,16 +126,16 @@ public abstract class AbstractFunction implements Function {
     return l.get();
   }
   
-  protected Double parseDouble(int argIndex, ZwlValue val) {
-    return ParseUtil.parseDouble(val, getWrongTypeException(val, Types.NUMBER, argIndex));
+  public Double parseDouble(int argIndex, ZwlValue val) {
+    return ParseUtil.parseDouble(val, () -> getWrongTypeException(val, Types.NUMBER, argIndex));
   }
   
   @SuppressWarnings("SameParameterValue")
-  protected Boolean parseBoolean(int argIndex, ZwlValue val) {
-    return ParseUtil.parseBoolean(val, getWrongTypeException(val, Types.BOOLEAN, argIndex));
+  public Boolean parseBoolean(int argIndex, ZwlValue val) {
+    return ParseUtil.parseBoolean(val, () -> getWrongTypeException(val, Types.BOOLEAN, argIndex));
   }
   
-  protected String tryCastString(int argIndex, ZwlValue val) {
+  public String tryCastString(int argIndex, ZwlValue val) {
     Optional<String> s = val.getStringValue();
     if (!s.isPresent()) {
       throw getWrongTypeException(val, Types.STRING, argIndex);
