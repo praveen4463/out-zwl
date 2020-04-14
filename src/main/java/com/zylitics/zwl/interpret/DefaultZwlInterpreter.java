@@ -279,8 +279,10 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
       visit(ctx.block());
     }
     // remove the identifier once the loop is finished
-    vars.delete(id);
-    
+    if (vars.exists(id)) {
+      vars.delete(id);
+    }
+
     return _void;
   }
   
@@ -316,8 +318,12 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
       visit(ctx.block());
     }
     // remove the identifiers once the loop is finished
-    vars.delete(key);
-    vars.delete(value);
+    if (vars.exists(key)) {
+      vars.delete(key);
+    }
+    if (vars.exists(value)) {
+      vars.delete(value);
+    }
   
     return _void;
   }
@@ -355,7 +361,9 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
       visit(ctx.block());
     }
     // remove the identifier once the loop is finished
-    vars.delete(id);
+    if (vars.exists(id)) {
+      vars.delete(id);
+    }
     
     return _void;
   }
@@ -669,7 +677,11 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
   
   @Override
   public ZwlValue visitRawStringExpression(RawStringExpressionContext ctx) {
-    String s = ctx.getText();
+    // When user types something with new lines and os is windows, carriage return is added together with new line.
+    // When matching something with driver, driver doesn't give carriage returns but only new line (nothing else should
+    // add a carriage return with new line than a windows OS), thus we should strip them out and make it a unix like
+    // string.
+    String s = ctx.getText().replace("\r", "");
     LOG.debug("Raw string: {}", s);
     // strip out back quotes in string.
     return new StringZwlValue(s.substring(1, s.length() - 1));
