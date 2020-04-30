@@ -20,6 +20,7 @@ Note:
 1. Any implementing function may save state but that will be remain same for the lifetime of the
    build, if that function is used further in build, the same state will be used because functions
    are instantiated only once per build.
+2. Pay attention to doNotExpandListToArguments
  */
 public abstract class AbstractFunction implements Function {
   
@@ -133,6 +134,14 @@ public abstract class AbstractFunction implements Function {
   @SuppressWarnings("SameParameterValue")
   public Boolean parseBoolean(int argIndex, ZwlValue val) {
     return ParseUtil.parseBoolean(val, () -> getWrongTypeException(val, Types.BOOLEAN, argIndex));
+  }
+  
+  public <T extends Enum<T>> T parseEnum(int argIndex, ZwlValue val, Class<T> enumType) {
+    try {
+      return Enum.valueOf(enumType, tryCastString(argIndex, val));
+    } catch (IllegalArgumentException ia) {
+      throw getWrongTypeException(val, enumType.getSimpleName(), argIndex);
+    }
   }
   
   public String tryCastString(int argIndex, ZwlValue val) {

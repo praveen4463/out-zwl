@@ -9,4 +9,5 @@ Steps to generate parsers and lexers from grammar.
 3- Parser and Lexer code should generate in target/generated-sources/antlr4
 
 4- No need to copy the files in any other class path, compiler infers from
-location using antlr4's plugin.
+location using antlr4's plugin. If it doesn't, open module setting and mark
+target/generated-sources/antlr4 as 'Source' rather than 'Exclude'.

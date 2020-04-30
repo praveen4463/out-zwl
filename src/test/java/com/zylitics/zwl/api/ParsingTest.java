@@ -1,6 +1,7 @@
 package com.zylitics.zwl.api;
 
 import com.zylitics.zwl.antlr4.StoringErrorListener;
+import com.zylitics.zwl.exception.ZwlLangException;
 import com.zylitics.zwl.util.StringUtil;
 import org.antlr.v4.runtime.ANTLRErrorListener;
 import org.antlr.v4.runtime.InputMismatchException;
@@ -96,10 +97,10 @@ public class ParsingTest {
     boolean gotExpected = false;
     try {
       List<ANTLRErrorListener> listeners = Collections.singletonList(listener);
-      Main main = new Main(code, listeners);
-      main.parseDevOnly();
-    } catch (RuntimeException r) {
-      gotExpected = matchCause(r, expectedException);
+      ZwlApi zwlApi = new ZwlApi(code, listeners);
+      zwlApi.parseDevOnly();
+    } catch (ZwlLangException z) {
+      gotExpected = matchCause(z, expectedException);
     }
     assertTrue(gotExpected);
     assertNotNull(listener.getMsg());

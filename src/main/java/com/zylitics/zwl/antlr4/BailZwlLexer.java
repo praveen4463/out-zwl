@@ -1,5 +1,6 @@
 package com.zylitics.zwl.antlr4;
 
+import com.zylitics.zwl.exception.ZwlLangException;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.LexerNoViableAltException;
 
@@ -11,6 +12,6 @@ public class BailZwlLexer extends ZwlLexer {
   
   @Override
   public void recover(LexerNoViableAltException e) {
-    throw new RuntimeException(e);
+    throw new ZwlLangException(e);
   }
 }

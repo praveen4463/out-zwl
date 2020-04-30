@@ -5,15 +5,14 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.zylitics.zwl.constants.Exceptions;
 import com.zylitics.zwl.datatype.*;
-import com.zylitics.zwl.exception.*;
 import org.antlr.v4.runtime.ANTLRErrorListener;
 import org.antlr.v4.runtime.ConsoleErrorListener;
 import org.antlr.v4.runtime.DiagnosticErrorListener;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.List;
-import java.util.Map;
 
 /**
  * This test class also shows how to add an external variable into the interpreter.
@@ -56,11 +55,12 @@ public class ZwlLangTests {
   
   private void run(String file) throws IOException {
     // for these tests, we'll just add console and diagnostic listener.
-    Main main = new Main("resources/" + file, Charsets.UTF_8, DEFAULT_TEST_LISTENERS);
+    ZwlApi zwlApi = new ZwlApi(Paths.get("resources/" + file), Charsets.UTF_8,
+        DEFAULT_TEST_LISTENERS);
     // set external variable(s) into de only interpreter. It's important to use dev only so that
     // we can detect ambiguities in grammar early, they will be shown at the top of the test
     // result.
-    main.interpretDevOnly(zwlInterpreter -> {
+    zwlApi.interpretDevOnly(zwlInterpreter -> {
       // the utility of adding things like exceptions as constants is users don't have
       // copy paste exact string and can choose from suggestions (once we have this functionality
       // in IDE). Also we can shorten the names this way, this is less error prone.

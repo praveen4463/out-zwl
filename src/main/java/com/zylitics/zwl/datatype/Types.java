@@ -15,4 +15,6 @@ public class Types {
   public static final String NOTHING = "Nothing";
   
   public static final String VOID = "Void";
+  
+  public static final String OBJECT = "Object";
 }

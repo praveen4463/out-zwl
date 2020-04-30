@@ -88,6 +88,13 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
   }
   
   @Override
+  public void setLineChangeListeners(List<InterpreterLineChangeListener> lineChangeListeners) {
+    Objects.requireNonNull(lineChangeListeners, "lineChangeListeners can't be null");
+    
+    this.lineChangeListeners.addAll(lineChangeListeners);
+  }
+  
+  @Override
   public ZwlValue visitAssignment(AssignmentContext ctx) {
     compareAndSetCurrentLineInProgram(ctx.Identifier());
     String id = ctx.Identifier().getText();
@@ -150,7 +157,6 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
   // If a non-existent variable is referenced, process fails fast.
   @Override
   public ZwlValue visitIdentifierExpr(IdentifierExprContext ctx) {
-    compareAndSetCurrentLineInProgram(ctx.Identifier());
     String id = ctx.Identifier().getText();
     Optional<ZwlValue> idValue = vars.resolve(id);
     if (!idValue.isPresent()) {
@@ -608,7 +614,7 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
             eqOp == left.getDoubleValue().get().equals(parseNumberExpr(right, ctx)));
       default:
         throw new InvalidTypeException("Can't convert type " + right.getType() + " to " +
-            left.getType() + " and vice-versa.");
+            left.getType() + " and vice-versa. " + lineNColumn(ctx));
     }
   }
   
@@ -772,6 +778,7 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
     }
   }
   
+  // should be invoked on every statement visit
   private void compareAndSetCurrentLineInProgram(TerminalNode node) {
     int tokenLine = node.getSymbol().getLine();
     if (currentLineInProgram == tokenLine) {

@@ -20,6 +20,10 @@ public class ZwlLangException extends RuntimeException {
     super(msg);
   }
   
+  public ZwlLangException(Throwable cause) {
+    super(cause);
+  }
+  
   /**
    * Should be used when a thrown exception needs to be wrapped in a {@link ZwlLangException}.
    * @param lineNColumn the ZWL program's line and column number where the error encountered

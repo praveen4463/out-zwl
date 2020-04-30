@@ -1,0 +1,151 @@
+# dry run feature enable users to stub functions that uses webdriver so that the behaviour of other
+# zwl functions can be tested without running a webdriver.
+
+a = [1, 2, 3]
+printF("size of a is %s", size(a))
+
+# first do a series of tests to make sure the logic of default value work, and then test all
+# functions in the same way to see they all have the required code for dry running and are ok with
+# the null arguments (such as webdriver) given to their constructor.
+
+# when no default value is given, function's own should returned
+elemId = findElement(".some-selector")
+assertTrue(isValidElemId(elemId))
+
+# when a default is given, that is returned if it matches function's return type
+elemId = findElement(".some-other-selector") ?? { "invalid-element-id" }
+assertFalse(isValidElemId(elemId))
+
+# when a default is given, that doesn't matches function's return type, exception is returned
+assertThrows(exceptions.invalidTypeEx,
+    findElement(".some-other-selector") ?? { true }
+)
+
+# when a void function is given some default value, it is ignored and void is returned.
+shouldBeVoid = openUrl("https://google.co.in") ?? { "I-should-not-be-returned" }
+assertTrue(isVoid(shouldBeVoid))
+
+# if some function's return type is Object, any type of user supplied value should be returned
+shouldBeBoolean = executeScript("document.location = 'https://google.com'") ?? { true }
+assertTrue(shouldBeBoolean)
+
+# now test just the default value assigned to all functions-----------------------------------------
+assertTrue(isVoid(dragAndDrop("#credit2", "#bank")))
+
+assertTrue(isVoid(performAction(
+  move(draggable),
+  hold(),
+  move(".s", 0, -15),
+  release()
+)))
+
+assertTrue(isVoid(scroll("#credit2")))
+
+assertTrue(colorMatches("#invalid-color", colors.blueviolet))
+
+assertTrue(isVoid(close()))
+
+assertTrue(size(getAllWinIds()) > 1)
+
+winIdMinLength = 10 # window ids are more than 10 chars long string
+
+assertTrue(length(getCurrentWinId()) > winIdMinLength)
+
+assertTrue(isVoid(newWin()))
+
+assertTrue(isVoid(switchFrame(0)))
+
+assertTrue(isVoid(switchParentFrame()))
+
+assertTrue(isVoid(switchWin()))
+
+assertTrue(isVoid(fullScreenWin()))
+
+m = getWinPosition()
+assertTrue(m.x > 0 && m.y > 0
+
+m = getWinSize()
+assertTrue(m.width > 0 && m.height > 0)
+
+assertTrue(isVoid(maximizeWin()))
+
+assertTrue(isVoid(moveWinBy(1, 1)))
+
+assertTrue(isVoid(resizeWinBy(1, 1)))
+
+assertTrue(isVoid(setWinPosition(1, 1)))
+
+assertTrue(isVoid(setWinSize(1, 1)))
+
+assertTrue(isVoid(addCookie("zwl_cookie", "1188", "/", "zylitics.io", 365*24*60*60*1000)))
+
+assertTrue(isVoid(deleteAllCookies()))
+
+assertTrue(isVoid(deleteCookie("zwl_cookie")))
+
+assertTrue(size(getCookies()) > 1)
+
+assertTrue(length(getNamedCookie(getCookies()[0].name).name) > 0)
+
+assertFalse(exists(executeAsyncScript("const a = 1")))
+
+assertFalse(exists(executeScript("const a = 1")))
+
+assertTrue(length(getPageSource()) > 0)
+
+assertTrue(isVoid(clear("#ch1")))
+
+assertTrue(isVoid(clearAll("#ch1", "#ch2")))
+
+assertTrue(isVoid(click("#ch1")))
+
+assertTrue(isVoid(clickAll("#ch1", "#ch2")))
+
+assertTrue(length(clickNoSwitch(".a1")) > winIdMinLength)
+
+assertTrue(isVoid(clickSwitchNew(".a2")))
+
+assertTrue(isVoid(submit(".b1")))
+
+assertTrue(isVoid(sendKeysToPage(".doc-click", keys.shift, "r")))
+
+assertTrue(isVoid(sendKeysToPageF("j")))
+
+assertTrue(isVoid(setFile("#f_single", "abc.pdf")))
+
+assertTrue(isVoid(setFiles("#f_mul", "abc.pdf", "xyz.pdf")))
+
+assertTrue(isVoid(type("#fname", "praveen")))
+
+assertTrue(isVoid(typeActive("praveen")))
+
+assertTrue(isVoid(typeIntoElements("same-illegal-string", "#fname", "#lname")))
+
+assertTrue(isVoid(typeUsingMap({"#inp1": 1234, "#inp2": 3333})))
+
+assertTrue(isValidElemId(activeElement()))
+
+assertTrue(isValidElemId(findElement(".d1")))
+
+assertTrue(isValidElemId(findElementFromElement(".p1", ".d1")))
+
+assertTrue(size(findElements(".m1")) > 1)
+
+assertTrue(size(findElementsFromElement(".p1", ".m1")) > 1)
+
+assertTrue(size(findElementsWithSelectors(".unknown", ".m1")) > 1)
+
+assertTrue(isValidElemId(findElementWithSelectors(".unknown", ".d1")))
+
+
+
+/*
+elemIds = findElements(".s")
+assertTrue(size(elemIds) == 2)
+assertTrue(isValidElemId(elemIds[0]) && isValidElemId(elemIds[1]))
+
+# !! isValidElemId shouldn't be stubbed and doesn't have the code.
+
+shouldBeVoid = sleep(20000)
+assertTrue(isVoid(shouldBeVoid))
+*/

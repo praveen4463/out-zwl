@@ -4,6 +4,7 @@ import com.google.common.base.Charsets;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.nio.file.Paths;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -14,9 +15,9 @@ public class LineChangeListenerTest {
   @Test
   void lineChangeListenerTest() throws IOException
   {
-    Main main = new Main("resources/" + "LineChangeListenerTest.zwl", Charsets.UTF_8,
-        ZwlLangTests.DEFAULT_TEST_LISTENERS);
-    main.interpretDevOnly(zwlInterpreter ->
+    ZwlApi zwlApi = new ZwlApi(Paths.get("resources/" + "LineChangeListenerTest.zwl")
+        , Charsets.UTF_8, ZwlLangTests.DEFAULT_TEST_LISTENERS);
+    zwlApi.interpretDevOnly(zwlInterpreter ->
         zwlInterpreter.setLineChangeListener(line -> {
           actualTotalLineChangeEvents++;
           System.out.println("Currently executing line " + line);
