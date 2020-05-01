@@ -16,13 +16,21 @@ public enum FuncDefReturnValue {
   FALSE (D.FALSE),
   POSITION (new MapZwlValue(ImmutableMap.of("x", D.HUNDRED, "y", D.HUNDRED))),
   SIZE (new MapZwlValue(ImmutableMap.of("width", D.FIVE_HUNDRED, "height", D.FIVE_HUNDRED))),
-  COOKIE (new MapZwlValue(D.CK1)),
-  COOKIES (new ListZwlValue(
-      ImmutableList.of(new MapZwlValue(D.CK1), new MapZwlValue(D.CK2)))),
+  RECT (new MapZwlValue(ImmutableMap.of("x", D.HUNDRED, "y", D.HUNDRED,
+      "width", D.FIVE_HUNDRED, "height", D.FIVE_HUNDRED))),
+  COOKIE (D.CK1),
+  COOKIES (new ListZwlValue(ImmutableList.of(D.CK1, D.CK2))),
   PAGE_SOURCE (D.PAGE_SOURCE),
   ELEMENT_TEXT (D.E_TEXT),
   ELEMENT_VALUE (D.E_VALUE),
   ELEMENT_TAG (D.E_TAG),
+  UNKNOWN (D.UNKNOWN),
+  URL (D.URL),
+  TITLE( D.TITLE),
+  ALERT_TEXT (D.ALERT_TEXT),
+  STORAGE_KEYS (D.STORAGE_KEYS),
+  TEN (D.TEN),
+  THOUSAND (D.THOUSAND),
   ;
   
   private final ZwlValue defValue;
@@ -45,11 +53,12 @@ public enum FuncDefReturnValue {
     private static final ZwlValue W1 = new StringZwlValue("B81C49985C162A8445E45575EE4726C6");
     private static final ZwlValue W2 = new StringZwlValue("C81C49985W162A8445E45575EE4726S9");
     private static final ZwlValue TEN = new DoubleZwlValue(10);
+    private static final ZwlValue THOUSAND = new DoubleZwlValue(1000);
     private static final ZwlValue HUNDRED = new DoubleZwlValue(100);
     private static final ZwlValue FIVE_HUNDRED = new DoubleZwlValue(500);
     private static final ZwlValue TRUE = new BooleanZwlValue(true);
     private static final ZwlValue FALSE = new BooleanZwlValue(false);
-    private static final Map<String, ZwlValue> CK1 = new ImmutableMap.Builder<String, ZwlValue>()
+    private static final ZwlValue CK1 = new MapZwlValue(new ImmutableMap.Builder<String, ZwlValue>()
         .put("name", new StringZwlValue("_ga"))
         .put("value", new StringZwlValue("GA1"))
         .put("domain", new StringZwlValue("www.google.com"))
@@ -57,8 +66,8 @@ public enum FuncDefReturnValue {
         .put("expiry", new DoubleZwlValue(1000))
         .put("secure", FALSE)
         .put("httpOnly", FALSE)
-        .build();
-    private static final Map<String, ZwlValue> CK2 = new ImmutableMap.Builder<String, ZwlValue>()
+        .build());
+    private static final ZwlValue CK2 = new MapZwlValue(new ImmutableMap.Builder<String, ZwlValue>()
         .put("name", new StringZwlValue("_gq"))
         .put("value", new StringZwlValue("GQ1"))
         .put("domain", new StringZwlValue("www.google.com"))
@@ -66,12 +75,18 @@ public enum FuncDefReturnValue {
         .put("expiry", new DoubleZwlValue(1000))
         .put("secure", FALSE)
         .put("httpOnly", FALSE)
-        .build();
+        .build());
     private static final ZwlValue PAGE_SOURCE = new StringZwlValue(
         "<html><head><title>example.com</title></head>" +
         "<body><div><h2>Welcome to example.com</h2></div></body></html>");
     private static final ZwlValue E_TEXT = new StringZwlValue("I'm feeling lucky");
-    private static final ZwlValue E_VALUE = new StringZwlValue("write something");
+    private static final ZwlValue E_VALUE = new StringZwlValue("Write something");
     private static final ZwlValue E_TAG = new StringZwlValue("input");
+    private static final ZwlValue UNKNOWN = new StringZwlValue("unknown");
+    private static final ZwlValue URL = new StringZwlValue("https://www.google.com");
+    private static final ZwlValue TITLE = new StringZwlValue("Google");
+    private static final ZwlValue ALERT_TEXT = new StringZwlValue("Are you sure?");
+    private static final ZwlValue STORAGE_KEYS = new ListZwlValue(
+        ImmutableList.of(new StringZwlValue("_ga"), new StringZwlValue("_gp")));
   }
 }

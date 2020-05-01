@@ -1,7 +1,7 @@
 package com.zylitics.zwl.webdriver.functions.elements.state;
 
-import com.zylitics.btbr.config.APICoreProperties;
-import com.zylitics.btbr.model.BuildCapability;
+import com.zylitics.zwl.webdriver.APICoreProperties;
+import com.zylitics.zwl.webdriver.BuildCapability;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.RemoteWebElement;
 
@@ -11,9 +11,9 @@ import java.util.List;
 public class AllElementsSelected extends AbstractMultiElementState {
   
   public AllElementsSelected(APICoreProperties.Webdriver wdProps,
-                           BuildCapability buildCapability,
-                           RemoteWebDriver driver,
-                           PrintStream printStream) {
+                             BuildCapability buildCapability,
+                             RemoteWebDriver driver,
+                             PrintStream printStream) {
     super(wdProps, buildCapability, driver, printStream);
   }
   

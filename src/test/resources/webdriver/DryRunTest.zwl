@@ -33,7 +33,7 @@ assertTrue(shouldBeBoolean)
 assertTrue(isVoid(dragAndDrop("#credit2", "#bank")))
 
 assertTrue(isVoid(performAction(
-  move(draggable),
+  move(".d1"),
   hold(),
   move(".s", 0, -15),
   release()
@@ -51,7 +51,7 @@ winIdMinLength = 10 # window ids are more than 10 chars long string
 
 assertTrue(length(getCurrentWinId()) > winIdMinLength)
 
-assertTrue(isVoid(newWin()))
+assertTrue(isVoid(newWin("tab")))
 
 assertTrue(isVoid(switchFrame(0)))
 
@@ -62,7 +62,7 @@ assertTrue(isVoid(switchWin()))
 assertTrue(isVoid(fullScreenWin()))
 
 m = getWinPosition()
-assertTrue(m.x > 0 && m.y > 0
+assertTrue(m.x > 0 && m.y > 0)
 
 m = getWinSize()
 assertTrue(m.width > 0 && m.height > 0)
@@ -137,15 +137,209 @@ assertTrue(size(findElementsWithSelectors(".unknown", ".m1")) > 1)
 
 assertTrue(isValidElemId(findElementWithSelectors(".unknown", ".d1")))
 
+assertTrue(allElementsDisplayed("#chk1", "#chk2"))
 
+assertTrue(allElementsEnabled("#chk1", "#chk2"))
 
-/*
-elemIds = findElements(".s")
-assertTrue(size(elemIds) == 2)
-assertTrue(isValidElemId(elemIds[0]) && isValidElemId(elemIds[1]))
+assertTrue(allElementsSelected("#chk1", "#chk2"))
 
-# !! isValidElemId shouldn't be stubbed and doesn't have the code.
+assertTrue(anyElementDisplayed("#chk1", "#chk2"))
 
-shouldBeVoid = sleep(20000)
-assertTrue(isVoid(shouldBeVoid))
-*/
+assertTrue(anyElementEnabled("#chk1", "#chk2"))
+
+assertTrue(anyElementSelected("#chk1", "#chk2"))
+
+assertTrue(isVoid(captureElementScreenshot(".d1")))
+
+assertTrue(elementExists("#chk1"))
+
+unknown = "unknown"
+
+assertTrue(getElementAttribute("#chk1", "type") == unknown)
+
+assertTrue(getElementAttributeOrCssValue("#chk1", "type") == unknown)
+
+assertTrue(getElementCssValue("#chk1", "position") == unknown)
+
+m = getElementRect(".t1")
+assertTrue(m.width > 0 && m.height > 0 && m.x > 0 && m.y > 0)
+
+assertTrue(length(getElementText(".d1")) > 0)
+
+assertTrue(length(getElementValue("#t1")) > 0)
+
+m = getElementViewportCoordinates(".t1")
+assertTrue(m.x > 0 && m.y > 0)
+
+assertTrue(length(getTagName("#chk1")) > 0)
+
+assertTrue(isElementDisplayed("#chk1"))
+
+assertTrue(isElementEnabled("#chk1"))
+
+assertTrue(isElementSelected("#chk1"))
+
+assertTrue(isStale(findElement("#chk1")))
+
+assertTrue(isVoid(back()))
+
+assertTrue(isVoid(forward()))
+
+assertTrue(length(getCurrentUrl()) > 0)
+
+assertTrue(length(getTitle()) > 0)
+
+assertTrue(isVoid(openUrl("www.google.com")))
+
+assertTrue(isVoid(openUrlNewWin("www.google.com")))
+
+assertTrue(isVoid(refresh()))
+
+assertTrue(isVoid(acceptAlert()))
+
+assertTrue(isVoid(dismissAlert()))
+
+assertTrue(length(getAlertText()) > 0)
+
+assertTrue(isVoid(sendAlertText("some-input")))
+
+assertTrue(isVoid(deselectAll(".s1")))
+
+assertTrue(isVoid(deselectByIndex(".s1", 1)))
+
+assertTrue(isVoid(deselectByValue(".s1", "1")))
+
+assertTrue(isVoid(deselectByVisibleText(".s1", "Good bye")))
+
+assertTrue(size(getAllSelectedOptions(".s1")) > 1)
+
+assertTrue(isValidElemId(getFirstSelectedOption(".s1")))
+
+assertTrue(size(getOptions(".s1")) > 1)
+
+assertFalse(isMultiple(".s1"))
+
+assertTrue(isVoid(selectByIndex(".s1", 1)))
+
+assertTrue(isVoid(selectByValue(".s1", "1")))
+
+assertTrue(isVoid(selectByVisibleText(".s1", "Good bye")))
+
+assertTrue(isVoid(lsClear()))
+
+assertTrue(lsGetItem("some-key") == unknown)
+
+assertTrue(size(lsGetKeySet()) > 1)
+
+assertTrue(isVoid(lsRemoveItem("some-key")))
+
+assertTrue(isVoid(lsSetItem("some-key", "some-value")))
+
+assertTrue(lsSize() > 1)
+
+assertTrue(isVoid(ssClear()))
+
+assertTrue(ssGetItem("some-key") == unknown)
+
+assertTrue(size(ssGetKeySet()) > 1)
+
+assertTrue(isVoid(ssRemoveItem("some-key")))
+
+assertTrue(isVoid(ssSetItem("some-key", "some-value")))
+
+assertTrue(ssSize() > 1)
+
+assertTrue(isVoid(setElementAccessTimeout(1)))
+
+assertTrue(isVoid(setPageLoadTimeout(1)))
+
+assertTrue(isVoid(setScriptTimeout(1)))
+
+assertTrue(getTimeout(timeouts.elemAccess) > 10)
+
+assertTrue(isVoid(untilAlertPresent()))
+
+all = [".chk1", ".chk2"]
+chk1 = ".chk1"
+
+assertTrue(untilAllDisabled(all))
+
+assertTrue(untilAllEnabled(all))
+
+assertTrue(untilAllInvisible(all))
+
+assertTrue(untilAllRemoved(all))
+
+assertTrue(size(untilAllSelectionsAre(true, all)) > 1)
+
+assertTrue(untilAllVisible(all))
+
+assertTrue(size(untilAnySelectionIs(false, all)) > 1)
+
+assertTrue(untilAttributeValueContains(chk1, "data", "anything"))
+
+assertTrue(untilAttributeValueIs(chk1, "margin-left", "100px"))
+
+assertTrue(untilAttributeValueLike(chk1, "secret", "^[a-zA-Z0-9]+$"))
+
+assertTrue(untilAttributeValueNonEmpty(chk1, "rel"))
+
+assertTrue(untilClicked(chk1))
+
+assertTrue(untilDisabled(chk1))
+
+assertTrue(untilEnabled(chk1))
+
+assertTrue(untilInvisible(chk1))
+
+assertFalse(exists(untilJsReturnsAValue("const a = 1")))
+
+assertTrue(untilJsThrowsNoException("const a = 1"))
+
+assertTrue(untilRemoved(chk1))
+
+assertTrue(untilSelectionIs(chk1, false))
+
+assertTrue(untilStale(findElement(chk1)))
+
+assertTrue(untilSwitchedToFrame(0))
+
+assertTrue(untilTextContains(".div1", "watch"))
+
+assertTrue(untilTextIs(".div1", "watch"))
+
+assertTrue(untilTextLike(".div2", "#[1-9][A-B0-9]{9}$"))
+
+assertTrue(length(untilTextNonEmpty(".div1")) > 0)
+
+assertTrue(untilTitleContains("welcome"))
+
+assertTrue(untilTitleIs("welcome to facebook"))
+
+assertTrue(untilTotalElementsEQ("div", 3))
+
+assertTrue(untilTotalElementsGT("div", 3))
+
+assertTrue(untilTotalElementsLT("div", 2))
+
+assertTrue(untilTotalWindowsAre(2))
+
+assertTrue(untilUrlContains("google"))
+
+assertTrue(untilUrlIs("www.google.com"))
+
+assertTrue(untilUrlLike("google"))
+
+assertTrue(untilValueContains(chk1, "consent"))
+
+assertTrue(untilValueIs(chk1, "accept cookies"))
+
+assertTrue(untilValueLike(chk1, "[8-9][0-9]{9}$"))
+
+assertTrue(length(untilValueNonEmpty(".tx1")) > 0)
+
+assertTrue(untilVisible(chk1))
+
+# isValidElemId - shouldn't be stubbed and doesn't have the code.
+
+assertTrue(isVoid(sleep(20000)))

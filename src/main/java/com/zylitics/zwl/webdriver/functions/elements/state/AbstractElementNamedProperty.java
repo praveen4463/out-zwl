@@ -1,8 +1,10 @@
 package com.zylitics.zwl.webdriver.functions.elements.state;
 
-import com.zylitics.btbr.config.APICoreProperties;
-import com.zylitics.btbr.model.BuildCapability;
-import com.zylitics.btbr.webdriver.functions.AbstractWebdriverFunction;
+import com.zylitics.zwl.datatype.Types;
+import com.zylitics.zwl.webdriver.APICoreProperties;
+import com.zylitics.zwl.webdriver.BuildCapability;
+import com.zylitics.zwl.webdriver.constants.FuncDefReturnValue;
+import com.zylitics.zwl.webdriver.functions.AbstractWebdriverFunction;
 import com.zylitics.zwl.datatype.ZwlValue;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.RemoteWebElement;
@@ -35,6 +37,10 @@ abstract class AbstractElementNamedProperty extends AbstractWebdriverFunction {
                          Supplier<String> lineNColumn) {
     super.invoke(args, defaultValue, lineNColumn);
   
+    if (buildCapability.isDryRunning()) {
+      return evaluateDefValue(defaultValue);
+    }
+  
     if (args.size() < 2) {
       throw unexpectedEndOfFunctionOverload(args.size());
     }
@@ -47,4 +53,14 @@ abstract class AbstractElementNamedProperty extends AbstractWebdriverFunction {
   }
   
   protected abstract String get(RemoteWebElement element, String propertyName);
+  
+  @Override
+  protected ZwlValue getFuncDefReturnValue() {
+    return FuncDefReturnValue.UNKNOWN.getDefValue();
+  }
+  
+  @Override
+  protected String getFuncReturnType() {
+    return Types.STRING;
+  }
 }

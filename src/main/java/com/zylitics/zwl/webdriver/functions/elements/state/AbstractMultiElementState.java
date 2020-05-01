@@ -1,8 +1,10 @@
 package com.zylitics.zwl.webdriver.functions.elements.state;
 
-import com.zylitics.btbr.config.APICoreProperties;
-import com.zylitics.btbr.model.BuildCapability;
-import com.zylitics.btbr.webdriver.functions.AbstractWebdriverFunction;
+import com.zylitics.zwl.datatype.Types;
+import com.zylitics.zwl.webdriver.APICoreProperties;
+import com.zylitics.zwl.webdriver.BuildCapability;
+import com.zylitics.zwl.webdriver.constants.FuncDefReturnValue;
+import com.zylitics.zwl.webdriver.functions.AbstractWebdriverFunction;
 import com.zylitics.zwl.datatype.BooleanZwlValue;
 import com.zylitics.zwl.datatype.ZwlValue;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -35,6 +37,10 @@ abstract class AbstractMultiElementState extends AbstractWebdriverFunction {
   public ZwlValue invoke(List<ZwlValue> args, Supplier<ZwlValue> defaultValue,
                          Supplier<String> lineNColumn) {
     super.invoke(args, defaultValue, lineNColumn);
+  
+    if (buildCapability.isDryRunning()) {
+      return evaluateDefValue(defaultValue);
+    }
     
     if (args.size() == 0) {
       throw unexpectedEndOfFunctionOverload(args.size());
@@ -44,4 +50,14 @@ abstract class AbstractMultiElementState extends AbstractWebdriverFunction {
   }
   
   protected abstract boolean stateCheck(List<RemoteWebElement> elements);
+  
+  @Override
+  protected ZwlValue getFuncDefReturnValue() {
+    return FuncDefReturnValue.TRUE.getDefValue();
+  }
+  
+  @Override
+  protected String getFuncReturnType() {
+    return Types.BOOLEAN;
+  }
 }

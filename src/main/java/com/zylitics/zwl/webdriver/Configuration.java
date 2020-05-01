@@ -2,6 +2,8 @@ package com.zylitics.zwl.webdriver;
 
 public class Configuration {
   
+  public static final String SYS_DEF_TEMP_DIR = System.getProperty("java.io.tmpdir");
+  
   public int getTimeouts(APICoreProperties.Webdriver wdProps,
                          BuildCapability buildCapability,
                          TimeoutType timeoutType) {

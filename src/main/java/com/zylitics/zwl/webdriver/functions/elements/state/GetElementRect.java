@@ -1,13 +1,11 @@
 package com.zylitics.zwl.webdriver.functions.elements.state;
 
 import com.google.common.collect.ImmutableMap;
-import com.zylitics.btbr.config.APICoreProperties;
-import com.zylitics.btbr.model.BuildCapability;
-import com.zylitics.btbr.webdriver.functions.AbstractWebdriverFunction;
-import com.zylitics.zwl.datatype.DoubleZwlValue;
-import com.zylitics.zwl.datatype.MapZwlValue;
-import com.zylitics.zwl.datatype.NothingZwlValue;
-import com.zylitics.zwl.datatype.ZwlValue;
+import com.zylitics.zwl.datatype.*;
+import com.zylitics.zwl.webdriver.constants.FuncDefReturnValue;
+import com.zylitics.zwl.webdriver.functions.AbstractWebdriverFunction;
+import com.zylitics.zwl.webdriver.APICoreProperties;
+import com.zylitics.zwl.webdriver.BuildCapability;
 import org.openqa.selenium.Rectangle;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
@@ -18,9 +16,9 @@ import java.util.function.Supplier;
 public class GetElementRect extends AbstractWebdriverFunction {
   
   public GetElementRect(APICoreProperties.Webdriver wdProps,
-                                 BuildCapability buildCapability,
-                                 RemoteWebDriver driver,
-                                 PrintStream printStream) {
+                        BuildCapability buildCapability,
+                        RemoteWebDriver driver,
+                        PrintStream printStream) {
     super(wdProps, buildCapability, driver, printStream);
   }
   
@@ -44,6 +42,10 @@ public class GetElementRect extends AbstractWebdriverFunction {
                          Supplier<String> lineNColumn) {
     super.invoke(args, defaultValue, lineNColumn);
   
+    if (buildCapability.isDryRunning()) {
+      return evaluateDefValue(defaultValue);
+    }
+  
     if (args.size() == 0) {
       throw unexpectedEndOfFunctionOverload(args.size());
     }
@@ -58,5 +60,15 @@ public class GetElementRect extends AbstractWebdriverFunction {
         "width", new DoubleZwlValue(r.width),
         "height", new DoubleZwlValue(r.height)
     ));
+  }
+  
+  @Override
+  protected ZwlValue getFuncDefReturnValue() {
+    return FuncDefReturnValue.RECT.getDefValue();
+  }
+  
+  @Override
+  protected String getFuncReturnType() {
+    return Types.MAP;
   }
 }

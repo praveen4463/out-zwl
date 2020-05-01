@@ -14,6 +14,8 @@ public class BuildCapability {
   
   private int wdTimeoutsElementAccess;
   
+  private boolean wdBrwStartMaximize;
+  
   private boolean dryRunning;
   
   public String getWdBrowserName() {
@@ -76,6 +78,15 @@ public class BuildCapability {
   
   public BuildCapability setDryRunning(boolean dryRunning) {
     this.dryRunning = dryRunning;
+    return this;
+  }
+  
+  public boolean isWdBrwStartMaximize() {
+    return wdBrwStartMaximize;
+  }
+  
+  public BuildCapability setWdBrwStartMaximize(boolean wdBrwStartMaximize) {
+    this.wdBrwStartMaximize = wdBrwStartMaximize;
     return this;
   }
 }

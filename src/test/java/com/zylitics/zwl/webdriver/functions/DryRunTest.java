@@ -32,24 +32,16 @@ public class DryRunTest {
   
   @Test
   void dryRunTest() throws Exception {
-    BuildCapability buildCapability = new BuildCapability();
-    buildCapability.setDryRunning(true)
-        .setWdBrowserName(BrowserType.CHROME)
-        .setWdPlatformName(Platform.MAC.name());
+    BuildCapability buildCapability = new BuildCapability().setDryRunning(true);
     
     WebdriverFunctions webdriverFunctions = new WebdriverFunctions(buildCapability, System.out);
+    
     ZwlInterpreterVisitor interpreterVisitor = zwlInterpreter -> {
       // function just needed for dry run tests
       zwlInterpreter.setFunction(new IsVoid());
       
-      // readonly variables...
-      Map<String, ZwlValue> browserDetail = ImmutableMap.of(
-          "name", new StringZwlValue(Browsers.valueByName(buildCapability.getWdBrowserName())
-              .getAlias())
-      );
-      zwlInterpreter.setReadOnlyVariable("browser", new MapZwlValue(browserDetail));
-      zwlInterpreter.setReadOnlyVariable("platform",
-          new StringZwlValue(buildCapability.getWdPlatformName()));
+      // These tests don't need browser and platform readonly variable but add them in production
+      // if they're found in build caps given by user.
     };
   
     ZwlApi zwlApi = new ZwlApi(Paths.get("resources/webdriver/DryRunTest.zwl"), Charsets.UTF_8,

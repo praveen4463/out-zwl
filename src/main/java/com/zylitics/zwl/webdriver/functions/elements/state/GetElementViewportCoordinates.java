@@ -1,13 +1,11 @@
 package com.zylitics.zwl.webdriver.functions.elements.state;
 
 import com.google.common.collect.ImmutableMap;
-import com.zylitics.btbr.config.APICoreProperties;
-import com.zylitics.btbr.model.BuildCapability;
-import com.zylitics.btbr.webdriver.functions.AbstractWebdriverFunction;
-import com.zylitics.zwl.datatype.DoubleZwlValue;
-import com.zylitics.zwl.datatype.MapZwlValue;
-import com.zylitics.zwl.datatype.NothingZwlValue;
-import com.zylitics.zwl.datatype.ZwlValue;
+import com.zylitics.zwl.datatype.*;
+import com.zylitics.zwl.webdriver.APICoreProperties;
+import com.zylitics.zwl.webdriver.BuildCapability;
+import com.zylitics.zwl.webdriver.constants.FuncDefReturnValue;
+import com.zylitics.zwl.webdriver.functions.AbstractWebdriverFunction;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.RemoteWebElement;
@@ -20,9 +18,9 @@ import java.util.function.Supplier;
 public class GetElementViewportCoordinates extends AbstractWebdriverFunction {
   
   public GetElementViewportCoordinates(APICoreProperties.Webdriver wdProps,
-                        BuildCapability buildCapability,
-                        RemoteWebDriver driver,
-                        PrintStream printStream) {
+                                       BuildCapability buildCapability,
+                                       RemoteWebDriver driver,
+                                       PrintStream printStream) {
     super(wdProps, buildCapability, driver, printStream);
   }
   
@@ -50,6 +48,11 @@ public class GetElementViewportCoordinates extends AbstractWebdriverFunction {
       throw unexpectedEndOfFunctionOverload(args.size());
     }
     String elemIdOrSelector = tryCastString(0, args.get(0));
+    
+    if (buildCapability.isDryRunning()) {
+      return evaluateDefValue(defaultValue);
+    }
+    
     Point p =
         handleWDExceptions(() -> {
           boolean scrollIntoViewport = true;
@@ -74,5 +77,15 @@ public class GetElementViewportCoordinates extends AbstractWebdriverFunction {
         "x", new DoubleZwlValue(p.x),
         "y", new DoubleZwlValue(p.y)
     ));
+  }
+  
+  @Override
+  protected ZwlValue getFuncDefReturnValue() {
+    return FuncDefReturnValue.POSITION.getDefValue();
+  }
+  
+  @Override
+  protected String getFuncReturnType() {
+    return Types.MAP;
   }
 }

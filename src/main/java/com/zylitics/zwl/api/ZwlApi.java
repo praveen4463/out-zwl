@@ -71,14 +71,6 @@ public final class ZwlApi {
     getParserDevOnly(lexer).compilationUnit();
   }
   
-  // remove it
-  public void interpret(ZwlInterpreterVisitor interpreterVisitor) throws ZwlLangException {
-    ParseTree tree = getParser(lexer).compilationUnit();
-    DefaultZwlInterpreter interpreter = new DefaultZwlInterpreter();
-    interpreter.accept(interpreterVisitor);
-    interpreter.visit(tree);
-  }
-  
   /**
    * Interprets and executes the given code.
    * @param webdriverFunctions Webdriver functions to be added into the set of functions for the

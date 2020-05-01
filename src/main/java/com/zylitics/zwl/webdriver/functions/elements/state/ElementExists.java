@@ -1,8 +1,10 @@
 package com.zylitics.zwl.webdriver.functions.elements.state;
 
-import com.zylitics.btbr.config.APICoreProperties;
-import com.zylitics.btbr.model.BuildCapability;
-import com.zylitics.btbr.webdriver.functions.AbstractWebdriverFunction;
+import com.zylitics.zwl.datatype.Types;
+import com.zylitics.zwl.webdriver.APICoreProperties;
+import com.zylitics.zwl.webdriver.BuildCapability;
+import com.zylitics.zwl.webdriver.constants.FuncDefReturnValue;
+import com.zylitics.zwl.webdriver.functions.AbstractWebdriverFunction;
 import com.zylitics.zwl.datatype.BooleanZwlValue;
 import com.zylitics.zwl.datatype.ZwlValue;
 import org.openqa.selenium.NoSuchElementException;
@@ -15,9 +17,9 @@ import java.util.function.Supplier;
 public class ElementExists extends AbstractWebdriverFunction {
   
   public ElementExists(APICoreProperties.Webdriver wdProps,
-                 BuildCapability buildCapability,
-                 RemoteWebDriver driver,
-                 PrintStream printStream) {
+                       BuildCapability buildCapability,
+                       RemoteWebDriver driver,
+                       PrintStream printStream) {
     super(wdProps, buildCapability, driver, printStream);
   }
   
@@ -40,6 +42,10 @@ public class ElementExists extends AbstractWebdriverFunction {
   public ZwlValue invoke(List<ZwlValue> args, Supplier<ZwlValue> defaultValue,
                          Supplier<String> lineNColumn) {
     super.invoke(args, defaultValue, lineNColumn);
+  
+    if (buildCapability.isDryRunning()) {
+      return evaluateDefValue(defaultValue);
+    }
     
     if (args.size() == 0) {
       throw unexpectedEndOfFunctionOverload(args.size());
@@ -54,5 +60,15 @@ public class ElementExists extends AbstractWebdriverFunction {
       }
       return new BooleanZwlValue(exists);
     });
+  }
+  
+  @Override
+  protected ZwlValue getFuncDefReturnValue() {
+    return FuncDefReturnValue.TRUE.getDefValue();
+  }
+  
+  @Override
+  protected String getFuncReturnType() {
+    return Types.BOOLEAN;
   }
 }
