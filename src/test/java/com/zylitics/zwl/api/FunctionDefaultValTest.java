@@ -22,7 +22,7 @@ public class FunctionDefaultValTest {
     
     ZwlApi zwlApi = new ZwlApi(code, ZwlLangTests.DEFAULT_TEST_LISTENERS);
     // set our overridden function that should overwrite the existing one.
-    zwlApi.interpretDevOnly(zwlInterpreter -> zwlInterpreter.setFunction(new Lower()));
+    zwlApi.interpretDevOnly(null, null, zwlInterpreter -> zwlInterpreter.addFunction(new Lower()));
   }
   
   /**

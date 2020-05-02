@@ -2,6 +2,9 @@ package com.zylitics.zwl.webdriver;
 
 public class BuildCapability {
   
+  // Although browser and platform details are not used within webdriver function's code, they're
+  // still in Build caps for a potential future use when we may implicitly tweak functionality
+  // based on browser and platform so that user doesn't have to deal with it in zwl.
   private String wdBrowserName;
   
   private String wdBrowserVersion;
@@ -14,16 +17,16 @@ public class BuildCapability {
   
   private int wdTimeoutsElementAccess;
   
-  private boolean wdBrwStartMaximize;
-  
-  private boolean dryRunning;
+  private Boolean dryRunning;
   
   public String getWdBrowserName() {
     return wdBrowserName;
   }
   
   public BuildCapability setWdBrowserName(String wdBrowserName) {
-    this.wdBrowserName = wdBrowserName;
+    if (this.wdBrowserName == null) {
+      this.wdBrowserName = wdBrowserName;
+    }
     return this;
   }
   
@@ -32,7 +35,9 @@ public class BuildCapability {
   }
   
   public BuildCapability setWdBrowserVersion(String wdBrowserVersion) {
-    this.wdBrowserVersion = wdBrowserVersion;
+    if (this.wdBrowserVersion == null) {
+      this.wdBrowserVersion = wdBrowserVersion;
+    }
     return this;
   }
   
@@ -41,7 +46,9 @@ public class BuildCapability {
   }
   
   public BuildCapability setWdPlatformName(String wdPlatformName) {
-    this.wdPlatformName = wdPlatformName;
+    if (this.wdPlatformName == null) {
+      this.wdPlatformName = wdPlatformName;
+    }
     return this;
   }
   
@@ -49,6 +56,7 @@ public class BuildCapability {
     return wdTimeoutsScript;
   }
   
+  // not immutable, can be reset by timeout functions any number of times
   public BuildCapability setWdTimeoutsScript(int wdTimeoutsScript) {
     this.wdTimeoutsScript = wdTimeoutsScript;
     return this;
@@ -58,6 +66,7 @@ public class BuildCapability {
     return wdTimeoutsPageLoad;
   }
   
+  // not immutable, can be reset by timeout functions any number of times
   public BuildCapability setWdTimeoutsPageLoad(int wdTimeoutsPageLoad) {
     this.wdTimeoutsPageLoad = wdTimeoutsPageLoad;
     return this;
@@ -67,26 +76,20 @@ public class BuildCapability {
     return wdTimeoutsElementAccess;
   }
   
+  // not immutable, can be reset by timeout functions any number of times
   public BuildCapability setWdTimeoutsElementAccess(int wdTimeoutsElementAccess) {
     this.wdTimeoutsElementAccess = wdTimeoutsElementAccess;
     return this;
   }
   
-  public boolean isDryRunning() {
+  public Boolean isDryRunning() {
     return dryRunning;
   }
   
-  public BuildCapability setDryRunning(boolean dryRunning) {
-    this.dryRunning = dryRunning;
-    return this;
-  }
-  
-  public boolean isWdBrwStartMaximize() {
-    return wdBrwStartMaximize;
-  }
-  
-  public BuildCapability setWdBrwStartMaximize(boolean wdBrwStartMaximize) {
-    this.wdBrwStartMaximize = wdBrwStartMaximize;
+  public BuildCapability setDryRunning(Boolean dryRunning) {
+    if (this.dryRunning == null) {
+      this.dryRunning = dryRunning;
+    }
     return this;
   }
 }

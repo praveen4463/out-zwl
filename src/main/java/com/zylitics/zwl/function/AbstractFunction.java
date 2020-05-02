@@ -190,8 +190,9 @@ public abstract class AbstractFunction implements Function {
     if (this == o) return true;
     if (o == null || !getClass().getSimpleName().equals(o.getClass().getSimpleName())) return false;
     AbstractFunction that = (AbstractFunction) o;
-    return getName().equals(that.getName()) && minParamsCount() == that.minParamsCount()
-        && maxParamsCount() == that.maxParamsCount();
+    return getName().equals(that.getName());
+    // if two function's have same name, they are considered equal irrespective to the number of
+    // parameters.
   }
   
   @Override

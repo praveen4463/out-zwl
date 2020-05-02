@@ -1,8 +1,6 @@
 package com.zylitics.zwl.webdriver;
 
 import com.google.cloud.storage.Storage;
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableSet;
 import com.zylitics.zwl.webdriver.functions.action.ActionFunctions;
 import com.zylitics.zwl.webdriver.functions.action.DragAndDrop;
@@ -59,7 +57,7 @@ public class WebdriverFunctions {
   
   private final Storage storage;
   
-  private final String pathToUploadedFiles;
+  private final String userUploadsCloudPath;
   
   private final Path buildDir;
   
@@ -68,39 +66,31 @@ public class WebdriverFunctions {
                             RemoteWebDriver driver,
                             PrintStream printStream,
                             Storage storage,
-                            String pathToUploadedFiles,
+                            String userUploadsCloudPath,
                             Path buildDir) {
-    Preconditions.checkNotNull(wdProps, "wdProps can't be null");
-    Preconditions.checkNotNull(buildCapability, "buildCapability can't be null");
-    Preconditions.checkNotNull(driver, "driver can't be null");
-    Preconditions.checkNotNull(printStream, "printStream can't be null");
-    Preconditions.checkNotNull(storage, "storage can't be null");
-    Preconditions.checkArgument(!Strings.isNullOrEmpty(pathToUploadedFiles),
-        "pathToUploadedFiles can't be empty");
-    Preconditions.checkNotNull(buildDir, "buildDir can't be null");
-    
     this.wdProps = wdProps;
     this.buildCapability = buildCapability;
     this.driver = driver;
     this.printStream = printStream;
     this.storage = storage;
-    this.pathToUploadedFiles = pathToUploadedFiles;
+    this.userUploadsCloudPath = userUploadsCloudPath;
     this.buildDir = buildDir;
   }
   
+  /**
+   * Constructor for dry run. Note that {@link BuildCapability} is required argument because
+   * functions use it to detect whether dry run is activated.
+   * @param buildCapability An instance of {@link BuildCapability}
+   * @param printStream An instance of {@link PrintStream}
+   */
   public WebdriverFunctions(BuildCapability buildCapability,
                             PrintStream printStream) {
-    Preconditions.checkNotNull(buildCapability, "buildCapability can't be null");
-    Preconditions.checkNotNull(printStream, "printStream can't be null");
-    if (!buildCapability.isDryRunning()) {
-      throw new RuntimeException("This constructor can't be used when dry running is unintended");
-    }
     this.wdProps = null;
     this.buildCapability = buildCapability;
     this.driver = null;
     this.printStream = printStream;
     this.storage = null;
-    this.pathToUploadedFiles = null;
+    this.userUploadsCloudPath = null;
     this.buildDir = null;
   }
   
@@ -169,9 +159,9 @@ public class WebdriverFunctions {
         new SendKeysToPage(wdProps, buildCapability, driver, printStream),
         new SendKeysToPageF(wdProps, buildCapability, driver, printStream),
         new SetFile(wdProps, buildCapability, driver, printStream, storage,
-            pathToUploadedFiles, buildDir),
+            userUploadsCloudPath, buildDir),
         new SetFiles(wdProps, buildCapability, driver, printStream, storage,
-            pathToUploadedFiles, buildDir),
+            userUploadsCloudPath, buildDir),
         new Type(wdProps, buildCapability, driver, printStream),
         new TypeActive(wdProps, buildCapability, driver, printStream),
         new TypeIntoElements(wdProps, buildCapability, driver, printStream),

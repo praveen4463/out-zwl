@@ -21,7 +21,9 @@ public class APICoreProperties {
     }
   
     public Webdriver setUserDataBucket(String userDataBucket) {
-      this.userDataBucket = userDataBucket;
+      if (this.userDataBucket == null) {
+        this.userDataBucket = userDataBucket;
+      }
       return this;
     }
   
@@ -30,7 +32,9 @@ public class APICoreProperties {
     }
   
     public Webdriver setDefaultTimeoutElementAccess(Integer defaultTimeoutElementAccess) {
-      this.defaultTimeoutElementAccess = defaultTimeoutElementAccess;
+      if (this.defaultTimeoutElementAccess == null) {
+        this.defaultTimeoutElementAccess = defaultTimeoutElementAccess;
+      }
       return this;
     }
   
@@ -39,7 +43,9 @@ public class APICoreProperties {
     }
   
     public Webdriver setDefaultTimeoutPageLoad(Integer defaultTimeoutPageLoad) {
-      this.defaultTimeoutPageLoad = defaultTimeoutPageLoad;
+      if (this.defaultTimeoutPageLoad == null) {
+        this.defaultTimeoutPageLoad = defaultTimeoutPageLoad;
+      }
       return this;
     }
   
@@ -48,7 +54,9 @@ public class APICoreProperties {
     }
   
     public Webdriver setDefaultTimeoutScript(Integer defaultTimeoutScript) {
-      this.defaultTimeoutScript = defaultTimeoutScript;
+      if (this.defaultTimeoutScript == null) {
+        this.defaultTimeoutScript = defaultTimeoutScript;
+      }
       return this;
     }
   
@@ -57,7 +65,9 @@ public class APICoreProperties {
     }
   
     public Webdriver setDefaultTimeoutNewWindow(Integer defaultTimeoutNewWindow) {
-      this.defaultTimeoutNewWindow = defaultTimeoutNewWindow;
+      if (this.defaultTimeoutNewWindow == null) {
+        this.defaultTimeoutNewWindow = defaultTimeoutNewWindow;
+      }
       return this;
     }
   
@@ -66,7 +76,9 @@ public class APICoreProperties {
     }
   
     public Webdriver setElementShotDir(String elementShotDir) {
-      this.elementShotDir = elementShotDir;
+      if (this.elementShotDir == null) {
+        this.elementShotDir = elementShotDir;
+      }
       return this;
     }
   }

@@ -60,20 +60,20 @@ public class ZwlLangTests {
     // set external variable(s) into de only interpreter. It's important to use dev only so that
     // we can detect ambiguities in grammar early, they will be shown at the top of the test
     // result.
-    zwlApi.interpretDevOnly(zwlInterpreter -> {
+    zwlApi.interpretDevOnly(null, null, zwlInterpreter -> {
       // the utility of adding things like exceptions as constants is users don't have
       // copy paste exact string and can choose from suggestions (once we have this functionality
       // in IDE). Also we can shorten the names this way, this is less error prone.
-      zwlInterpreter.setReadOnlyVariable("exceptions",
+      zwlInterpreter.addReadOnlyVariable("exceptions",
           new MapZwlValue(Exceptions.asMap()));
       // preferences (test values only), note that all global variables such as preferences and
       // globals are loaded from db as string and cast as StringZwlValue. The calling code will
       // convert to the desired type. Emulating that rule below.
-      zwlInterpreter.setReadOnlyVariable("preferences", new MapZwlValue(ImmutableMap.of(
+      zwlInterpreter.addReadOnlyVariable("preferences", new MapZwlValue(ImmutableMap.of(
           "forLoopMaxIterations", new StringZwlValue(String.valueOf(FOR_LOOP_MAX_ITERATION))
       )));
       // testTools to get custom values required for testing.
-      zwlInterpreter.setReadOnlyVariable("testTools", new MapZwlValue(ImmutableMap.of(
+      zwlInterpreter.addReadOnlyVariable("testTools", new MapZwlValue(ImmutableMap.of(
           "Nothing", new NothingZwlValue()
       )));
     });

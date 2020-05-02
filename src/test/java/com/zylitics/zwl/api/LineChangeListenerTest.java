@@ -17,7 +17,7 @@ public class LineChangeListenerTest {
   {
     ZwlApi zwlApi = new ZwlApi(Paths.get("resources/" + "LineChangeListenerTest.zwl")
         , Charsets.UTF_8, ZwlLangTests.DEFAULT_TEST_LISTENERS);
-    zwlApi.interpretDevOnly(zwlInterpreter ->
+    zwlApi.interpretDevOnly(null, null, zwlInterpreter ->
         zwlInterpreter.setLineChangeListener(line -> {
           actualTotalLineChangeEvents++;
           System.out.println("Currently executing line " + line);

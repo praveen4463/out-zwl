@@ -1,6 +1,6 @@
-package com.zylitics.zwl.webdriver.functions;
+package com.zylitics.zwl.api;
 
-public enum ZwlTests {
+public enum AllWebdriverTests {
   
   ACTIONS_TEST ("ActionsTest.zwl"),
   BASIC_WD_TEST ("BasicWdTest.zwl"),
@@ -23,7 +23,7 @@ public enum ZwlTests {
   
   private final String file;
   
-  ZwlTests(String file) {
+  AllWebdriverTests(String file) {
     this.file = file;
   }
   

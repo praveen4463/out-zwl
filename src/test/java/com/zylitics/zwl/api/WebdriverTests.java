@@ -1,5 +1,6 @@
-package com.zylitics.zwl.webdriver.functions;
+package com.zylitics.zwl.api;
 
+import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
@@ -9,8 +10,6 @@ import com.google.common.collect.ImmutableMap;
 import com.zylitics.zwl.util.CollectionUtil;
 import com.zylitics.zwl.util.IOUtil;
 import com.zylitics.zwl.webdriver.*;
-import com.zylitics.zwl.api.ZwlApi;
-import com.zylitics.zwl.api.ZwlInterpreterVisitor;
 import com.zylitics.zwl.datatype.MapZwlValue;
 import com.zylitics.zwl.datatype.StringZwlValue;
 import com.zylitics.zwl.datatype.ZwlValue;
@@ -39,6 +38,7 @@ import org.openqa.selenium.ie.InternetExplorerOptions;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
+import javax.annotation.Nullable;
 import java.io.PrintStream;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -66,12 +66,13 @@ public class WebdriverTests {
   private static final String ELEMENT_SHOT_NAME = "small-select";
   private static final String USER_DATA_BUCKET = "zl-user-data";
   private static final Boolean BROWSER_START_MAXIMIZE = true;
+  private static final String EXAMPLE_USER_UPLOAD_CLOUD_PATH = "11021/uploads";
   
   final PrintStream printStream = System.out;
   
   Path fakeBuildDir;
   RemoteWebDriver driver;
-  WebdriverFunctions wdFunctions;
+  ZwlWdTestProperties zwlWdTestProperties;
   ZwlInterpreterVisitor interpreterVisitor;
   
   @BeforeEach
@@ -87,7 +88,7 @@ public class WebdriverTests {
   void allTests(Browsers browser) throws Exception {
     Assumptions.assumeFalse(shouldSkip(browser), "Skipped");
     setup(browser);
-    for (ZwlTests t : ZwlTests.values()) {
+    for (AllWebdriverTests t : AllWebdriverTests.values()) {
       //-------------------------------Sanitize start-----------------------------------------------
       // delete any open windows and leave just one with about:blank, delete all cookies before
       // reading new test
@@ -109,9 +110,9 @@ public class WebdriverTests {
       printStream.println("Reading and executing from " + file);
       ZwlApi zwlApi = new ZwlApi(Paths.get("resources/webdriver/" + t.getFile()), Charsets.UTF_8,
           DEFAULT_TEST_LISTENERS);
-      zwlApi.interpret(wdFunctions, interpreterVisitor);
+      zwlApi.interpretDevOnly(zwlWdTestProperties, null, interpreterVisitor);
       
-      if (t == ZwlTests.ELEMENT_CAPTURE_TEST) {
+      if (t == AllWebdriverTests.ELEMENT_CAPTURE_TEST) {
         // element capture requires I/O access to check created file.
         assertElementCapture();
       }
@@ -122,49 +123,49 @@ public class WebdriverTests {
   @ParameterizedTest
   @EnumSource(value = Browsers.class)
   void basicWdTest(Browsers browser) throws Exception {
-    run(browser, ZwlTests.BASIC_WD_TEST.getFile());
+    run(browser, AllWebdriverTests.BASIC_WD_TEST.getFile());
   }
   
   @Tag("actions")
   @ParameterizedTest
   @EnumSource(value = Browsers.class)
   void actionsTest(Browsers browser) throws Exception {
-    run(browser, ZwlTests.ACTIONS_TEST.getFile());
+    run(browser, AllWebdriverTests.ACTIONS_TEST.getFile());
   }
   
   @Tag("color")
   @ParameterizedTest
   @EnumSource(value = Browsers.class)
   void colorTest(Browsers browser) throws Exception {
-    run(browser, ZwlTests.COLOR_TEST.getFile());
+    run(browser, AllWebdriverTests.COLOR_TEST.getFile());
   }
   
   @Tag("context")
   @ParameterizedTest
   @EnumSource(value = Browsers.class)
   void contextTest(Browsers browser) throws Exception {
-    run(browser, ZwlTests.CONTEXT_TEST.getFile());
+    run(browser, AllWebdriverTests.CONTEXT_TEST.getFile());
   }
   
   @Tag("cookie")
   @ParameterizedTest
   @EnumSource(value = Browsers.class)
   void cookieTest(Browsers browser) throws Exception {
-    run(browser, ZwlTests.COOKIE_TEST.getFile());
+    run(browser, AllWebdriverTests.COOKIE_TEST.getFile());
   }
   
   @Tag("document")
   @ParameterizedTest
   @EnumSource(value = Browsers.class)
   void documentTest(Browsers browser) throws Exception {
-    run(browser, ZwlTests.DOCUMENT_TEST.getFile());
+    run(browser, AllWebdriverTests.DOCUMENT_TEST.getFile());
   }
   
   @Tag("einteraction")
   @ParameterizedTest
   @EnumSource(value = Browsers.class)
   void eInteractionTest(Browsers browser) throws Exception {
-    run(browser, ZwlTests.E_INTERACTION_TEST.getFile());
+    run(browser, AllWebdriverTests.E_INTERACTION_TEST.getFile());
   }
   
   @Tag("setfiles")
@@ -173,77 +174,77 @@ public class WebdriverTests {
   @ParameterizedTest
   @EnumSource(value = Browsers.class)
   void setFilesTest(Browsers browser) throws Exception {
-    run(browser, ZwlTests.SET_FILES_TEST.getFile());
+    run(browser, AllWebdriverTests.SET_FILES_TEST.getFile());
   }
   
   @Tag("einteractionkeys")
   @ParameterizedTest
   @EnumSource(value = Browsers.class)
   void eInteractionKeysTest(Browsers browser) throws Exception {
-    run(browser, ZwlTests.E_INTERACTION_KEYS_TEST.getFile());
+    run(browser, AllWebdriverTests.E_INTERACTION_KEYS_TEST.getFile());
   }
   
   @Tag("elementretrieval")
   @ParameterizedTest
   @EnumSource(value = Browsers.class)
   void elementRetrievalTest(Browsers browser) throws Exception {
-    run(browser, ZwlTests.ELEMENT_RETRIEVAL_TEST.getFile());
+    run(browser, AllWebdriverTests.ELEMENT_RETRIEVAL_TEST.getFile());
   }
   
   @Tag("elementstate")
   @ParameterizedTest
   @EnumSource(value = Browsers.class)
   void elementStateTest(Browsers browser) throws Exception {
-    run(browser, ZwlTests.ELEMENT_STATE_TEST.getFile());
+    run(browser, AllWebdriverTests.ELEMENT_STATE_TEST.getFile());
   }
   
   @Tag("navigation")
   @ParameterizedTest
   @EnumSource(value = Browsers.class)
   void navigationTest(Browsers browser) throws Exception {
-    run(browser, ZwlTests.NAVIGATION_TEST.getFile());
+    run(browser, AllWebdriverTests.NAVIGATION_TEST.getFile());
   }
   
   @Tag("prompts")
   @ParameterizedTest
   @EnumSource(value = Browsers.class)
   void promptsTest(Browsers browser) throws Exception {
-    run(browser, ZwlTests.PROMPTS_TEST.getFile());
+    run(browser, AllWebdriverTests.PROMPTS_TEST.getFile());
   }
   
   @Tag("select")
   @ParameterizedTest
   @EnumSource(value = Browsers.class)
   void selectTest(Browsers browser) throws Exception {
-    run(browser, ZwlTests.SELECT_TEST.getFile());
+    run(browser, AllWebdriverTests.SELECT_TEST.getFile());
   }
   
   @Tag("storage")
   @ParameterizedTest
   @EnumSource(value = Browsers.class)
   void storageTest(Browsers browser) throws Exception {
-    run(browser, ZwlTests.STORAGE_TEST.getFile());
+    run(browser, AllWebdriverTests.STORAGE_TEST.getFile());
   }
   
   @Tag("timeout")
   @ParameterizedTest
   @EnumSource(value = Browsers.class)
   void timeoutTest(Browsers browser) throws Exception {
-    run(browser, ZwlTests.TIMEOUT_TEST.getFile());
+    run(browser, AllWebdriverTests.TIMEOUT_TEST.getFile());
   }
   
   @Tag("until")
   @ParameterizedTest
   @EnumSource(value = Browsers.class)
   void untilTest(Browsers browser) throws Exception {
-    run(browser, ZwlTests.UNTIL_TEST.getFile());
+    run(browser, AllWebdriverTests.UNTIL_TEST.getFile());
   }
   
   @Tag("elemcapture")
   @ParameterizedTest
   @EnumSource(value = Browsers.class)
   void elementScreenCaptureTest(Browsers browser) throws Exception {
-    run(browser, ZwlTests.ELEMENT_CAPTURE_TEST.getFile());
+    run(browser, AllWebdriverTests.ELEMENT_CAPTURE_TEST.getFile());
     assertElementCapture();
   }
   
@@ -268,7 +269,7 @@ public class WebdriverTests {
     setup(browser);
     ZwlApi zwlApi = new ZwlApi(Paths.get("resources/webdriver/" + file), Charsets.UTF_8,
         DEFAULT_TEST_LISTENERS);
-    zwlApi.interpret(wdFunctions, interpreterVisitor);
+    zwlApi.interpretDevOnly(zwlWdTestProperties, null, interpreterVisitor);
   }
   
   private boolean shouldSkip(Browsers browser) {
@@ -310,7 +311,7 @@ public class WebdriverTests {
     }
     
     // do some actions on driver based on build capabilities
-    if (buildCapability.isWdBrwStartMaximize()) {
+    if (BROWSER_START_MAXIMIZE) {
       driver.manage().window().maximize();
     }
     
@@ -321,32 +322,15 @@ public class WebdriverTests {
     }
     Files.createDirectory(fakeBuildDir);
     
-    wdFunctions = new WebdriverFunctions(wdProps,
-        buildCapability,
-        driver,
-        printStream,
-        StorageOptions.getDefaultInstance().getService(),
-        "11021/uploads",
-        fakeBuildDir);
+    zwlWdTestProperties = getZwlWdTestProperties(wdProps, buildCapability);
     
     interpreterVisitor = zwlInterpreter -> {
       // readonly variables
-      // browser detail, not adding version as it's not required and given in these tests.
-      Map<String, ZwlValue> browserDetail = ImmutableMap.of(
-          "name", new StringZwlValue(browser.getAlias())
-          // add version when required
-      );
-      zwlInterpreter.setReadOnlyVariable("browser", new MapZwlValue(browserDetail));
-      
       // test specific only
       Map<String, ZwlValue> staticSite = ImmutableMap.of(
           "urlPrefix", new StringZwlValue("http://static.wditp.zylitics.io/html/")
       );
-      zwlInterpreter.setReadOnlyVariable("staticSite", new MapZwlValue(staticSite));
-      
-      // single valued
-      zwlInterpreter.setReadOnlyVariable("platform",
-          new StringZwlValue(buildCapability.getWdPlatformName()));
+      zwlInterpreter.addReadOnlyVariable("staticSite", new MapZwlValue(staticSite));
     };
   }
   
@@ -380,8 +364,8 @@ public class WebdriverTests {
   private BuildCapability getBuildCapability(Browsers browser) {
     BuildCapability b = new BuildCapability();
     b.setWdBrowserName(browser.getName());
+    b.setWdBrowserVersion("11.11"); // any version just to satisfy validation
     b.setWdPlatformName(System.getProperty("os"));
-    b.setWdBrwStartMaximize(BROWSER_START_MAXIMIZE);
     // all timeouts in build caps are initialized with -1 in db if no value is given.
     b.setWdTimeoutsPageLoad(-1);
     b.setWdTimeoutsElementAccess(-1);
@@ -410,5 +394,129 @@ public class WebdriverTests {
     caps.setCapability(CapabilityType.UNEXPECTED_ALERT_BEHAVIOUR, "ignore");
     
     return caps;
+  }
+  
+  // it's kind of weird we're creating Defaults and Capabilities of ZwlWdTestProperties from
+  // APICoreProperties.Webdriver and BuildCapability, and ZwlWdTestPropsAssigner will then
+  // do the exact opposite but this is happening just for this test. For parent application code
+  // (application that will use zwl),
+  // APICoreProperties.Webdriver and BuildCapability will be much larger objects and totally
+  // different from what is in here. So, Defaults and Capabilities are actually just a part of
+  // APICoreProperties.Webdriver and BuildCapability in parent application.
+  private ZwlWdTestProperties getZwlWdTestProperties(APICoreProperties.Webdriver wdProps,
+                                                     BuildCapability buildCapability) {
+    return new ZwlWdTestProperties() {
+      @Override
+      public RemoteWebDriver getDriver() {
+        return driver;
+      }
+  
+      @Override
+      public PrintStream getPrintStream() {
+        return printStream;
+      }
+  
+      @Override
+      public Storage getStorage() {
+        return StorageOptions.getDefaultInstance().getService();
+      }
+  
+      @Override
+      public String getUserUploadsCloudPath() {
+        return EXAMPLE_USER_UPLOAD_CLOUD_PATH;
+      }
+  
+      @Override
+      public Path getBuildDir() {
+        return fakeBuildDir;
+      }
+  
+      @Override
+      public Defaults getDefault() {
+        return new Defaults() {
+          @Override
+          public String getUserDataBucket() {
+            return wdProps.getUserDataBucket();
+          }
+  
+          @Override
+          public Integer getDefaultTimeoutElementAccess() {
+            return wdProps.getDefaultTimeoutElementAccess();
+          }
+  
+          @Override
+          public Integer getDefaultTimeoutPageLoad() {
+            return wdProps.getDefaultTimeoutPageLoad();
+          }
+  
+          @Override
+          public Integer getDefaultTimeoutScript() {
+            return wdProps.getDefaultTimeoutScript();
+          }
+  
+          @Override
+          public Integer getDefaultTimeoutNewWindow() {
+            return wdProps.getDefaultTimeoutNewWindow();
+          }
+  
+          @Override
+          public String getElementShotDir() {
+            return wdProps.getElementShotDir();
+          }
+        };
+      }
+  
+      @Override
+      public Capabilities getCapabilities() {
+        return new Capabilities() {
+          @Override
+          public String getBrowserName() {
+            return buildCapability.getWdBrowserName();
+          }
+  
+          @Override
+          public String getBrowserVersion() {
+            return buildCapability.getWdBrowserVersion();
+          }
+  
+          @Override
+          public String getPlatformName() {
+            return buildCapability.getWdPlatformName();
+          }
+  
+          @Override
+          public Integer getCustomTimeoutElementAccess() {
+            return buildCapability.getWdTimeoutsElementAccess();
+          }
+  
+          @Override
+          public Integer getCustomTimeoutPageLoad() {
+            return buildCapability.getWdTimeoutsPageLoad();
+          }
+  
+          @Override
+          public Integer getCustomTimeoutScript() {
+            return buildCapability.getWdTimeoutsScript();
+          }
+        };
+      }
+  
+      @Override
+      public Variables getVariables() {
+        return new Variables() {
+          @Nullable
+          @Override
+          public Map<String, String> getPreferences() {
+            return null;
+          }
+  
+          @Nullable
+          @Override
+          public Map<String, String> getGlobal() {
+            return null;
+          }
+        };
+      }
+    };
   }
 }

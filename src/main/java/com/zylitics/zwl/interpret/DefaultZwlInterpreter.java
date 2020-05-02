@@ -6,11 +6,16 @@ import com.zylitics.zwl.api.ZwlInterpreterVisitor;
 import com.zylitics.zwl.antlr4.ZwlLexer;
 import com.zylitics.zwl.antlr4.ZwlParser.*;
 import com.zylitics.zwl.antlr4.ZwlParserBaseVisitor;
+import com.zylitics.zwl.constants.Exceptions;
 import com.zylitics.zwl.datatype.*;
 import com.zylitics.zwl.exception.*;
 import com.zylitics.zwl.internal.Variables;
 import com.zylitics.zwl.util.ParseUtil;
 import com.zylitics.zwl.util.StringUtil;
+import com.zylitics.zwl.webdriver.constants.By;
+import com.zylitics.zwl.webdriver.constants.Colorz;
+import com.zylitics.zwl.webdriver.constants.Keyz;
+import com.zylitics.zwl.webdriver.constants.Timeouts;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -29,10 +34,14 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
   
   private static final Logger LOG = LoggerFactory.getLogger(DefaultZwlInterpreter.class);
   
+  private static final String FOR_LOOP_MAX_ITERATIONS_KEY = "forLoopMaxIterations";
+  
+  public static final String PREFERENCES_KEY = "preferences";
+  
   private final Set<String> readOnlyVars = new HashSet<>();
   private final ZwlValue _void = new VoidZwlValue();
   
-  private final Variables vars;
+  private final Variables vars = new Variables();;
   private final Set<Function> functions;
   
   private final List<InterpreterLineChangeListener> lineChangeListeners = new ArrayList<>();
@@ -40,11 +49,18 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
   private int currentLineInProgram = 0;
   
   public DefaultZwlInterpreter() {
-    // added function list should be constructed new, each request should use it's own set of
-    // function objects.
+    // add language specific functions (should always create new instances of available functions)
     functions = new HashSet<>(BuiltInFunction.get());
-    // add readonly variables that are ZWL specific
-    vars = new Variables();
+    
+    // add internal readonly variables
+    Map<String, ZwlValue> exceptions = new HashMap<>(Exceptions.asMap());
+    exceptions.putAll(com.zylitics.zwl.webdriver.constants.Exceptions.asMap());
+    addReadOnlyVariable("exceptions",
+        new MapZwlValue(Collections.unmodifiableMap(exceptions)));
+    addReadOnlyVariable("colors", new MapZwlValue(Colorz.asMap()));
+    addReadOnlyVariable("keys", new MapZwlValue(Keyz.asMap()));
+    addReadOnlyVariable("by", new MapZwlValue(By.asMap()));
+    addReadOnlyVariable("timeouts", new MapZwlValue(Timeouts.asMap()));
   }
   
   public void accept(ZwlInterpreterVisitor visitor) {
@@ -52,10 +68,10 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
   }
   
   @Override
-  public void setReadOnlyVariable(String identifier, ZwlValue value) {
+  public void addReadOnlyVariable(String identifier, ZwlValue value) {
     Objects.requireNonNull(identifier, "identifier can't be null");
     Objects.requireNonNull(value, "value can't be null");
-    
+  
     String lower = identifier.toLowerCase();
     if (!readOnlyVars.add(lower)) {
       return;
@@ -64,20 +80,26 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
   }
   
   @Override
-  public void setFunctions(Set<Function> functions) {
-    Objects.requireNonNull(functions, "function list can't be null");
-    
-    for (Function f : functions) {
-      setFunction(f);
-    }
+  public void addFunction(Function function) {
+    Objects.requireNonNull(function, "function can't be null");
+  
+    functions.add(function);
   }
   
   @Override
-  public void setFunction(Function function) {
+  public void addFunctions(Set<Function> functions) {
+    Objects.requireNonNull(functions, "function list can't be null");
+  
+    for (Function f : functions) {
+      addFunction(f);
+    }
+  }
+  
+  public boolean replaceFunction(Function function) {
     Objects.requireNonNull(function, "function can't be null");
-    
-    functions.removeIf(f -> f.equals(function));
-    functions.add(function);
+  
+    functions.remove(function);
+    return functions.add(function);
   }
   
   @Override
@@ -736,13 +758,13 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
   }
   
   private long getForLoopMaxIterations() {
-    String key = "forLoopMaxIterations";
     Optional<Map<String, ZwlValue>> p = getPreferences();
-    if (!(p.isPresent() && p.get().containsKey(key))) {
-      LOG.warn("Preferences doesn't contain infinite loop detection key: " + key);
+    if (!(p.isPresent() && p.get().containsKey(FOR_LOOP_MAX_ITERATIONS_KEY))) {
+      LOG.warn("Preferences doesn't contain infinite loop detection key: " +
+          FOR_LOOP_MAX_ITERATIONS_KEY);
       return -1;
     }
-    ZwlValue num = tryConvertNumber(p.get().get(key));
+    ZwlValue num = tryConvertNumber(p.get().get(FOR_LOOP_MAX_ITERATIONS_KEY));
     if (!num.getDoubleValue().isPresent()) {
       return -1;
     }
@@ -750,14 +772,14 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
   }
   
   private Optional<Map<String, ZwlValue>> getPreferences() {
-    Optional<ZwlValue> p = vars.resolve("preferences");
+    Optional<ZwlValue> p = vars.resolve(PREFERENCES_KEY);
     if (!p.isPresent()) {
-      LOG.warn("Preferences were not supplied.");
+      LOG.warn(PREFERENCES_KEY + " were not supplied.");
       return Optional.empty();
     }
     Optional<Map<String, ZwlValue>> preferences = p.get().getMapValue();
     if (!preferences.isPresent()) {
-      throw new RuntimeException("Preferences isn't a type of 'Map'.");
+      throw new RuntimeException(PREFERENCES_KEY + " isn't a type of 'Map'.");
     }
     return preferences;
   }
