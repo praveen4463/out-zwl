@@ -4,8 +4,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.zylitics.zwl.datatype.*;
 
-import java.util.Map;
-
 public enum FuncDefReturnValue {
   
   ELEMENT_ID (D.E1),

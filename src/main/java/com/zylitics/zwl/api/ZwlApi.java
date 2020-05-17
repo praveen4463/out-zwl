@@ -51,6 +51,7 @@ public final class ZwlApi {
    * encapsulated as cause field. Caller should check whether the cause field contain this exception
    * and if so, may relay back to user.
    */
+  @SuppressWarnings("unused")
   public void parse() throws RuntimeException {
     getParser().compilationUnit();
   }

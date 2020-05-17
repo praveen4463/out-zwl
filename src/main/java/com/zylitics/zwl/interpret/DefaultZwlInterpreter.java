@@ -41,7 +41,7 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
   private final Set<String> readOnlyVars = new HashSet<>();
   private final ZwlValue _void = new VoidZwlValue();
   
-  private final Variables vars = new Variables();;
+  private final Variables vars = new Variables();
   private final Set<Function> functions;
   
   private final List<InterpreterLineChangeListener> lineChangeListeners = new ArrayList<>();
@@ -95,11 +95,11 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
     }
   }
   
-  public boolean replaceFunction(Function function) {
+  public void replaceFunction(Function function) {
     Objects.requireNonNull(function, "function can't be null");
   
     functions.remove(function);
-    return functions.add(function);
+    functions.add(function);
   }
   
   @Override

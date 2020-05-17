@@ -9,14 +9,16 @@
   <url>http://www.example.com</url>
 
   <properties>
-    <selenium.java.version>4.0.0-alpha-4</selenium.java.version>
-    <google.cloud.storage.version>1.107.0</google.cloud.storage.version>
     <antlr.version>4.8-1</antlr.version>
-    <stackdriver.logback.version>0.116.0-alpha</stackdriver.logback.version>
-    <junit.jupiter.version>5.5.2</junit.jupiter.version>
-    <mockito.version>3.1.0</mockito.version>
-    <maven-surefire-failsafe-version>2.22.2</maven-surefire-failsafe-version>
+    <google-cloud-storage.version>1.107.0</google-cloud-storage.version>
     <jre.version>1.8</jre.version>
+    <junit-jupiter.version>5.6.2</junit-jupiter.version>
+    <maven-assembly-plugin.version>3.3.0</maven-assembly-plugin.version>
+    <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
+    <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
+    <selenium.version>4.0.0-alpha-5</selenium.version>
+    <stackdriver-logback.version>0.117.0-alpha</stackdriver-logback.version>
+
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <skipTest>false</skipTest>
   </properties>
@@ -25,37 +27,37 @@
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
       <artifactId>selenium-java</artifactId>
-      <version>${selenium.java.version}</version>
+      <version>${selenium.version}</version>
     </dependency>
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
       <artifactId>selenium-api</artifactId>
-      <version>${selenium.java.version}</version>
+      <version>${selenium.version}</version>
     </dependency>
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
       <artifactId>selenium-chrome-driver</artifactId>
-      <version>${selenium.java.version}</version>
+      <version>${selenium.version}</version>
     </dependency>
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
       <artifactId>selenium-firefox-driver</artifactId>
-      <version>${selenium.java.version}</version>
+      <version>${selenium.version}</version>
     </dependency>
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
       <artifactId>selenium-ie-driver</artifactId>
-      <version>${selenium.java.version}</version>
+      <version>${selenium.version}</version>
     </dependency>
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
       <artifactId>selenium-remote-driver</artifactId>
-      <version>${selenium.java.version}</version>
+      <version>${selenium.version}</version>
     </dependency>
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
       <artifactId>selenium-support</artifactId>
-      <version>${selenium.java.version}</version>
+      <version>${selenium.version}</version>
     </dependency>
     <dependency>
       <groupId>org.antlr</groupId>
@@ -65,49 +67,29 @@
     <dependency>
       <groupId>com.google.cloud</groupId>
       <artifactId>google-cloud-logging-logback</artifactId>
-      <version>${stackdriver.logback.version}</version>
+      <version>${stackdriver-logback.version}</version>
     </dependency>
     <dependency>
       <groupId>com.google.cloud</groupId>
       <artifactId>google-cloud-storage</artifactId>
-      <version>${google.cloud.storage.version}</version>
+      <version>${google-cloud-storage.version}</version>
     </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-api</artifactId>
-      <version>${junit.jupiter.version}</version>
+      <version>${junit-jupiter.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-params</artifactId>
-      <version>${junit.jupiter.version}</version>
+      <version>${junit-jupiter.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-engine</artifactId>
-      <version>${junit.jupiter.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <!-- bytebuddy is explicitly added as dependency so that mockito uses the specified version
-       rather than transitively used version -->
-      <groupId>net.bytebuddy</groupId>
-      <artifactId>byte-buddy</artifactId>
-      <version>1.9.10</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-core</artifactId>
-      <version>${mockito.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-junit-jupiter</artifactId>
-      <version>${mockito.version}</version>
+      <version>${junit-jupiter.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -118,7 +100,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.8.0</version>
+          <version>${maven-compiler-plugin.version}</version>
           <configuration>
             <source>${jre.version}</source>
             <target>${jre.version}</target>
@@ -129,31 +111,21 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-assembly-plugin</artifactId>
-          <version>3.2.0</version>
+          <version>${maven-assembly-plugin.version}</version>
           <executions>
             <execution>
               <id>make-assembly</id>
-              <!-- adding the goal-single to package phase so that just mvn package makes a single
-                  package instead of mvn assembly:single
-              -->
               <phase>package</phase>
               <goals>
                 <goal>single</goal>
               </goals>
             </execution>
           </executions>
-          <configuration>
-            <!-- <appendAssemblyId>false</appendAssemblyId> -->
-            <!-- This will let jar to be produced without descriptorRef as suffix -->
-            <descriptorRefs>
-              <descriptorRef>jar-with-dependencies</descriptorRef>
-            </descriptorRefs>
-          </configuration>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>${maven-surefire-failsafe-version}</version>
+          <version>${maven-surefire-plugin.version}</version>
           <configuration>
             <skipTests>${skipTest}</skipTests>
           </configuration>
