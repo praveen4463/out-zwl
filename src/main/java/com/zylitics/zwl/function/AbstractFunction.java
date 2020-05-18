@@ -127,7 +127,7 @@ public abstract class AbstractFunction implements Function {
     return l.get();
   }
   
-  protected Double parseDouble(int argIndex, ZwlValue val) {
+  public Double parseDouble(int argIndex, ZwlValue val) {
     return ParseUtil.parseDouble(val, () -> getWrongTypeException(val, Types.NUMBER, argIndex));
   }
   
@@ -144,7 +144,7 @@ public abstract class AbstractFunction implements Function {
     }
   }
   
-  protected String tryCastString(int argIndex, ZwlValue val) {
+  public String tryCastString(int argIndex, ZwlValue val) {
     Optional<String> s = val.getStringValue();
     if (!s.isPresent()) {
       throw getWrongTypeException(val, Types.STRING, argIndex);
