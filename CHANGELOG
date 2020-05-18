@@ -13,3 +13,24 @@ v0.1.2
 2. Added support for line change listener in interpreter. Now on every line change in interpreter,
    caller's provided listener is executed that helps doing things like, outputting current line to
    user, checking thread interruption etc.
+**********
+v0.2.0
+**********
+1. ZwlLangException is now the superclass of all exceptions in Zwl (not EvalException).
+2. Print function now supports PrintStream as constructor parameter, enabling different type of
+   consumers to provide their own PrintStream implementation on runtime rather than having to
+   override the entire object with new implementation of Print function itself.
+3. Fixed 'for loop' detection code that was expecting a numeric, it should be converting from string
+4. added support for expanding list to arguments at runtime when user supplies a function with
+   arguments as list.
+5. Fixes to interpreter, Using sets rather than list wherever possible, also using linkedlist for
+   maps to get ordered retrieval.
+6. ZwlLangException uses a cause field to indicate exception chain. Fixes to ParseUtil so that it
+   won't require an exception as argument but supplier to enable lazy instantiation.
+7. Fixed raw string no carriage return on windows, a bug that causes invalid variable delete error
+   when collection is empty.
+8. All webdriver functions are ported from btbr into zwl, support for dry running is fully enabled,
+   now zwl contains everything language feature in itself.
+9. Fully upgraded the contract of ZwlApi to make it more clearer, now clients of ZwlApi will see
+   what is required thru interfaces for various calls like parse, dry run, interpret.
+10. Redundant dependencies fixed.

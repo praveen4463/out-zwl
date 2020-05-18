@@ -111,7 +111,7 @@ public abstract class AbstractFunction implements Function {
         "contains an invalid number that exceeds the availability.", getName(), argsCount));
   }
   
-  public Map<String, ZwlValue> tryCastMap(int argIndex, ZwlValue val) {
+  protected Map<String, ZwlValue> tryCastMap(int argIndex, ZwlValue val) {
     Optional<Map<String, ZwlValue>> m = val.getMapValue();
     if (!m.isPresent()) {
       throw getWrongTypeException(val, Types.MAP, argIndex);
@@ -119,7 +119,7 @@ public abstract class AbstractFunction implements Function {
     return m.get();
   }
   
-  public List<ZwlValue> tryCastList(@SuppressWarnings("SameParameterValue") int argIndex, ZwlValue val) {
+  protected List<ZwlValue> tryCastList(@SuppressWarnings("SameParameterValue") int argIndex, ZwlValue val) {
     Optional<List<ZwlValue>> l = val.getListValue();
     if (!l.isPresent()) {
       throw getWrongTypeException(val, Types.LIST, argIndex);
@@ -127,16 +127,16 @@ public abstract class AbstractFunction implements Function {
     return l.get();
   }
   
-  public Double parseDouble(int argIndex, ZwlValue val) {
+  protected Double parseDouble(int argIndex, ZwlValue val) {
     return ParseUtil.parseDouble(val, () -> getWrongTypeException(val, Types.NUMBER, argIndex));
   }
   
   @SuppressWarnings("SameParameterValue")
-  public Boolean parseBoolean(int argIndex, ZwlValue val) {
+  protected Boolean parseBoolean(int argIndex, ZwlValue val) {
     return ParseUtil.parseBoolean(val, () -> getWrongTypeException(val, Types.BOOLEAN, argIndex));
   }
   
-  public <T extends Enum<T>> T parseEnum(int argIndex, ZwlValue val, Class<T> enumType) {
+  protected <T extends Enum<T>> T parseEnum(int argIndex, ZwlValue val, Class<T> enumType) {
     try {
       return Enum.valueOf(enumType, tryCastString(argIndex, val));
     } catch (IllegalArgumentException ia) {
@@ -144,7 +144,7 @@ public abstract class AbstractFunction implements Function {
     }
   }
   
-  public String tryCastString(int argIndex, ZwlValue val) {
+  protected String tryCastString(int argIndex, ZwlValue val) {
     Optional<String> s = val.getStringValue();
     if (!s.isPresent()) {
       throw getWrongTypeException(val, Types.STRING, argIndex);
