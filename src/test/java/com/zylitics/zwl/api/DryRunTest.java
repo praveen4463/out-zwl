@@ -64,6 +64,12 @@ public class DryRunTest {
         return new Variables() {
           @Nullable
           @Override
+          public Map<String, String> getBuildVariables() {
+            return null;
+          }
+  
+          @Nullable
+          @Override
           public Map<String, String> getPreferences() {
             return null;
           }

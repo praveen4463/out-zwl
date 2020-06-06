@@ -8,9 +8,9 @@ public interface ZwlDryRunProperties {
   
   PrintStream getPrintStream();
   
-  ZwlDryRunProperties.Capabilities getCapabilities();
+  Capabilities getCapabilities();
   
-  ZwlDryRunProperties.Variables getVariables();
+  Variables getVariables();
   
   interface Capabilities {
   
@@ -25,6 +25,9 @@ public interface ZwlDryRunProperties {
   }
   
   interface Variables {
+  
+    @Nullable
+    Map<String, String> getBuildVariables();
     
     @Nullable
     Map<String, String> getPreferences();

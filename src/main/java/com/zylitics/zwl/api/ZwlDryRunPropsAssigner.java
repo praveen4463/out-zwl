@@ -39,6 +39,7 @@ class ZwlDryRunPropsAssigner {
     rva.assignBrowser(capabilities.getBrowserName(), capabilities.getBrowserVersion());
     rva.assignPlatform(capabilities.getPlatformName());
     ZwlDryRunProperties.Variables variables = props.getVariables();
+    rva.assignBuildVariables(variables.getBuildVariables());
     rva.assignPreferences(variables.getPreferences());
     rva.assignGlobal(variables.getGlobal());
   }

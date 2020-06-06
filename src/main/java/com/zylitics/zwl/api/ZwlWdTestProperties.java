@@ -57,6 +57,9 @@ public interface ZwlWdTestProperties {
   }
   
   interface Variables {
+  
+    @Nullable
+    Map<String, String> getBuildVariables();
     
     @Nullable
     Map<String, String> getPreferences();

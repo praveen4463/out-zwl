@@ -62,6 +62,7 @@ class ZwlWdTestPropsAssigner {
     rva.assignBrowser(buildCapability.getWdBrowserName(), buildCapability.getWdBrowserVersion());
     rva.assignPlatform(buildCapability.getWdPlatformName());
     ZwlWdTestProperties.Variables variables = props.getVariables();
+    rva.assignBuildVariables(variables.getBuildVariables());
     rva.assignPreferences(variables.getPreferences());
     rva.assignGlobal(variables.getGlobal());
   }

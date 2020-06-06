@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * assigns all non-internal read only variables which values are supplied by tests.
+ * assigns all non-internal read only variables whose values are supplied by tests.
  */
 class ReadOnlyVariablesAssigner {
   
@@ -41,6 +41,10 @@ class ReadOnlyVariablesAssigner {
       return;
     }
     interpreter.addReadOnlyVariable("platform", new StringZwlValue(platform));
+  }
+  
+  void assignBuildVariables(@Nullable Map<String, String> buildVariables) {
+    assignFromMap("build", buildVariables);
   }
   
   void assignPreferences(@Nullable Map<String, String> preferences) {
