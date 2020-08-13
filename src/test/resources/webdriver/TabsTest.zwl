@@ -1,0 +1,197 @@
+ROLE_TREE_ITEM = "*[role='treeitem']"
+TEST_ID_VERSION_TREE_ITEM = "*[data-testid='VERSION-treeItemName']"
+TAB_SELECTOR_BY_TITLE = "*[title='%s/%s/%s'] > :first-child"
+BREADCRUMB_FORMAT = "%s > %s > %s"
+FOCUSED_TAB_PROP = "border-bottom-color"
+FOCUSED_TAB_COLOR = "#03dac4"
+TAB_SELECTOR_ROLE = "button[role='tab']"
+CLOSE_ICON_SELECTOR = "*[data-testid='closeIcon']"
+TAB_TEXT_NODE_SELECTOR = "*[data-testid='tab'] :first-child"
+
+openUrl("http://localhost:3000/")
+assertTrue(isElementDisplayed("*[role='progressbar']"))
+# expects at least one file with a at least 4 tests.
+file = findElementFromElement("*[role='tree']", ROLE_TREE_ITEM) # get first file
+firstFileName = getElementText(file)
+click(file)
+tests = findElementsFromElement(file, ROLE_TREE_ITEM)
+assertTrue(size(tests) >= 4)
+
+#====================================================================
+#### Test: clicking on a version opens temporary tab
+firstTest = tests[0]
+firstTestName = getElementText(firstTest)
+click(firstTest)
+firstTestVersion = findElementFromElement(firstTest, ROLE_TREE_ITEM)
+firstTestVersionName = getElementText(
+  findElementFromElement(firstTestVersion, TEST_ID_VERSION_TREE_ITEM)
+)
+click(firstTestVersion)
+assertTrue(size(findElements(TAB_SELECTOR_ROLE)) == 1)
+firstTestVersionTab = findElement(format(TAB_SELECTOR_BY_TITLE,
+    firstFileName, firstTestName, firstTestVersionName))
+assertTrue(getElementCssValue(firstTestVersionTab, "font-style") == "italic")
+
+#====================================================================
+#### Test: clicking on version having temporary tab opened has no effect
+click(firstTestVersion)
+assertTrue(size(findElements(TAB_SELECTOR_ROLE)) == 1) # total tabs is 1
+assertTrue(getElementCssValue(firstTestVersionTab, "font-style") == "italic")
+
+#====================================================================
+#### Test: clicking or double clicking on an another version replaces existing temporary tab
+secondTest = tests[1]
+secondTestName = getElementText(secondTest)
+click(secondTest)
+secondTestVersion = findElementFromElement(secondTest, ROLE_TREE_ITEM)
+secondTestVersionName = getElementText(
+  findElementFromElement(secondTestVersion, TEST_ID_VERSION_TREE_ITEM)
+)
+click(secondTestVersion)
+assertTrue(size(findElements(TAB_SELECTOR_ROLE)) == 1)
+assertTrue(elementExists(
+    format(TAB_SELECTOR_BY_TITLE, firstFileName, secondTestName, secondTestVersionName))
+)
+# now dbl click on a different version which should replace current temporary (which is currently second)
+performAction(
+  move(firstTestVersion),
+  doubleClick()
+)
+assertTrue(size(findElements(TAB_SELECTOR_ROLE)) == 1)
+assertTrue(elementExists(
+    format(TAB_SELECTOR_BY_TITLE, firstFileName, firstTestName, firstTestVersionName))
+)
+
+#====================================================================
+#### Test: double clicking on a version opens a permanent tab
+# currently firstTestVersion is opened, make sure it's permanent
+assertTrue(getElementCssValue(firstTestVersionTab, "font-style") == "normal")
+# in addition to tab's font becoming normal, also make sure an additional tab can open, if the
+# existing tab is not permanent, any other tab removes temporary before opening.
+performAction(
+  move(secondTestVersion),
+  doubleClick()
+)
+assertTrue(size(findElements(TAB_SELECTOR_ROLE)) == 2) # now there are two tabs
+
+#====================================================================
+#### Test: double or single clicking on version having permanent tab opened has no effect on it's tab
+performAction(
+  move(secondTestVersion),
+  doubleClick()
+)
+click(secondTestVersion)
+tabs = findElements(TAB_SELECTOR_ROLE)
+assertTrue(size(tabs) == 2) # tabs stays at two
+
+#====================================================================
+#### Test: clicking on closeIcon closes tab
+click(findElementFromElement(tabs[0], CLOSE_ICON_SELECTOR))
+click(findElementFromElement(tabs[1], CLOSE_ICON_SELECTOR))
+assertFalse(elementExists(TAB_SELECTOR_ROLE))
+
+#====================================================================
+#### Test: double clicking on version having temporary tab opened turns tab permanent
+# open a temporary tab
+click(firstTestVersion)
+performAction(
+  move(firstTestVersion),
+  doubleClick()
+)
+assertTrue(getElementCssValue(firstTestVersionTab, "font-style") == "normal") # enough to check font only
+
+#====================================================================
+#### Test: switching tabs shows tab panel of focused tab
+# open second version's tab
+performAction(
+  move(secondTestVersion),
+  doubleClick()
+)
+# assert tab panel for current tab is shown
+currentBreadcrumb = findElement("[data-testid='tab-panel-breadcrumb']")
+assertTrue(getElementText(currentBreadcrumb) == format(BREADCRUMB_FORMAT,
+    firstFileName, secondTestName, secondTestVersionName))
+# now click on other tab and see the tab panel change to current tab
+click(firstTestVersionTab)
+assertTrue(getElementText(currentBreadcrumb) == format(BREADCRUMB_FORMAT,
+    firstFileName, firstTestName, firstTestVersionName))
+
+#====================================================================
+#### Test: focused tab has colored bottom and highlighted text
+# returns tabs elements in the same order they're rendered.
+tabs = findElements(TAB_SELECTOR_ROLE)
+assertTrue(size(tabs) == 2)
+# first tab is selected
+currentTab = tabs[0]
+assertTrue(colorMatches(
+  FOCUSED_TAB_COLOR, getElementCssValue(currentTab, FOCUSED_TAB_PROP)
+))
+assertTrue(
+    getElementCssValue(findElementFromElement(currentTab, TAB_TEXT_NODE_SELECTOR), "opacity") >= 0.8
+)
+
+#====================================================================
+#### Test: non focused tab has no colored bottom and dimmed text
+assertTrue(colorMatches(
+  colors.black, getElementCssValue(tabs[1], FOCUSED_TAB_PROP)
+))
+assertTrue(
+    getElementCssValue(findElementFromElement(tabs[1], TAB_TEXT_NODE_SELECTOR), "opacity") <= 0.6
+)
+
+#====================================================================
+#### Test: closing a focused tab sends focus to left adjacent if there is one on left
+# open at least 4 tabs for this test
+# first and second are already opened
+thirdTest = tests[2]
+click(thirdTest)
+thirdTestVersion = findElementFromElement(thirdTest, ROLE_TREE_ITEM)
+performAction(
+  move(thirdTestVersion),
+  doubleClick()
+)
+fourthTest = tests[3]
+click(fourthTest)
+fourthTestVersion = findElementFromElement(fourthTest, ROLE_TREE_ITEM)
+performAction(
+  move(fourthTestVersion),
+  doubleClick()
+)
+tabs = findElements(TAB_SELECTOR_ROLE)
+assertTrue(size(tabs) == 4)
+# 4th tab should be selected one
+assertTrue(colorMatches(
+  FOCUSED_TAB_COLOR, getElementCssValue(tabs[3], FOCUSED_TAB_PROP)
+))
+# close 4th
+click(findElementFromElement(tabs[3], CLOSE_ICON_SELECTOR))
+# 3rd should get selected
+assertTrue(colorMatches(
+  FOCUSED_TAB_COLOR, getElementCssValue(tabs[2], FOCUSED_TAB_PROP)
+))
+
+#====================================================================
+#### Test: closing a focused tab sends focus to right adjacent if there none of left
+# first select 1st tab
+click(tabs[0])
+# now close it
+click(findElementFromElement(tabs[0], CLOSE_ICON_SELECTOR))
+# 2nd should get selected
+assertTrue(colorMatches(
+  FOCUSED_TAB_COLOR, getElementCssValue(tabs[1], FOCUSED_TAB_PROP)
+))
+# close all remaining tabs
+click(findElementFromElement(tabs[1], CLOSE_ICON_SELECTOR))
+click(findElementFromElement(tabs[2], CLOSE_ICON_SELECTOR))
+
+#====================================================================
+#### Test: double clicking on temporary tab makes it permanent (complete it)
+click(firstTestVersion)
+performAction(
+  move(findElement(TAB_SELECTOR_ROLE)),
+  doubleClick()
+)
+assertTrue(getElementCssValue(firstTestVersionTab, "font-style") == "normal")
+
+# write tests for when multiple tabs are opened, new tab opens next to selected,
+# write test when files are closed

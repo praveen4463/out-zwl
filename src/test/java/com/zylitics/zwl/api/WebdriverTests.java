@@ -264,6 +264,13 @@ public class WebdriverTests {
     }
   }
   
+  @Tag("tabs")
+  @ParameterizedTest
+  @EnumSource(value = Browsers.class)
+  void tabsTest(Browsers browser) throws Exception {
+    run(browser, AllWebdriverTests.TABS_TEST.getFile());
+  }
+  
   private void run(Browsers browser, String file) throws Exception {
     Assumptions.assumeFalse(shouldSkip(browser), "Skipped");
     setup(browser);

@@ -19,7 +19,8 @@ public enum AllWebdriverTests {
   STORAGE_TEST ("StorageTest.zwl"),
   TIMEOUT_TEST ("TimeoutTest.zwl"),
   UNTIL_TEST ("UntilTest.zwl"),
-  ELEMENT_CAPTURE_TEST ("ElementCaptureTest.zwl");
+  ELEMENT_CAPTURE_TEST ("ElementCaptureTest.zwl"),
+  TABS_TEST ("TabsTest.zwl");
   
   private final String file;
   
