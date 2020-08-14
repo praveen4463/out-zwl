@@ -51,8 +51,9 @@ class ReadOnlyVariablesAssigner {
     assignFromMap(DefaultZwlInterpreter.PREFERENCES_KEY, preferences);
   }
   
-  void assignGlobal(@Nullable Map<String, String> global) {
-    assignFromMap("global", global);
+  // TODO: change this chain to say 'globals' rather than 'global' (extra 's')
+  void assignGlobal(@Nullable Map<String, String> globals) {
+    assignFromMap("globals", globals);
   }
   
   private void assignFromMap(String identifier, @Nullable Map<String, String> keyValue) {

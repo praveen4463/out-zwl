@@ -20,7 +20,7 @@ public enum AllWebdriverTests {
   TIMEOUT_TEST ("TimeoutTest.zwl"),
   UNTIL_TEST ("UntilTest.zwl"),
   ELEMENT_CAPTURE_TEST ("ElementCaptureTest.zwl"),
-  TABS_TEST ("TabsTest.zwl");
+  EDITOR_TABS_TEST ("EditorTabsTest.zwl");
   
   private final String file;
   

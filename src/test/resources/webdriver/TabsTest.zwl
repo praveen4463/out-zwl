@@ -28,6 +28,9 @@ firstTestVersionName = getElementText(
 )
 click(firstTestVersion)
 assertTrue(size(findElements(TAB_SELECTOR_ROLE)) == 1)
+# we can select the tab's inner node by either finding using title or data-testid. Find using title
+# only when we care about which version opened which tab. When just need to peek into tabs with no
+# concern about their corresponding version, use data-testid.
 firstTestVersionTab = findElement(format(TAB_SELECTOR_BY_TITLE,
     firstFileName, firstTestName, firstTestVersionName))
 assertTrue(getElementCssValue(firstTestVersionTab, "font-style") == "italic")
@@ -98,15 +101,15 @@ performAction(
   move(firstTestVersion),
   doubleClick()
 )
-assertTrue(getElementCssValue(firstTestVersionTab, "font-style") == "normal") # enough to check font only
-
-#====================================================================
-#### Test: switching tabs shows tab panel of focused tab
-# open second version's tab
+assertTrue(getElementCssValue(firstTestVersionTab, "font-style") == "normal")
 performAction(
   move(secondTestVersion),
   doubleClick()
 )
+assertTrue(size(findElements(TAB_SELECTOR_ROLE)) == 2)
+
+#====================================================================
+#### Test: switching tabs shows tab panel of focused tab
 # assert tab panel for current tab is shown
 currentBreadcrumb = findElement("[data-testid='tab-panel-breadcrumb']")
 assertTrue(getElementText(currentBreadcrumb) == format(BREADCRUMB_FORMAT,
@@ -187,11 +190,15 @@ click(findElementFromElement(tabs[2], CLOSE_ICON_SELECTOR))
 #====================================================================
 #### Test: double clicking on temporary tab makes it permanent (complete it)
 click(firstTestVersion)
+tabs = findElements(TAB_SELECTOR_ROLE)
 performAction(
-  move(findElement(TAB_SELECTOR_ROLE)),
+  move(tabs[0]),
   doubleClick()
 )
-assertTrue(getElementCssValue(firstTestVersionTab, "font-style") == "normal")
+assertTrue(getElementCssValue(
+    findElementFromElement(tabs[0], TAB_TEXT_NODE_SELECTOR), "font-style") == "normal")
+click(secondTestVersion)
+assertTrue(size(findElements(TAB_SELECTOR_ROLE)) == 2)
 
 # write tests for when multiple tabs are opened, new tab opens next to selected,
 # write test when files are closed

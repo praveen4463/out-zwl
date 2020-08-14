@@ -1,0 +1,534 @@
+# TAB_SELECTOR_BY_TITLE = "*[title='%s/%s/%s'] > :first-child"
+# Tests expect at least one file with a at least 4 tests loaded into IDE
+# These tests are ready to load into IDE when it's up and running, every test runs independently.
+/*
+#====================================================================
+#### Test: clicking on a version opens temporary tab
+openUrl(globals.URL_LOCAL)
+file = findElementFromElement(globals.ROLE_TREE, globals.ROLE_TREE_ITEM) # first file
+fileName = getElementText(findElementFromElement(file, globals.TEST_ID_FILE_TREE_ITEM))
+click(file)
+tests = findElementsFromElement(file, globals.ROLE_TREE_ITEM) # all tests in file
+click(tests[0])
+version = findElementFromElement(tests[0], globals.ROLE_TREE_ITEM) # first version in a test
+click(version)
+tabs = findElements(globals.ROLE_TAB_BUTTON) # all tabs
+assertTrue(size(tabs) == 1)
+# a temp tab has font-style of FONT_TEMP_TAB
+assertTrue(getElementCssValue(
+    findElementFromElement(tabs[0], globals.SELECTOR_TAB_TEXT_NODE), "font-style")
+        == globals.FONT_TEMP_TAB)
+# assert that the tab belongs to clicked version
+assertTrue(
+  getElementAttribute(findElementFromElement(tabs[0], globals.TEST_ID_TAB), "title") ==
+      format(
+        globals.TITLE_TAB_FORMAT,
+        fileName,
+        getElementText(findElementFromElement(tests[0], globals.TEST_ID_TEST_TREE_ITEM)),
+        getElementText(findElementFromElement(version, globals.TEST_ID_VERSION_TREE_ITEM))
+      )
+)
+# a temp tab is replaced when another tab is opened, open another version in another test, clicking
+# it should replace tab of previous version
+click(tests[1])
+version = findElementFromElement(tests[1], globals.ROLE_TREE_ITEM)
+click(version)
+tabs = findElements(globals.ROLE_TAB_BUTTON) # all tabs
+assertTrue(size(tabs) == 1)
+# assert that the tab belongs to clicked version
+assertTrue(
+  getElementAttribute(findElementFromElement(tabs[0], globals.TEST_ID_TAB), "title") ==
+      format(
+        globals.TITLE_TAB_FORMAT,
+        fileName,
+        getElementText(findElementFromElement(tests[1], globals.TEST_ID_TEST_TREE_ITEM)),
+        getElementText(findElementFromElement(version, globals.TEST_ID_VERSION_TREE_ITEM))
+      )
+)
+
+#====================================================================
+#### Test: clicking on version having temporary tab opened has no effect on it's tab
+openUrl(globals.URL_LOCAL)
+file = findElementFromElement(globals.ROLE_TREE, globals.ROLE_TREE_ITEM)
+click(file)
+tests = findElementsFromElement(file, globals.ROLE_TREE_ITEM)
+click(tests[0])
+version = findElementFromElement(tests[0], globals.ROLE_TREE_ITEM)
+click(version)
+# now click again
+click(version)
+tabs = findElements(globals.ROLE_TAB_BUTTON)
+assertTrue(getElementCssValue(
+    findElementFromElement(tabs[0], globals.SELECTOR_TAB_TEXT_NODE), "font-style")
+        == globals.FONT_TEMP_TAB)
+assertTrue(size(findElements(globals.ROLE_TAB_BUTTON)) == 1)
+
+#====================================================================
+#### Test: double clicking on version having temporary tab opened turns tab permanent
+openUrl(globals.URL_LOCAL)
+file = findElementFromElement(globals.ROLE_TREE, globals.ROLE_TREE_ITEM)
+click(file)
+tests = findElementsFromElement(file, globals.ROLE_TREE_ITEM)
+click(tests[0])
+version = findElementFromElement(tests[0], globals.ROLE_TREE_ITEM)
+# first click
+click(version)
+# now dbl click
+performAction(
+  move(version),
+  doubleClick()
+)
+tabs = findElements(globals.ROLE_TAB_BUTTON)
+# tab font should turn normal
+assertTrue(getElementCssValue(
+    findElementFromElement(tabs[0], globals.SELECTOR_TAB_TEXT_NODE), "font-style") == "normal")
+assertTrue(size(tabs) == 1)
+# to make sure tab is really permanent, click some other version, if this is not temp anymore, 2
+# tabs should open else it should get replaced which fails the test.
+click(tests[1])
+click(findElementFromElement(tests[1], globals.ROLE_TREE_ITEM))
+assertTrue(size(findElements(globals.ROLE_TAB_BUTTON)) == 2)
+
+#====================================================================
+#### Test: A temporary tab could also be made permanent by dbl clicking on it's tab
+openUrl(globals.URL_LOCAL)
+file = findElementFromElement(globals.ROLE_TREE, globals.ROLE_TREE_ITEM)
+click(file)
+tests = findElementsFromElement(file, globals.ROLE_TREE_ITEM)
+click(tests[0])
+version = findElementFromElement(tests[0], globals.ROLE_TREE_ITEM)
+# first click
+click(version)
+tabs = findElements(globals.ROLE_TAB_BUTTON)
+performAction(
+  move(tabs[0]),
+  doubleClick()
+)
+assertTrue(getElementCssValue(
+    findElementFromElement(tabs[0], globals.SELECTOR_TAB_TEXT_NODE), "font-style") == "normal")
+# make sure tab is really permanent
+click(tests[1])
+click(findElementFromElement(tests[1], globals.ROLE_TREE_ITEM))
+assertTrue(size(findElements(globals.ROLE_TAB_BUTTON)) == 2)
+
+#====================================================================
+#### Test: Dbl clicking on a version opens permanent tab
+openUrl(globals.URL_LOCAL)
+file = findElementFromElement(globals.ROLE_TREE, globals.ROLE_TREE_ITEM)
+click(file)
+tests = findElementsFromElement(file, globals.ROLE_TREE_ITEM)
+click(tests[0])
+version = findElementFromElement(tests[0], globals.ROLE_TREE_ITEM)
+performAction(
+  move(version),
+  doubleClick()
+)
+tabs = findElements(globals.ROLE_TAB_BUTTON)
+assertTrue(getElementCssValue(
+    findElementFromElement(tabs[0], globals.SELECTOR_TAB_TEXT_NODE), "font-style") == "normal")
+click(tests[1])
+click(findElementFromElement(tests[1], globals.ROLE_TREE_ITEM))
+assertTrue(size(findElements(globals.ROLE_TAB_BUTTON)) == 2)
+
+#====================================================================
+#### Test: single or dbl clicking on version having permanent tab opened has no effect on it's tab
+openUrl(globals.URL_LOCAL)
+file = findElementFromElement(globals.ROLE_TREE, globals.ROLE_TREE_ITEM)
+click(file)
+tests = findElementsFromElement(file, globals.ROLE_TREE_ITEM)
+click(tests[0])
+version = findElementFromElement(tests[0], globals.ROLE_TREE_ITEM)
+performAction(
+  move(version),
+  doubleClick()
+)
+# single click
+click(version)
+# dbl click
+performAction(
+  move(version),
+  doubleClick()
+)
+tabs = findElements(globals.ROLE_TAB_BUTTON)
+assertTrue(getElementCssValue(
+    findElementFromElement(tabs[0], globals.SELECTOR_TAB_TEXT_NODE), "font-style") == "normal")
+assertTrue(size(tabs) == 1)
+
+#====================================================================
+#### Test: new tab has it's own panel
+openUrl(globals.URL_LOCAL)
+file = findElementFromElement(globals.ROLE_TREE, globals.ROLE_TREE_ITEM)
+fileName = getElementText(findElementFromElement(file, globals.TEST_ID_FILE_TREE_ITEM))
+click(file)
+tests = findElementsFromElement(file, globals.ROLE_TREE_ITEM)
+click(tests[0])
+version = findElementFromElement(tests[0], globals.ROLE_TREE_ITEM)
+performAction(
+  move(version),
+  doubleClick()
+)
+breadcrumb = findElement(globals.TEST_ID_BREADCRUMB_TAB_PANEL)
+assertTrue(getElementText(breadcrumb) ==
+    format(
+      globals.BREADCRUMB_FORMAT,
+      fileName,
+      getElementText(findElementFromElement(tests[0], globals.TEST_ID_TEST_TREE_ITEM)),
+      getElementText(findElementFromElement(version, globals.TEST_ID_VERSION_TREE_ITEM))
+    )
+)
+# open another version
+click(tests[1])
+version = findElementFromElement(tests[1], globals.ROLE_TREE_ITEM)
+performAction(
+  move(version),
+  doubleClick()
+)
+# react doesn't remove old breadcrumb but just updates it in DOM, thus we can use same reference
+assertTrue(getElementText(breadcrumb) ==
+    format(
+      globals.BREADCRUMB_FORMAT,
+      fileName,
+      getElementText(findElementFromElement(tests[1], globals.TEST_ID_TEST_TREE_ITEM)),
+      getElementText(findElementFromElement(version, globals.TEST_ID_VERSION_TREE_ITEM))
+    )
+)
+# open another version
+click(tests[2])
+version = findElementFromElement(tests[2], globals.ROLE_TREE_ITEM)
+performAction(
+  move(version),
+  doubleClick()
+)
+assertTrue(getElementText(breadcrumb) ==
+    format(
+      globals.BREADCRUMB_FORMAT,
+      fileName,
+      getElementText(findElementFromElement(tests[2], globals.TEST_ID_TEST_TREE_ITEM)),
+      getElementText(findElementFromElement(version, globals.TEST_ID_VERSION_TREE_ITEM))
+    )
+)
+
+#====================================================================
+#### Test: new tab opens next to selected tab and becomes selected tab
+openUrl(globals.URL_LOCAL)
+file = findElementFromElement(globals.ROLE_TREE, globals.ROLE_TREE_ITEM)
+fileName = getElementText(findElementFromElement(file, globals.TEST_ID_FILE_TREE_ITEM))
+click(file)
+tests = findElementsFromElement(file, globals.ROLE_TREE_ITEM)
+click(tests[0])
+version = findElementFromElement(tests[0], globals.ROLE_TREE_ITEM)
+performAction(
+  move(version),
+  doubleClick()
+)
+tabs = findElements(globals.ROLE_TAB_BUTTON)
+# tab should be selected as it's the only tab, a tab is selected when it has colored bottom and
+# highlighted text
+assertTrue(colorMatches(
+  globals.FOCUSED_TAB_COLOR, getElementCssValue(tabs[0], globals.FOCUSED_TAB_COLOR_PROP)
+))
+assertTrue(getElementCssValue(findElementFromElement(tabs[0], globals.SELECTOR_TAB_TEXT_NODE)
+    , "opacity") >= 0.8)
+# open another tab
+click(tests[1])
+version = findElementFromElement(tests[1], globals.ROLE_TREE_ITEM)
+performAction(
+  move(version),
+  doubleClick()
+)
+tabs = findElements(globals.ROLE_TAB_BUTTON)
+# assert that tab opened at index = 1 (which should be the new tab) belongs to the current version
+# to make sure the new tab opened next to last selected tab (since new tab is at index = 1) and
+# we're checking the selection of the intended tab
+assertTrue(
+  getElementAttribute(findElementFromElement(tabs[1], globals.TEST_ID_TAB), "title") ==
+      format(
+        globals.TITLE_TAB_FORMAT,
+        fileName,
+        getElementText(findElementFromElement(tests[1], globals.TEST_ID_TEST_TREE_ITEM)),
+        getElementText(findElementFromElement(version, globals.TEST_ID_VERSION_TREE_ITEM))
+      )
+)
+# tab at index 1 should be selected (match just color, no need to match both the thing repeatedly)
+assertTrue(colorMatches(
+  globals.FOCUSED_TAB_COLOR, getElementCssValue(tabs[1], globals.FOCUSED_TAB_COLOR_PROP)
+))
+# previous tab at index 0 should get deselected
+assertTrue(colorMatches(
+  colors.black, getElementCssValue(tabs[0], globals.FOCUSED_TAB_COLOR_PROP)
+))
+assertTrue(getElementCssValue(findElementFromElement(tabs[0], globals.SELECTOR_TAB_TEXT_NODE)
+    , "opacity") <= 0.6)
+# now select tab at index 0 to let new tab stuff between 0 and 1
+click(tabs[0])
+# assert that now 0 is selected and 1 deselected
+assertTrue(colorMatches(
+  globals.FOCUSED_TAB_COLOR, getElementCssValue(tabs[0], globals.FOCUSED_TAB_COLOR_PROP)
+))
+assertTrue(colorMatches(
+  colors.black, getElementCssValue(tabs[1], globals.FOCUSED_TAB_COLOR_PROP)
+))
+# open a new tab
+click(tests[2])
+version = findElementFromElement(tests[2], globals.ROLE_TREE_ITEM)
+performAction(
+  move(version),
+  doubleClick()
+)
+tabs = findElements(globals.ROLE_TAB_BUTTON)
+# assert that new tab opened at index = 1 rather than 2 cause the selected was index 0
+assertTrue(
+  getElementAttribute(findElementFromElement(tabs[1], globals.TEST_ID_TAB), "title") ==
+      format(
+        globals.TITLE_TAB_FORMAT,
+        fileName,
+        getElementText(findElementFromElement(tests[2], globals.TEST_ID_TEST_TREE_ITEM)),
+        getElementText(findElementFromElement(version, globals.TEST_ID_VERSION_TREE_ITEM))
+      )
+)
+# tab at index 1 should be selected
+assertTrue(colorMatches(
+  globals.FOCUSED_TAB_COLOR, getElementCssValue(tabs[1], globals.FOCUSED_TAB_COLOR_PROP)
+))
+# previous tab at index 0 should get deselected
+assertTrue(colorMatches(
+  colors.black, getElementCssValue(tabs[0], globals.FOCUSED_TAB_COLOR_PROP)
+))
+
+#====================================================================
+#### Test: navigating versions switches their tabs
+openUrl(globals.URL_LOCAL)
+file = findElementFromElement(globals.ROLE_TREE, globals.ROLE_TREE_ITEM)
+fileName = getElementText(findElementFromElement(file, globals.TEST_ID_FILE_TREE_ITEM))
+click(file)
+tests = findElementsFromElement(file, globals.ROLE_TREE_ITEM)
+# open several versions
+test1 = tests[0]
+click(test1)
+version1 = findElementFromElement(test1, globals.ROLE_TREE_ITEM)
+performAction(
+  move(version1),
+  doubleClick()
+)
+test2 = tests[1]
+click(test2)
+version2 = findElementFromElement(test2, globals.ROLE_TREE_ITEM)
+performAction(
+  move(version2),
+  doubleClick()
+)
+test3 = tests[2]
+click(test3)
+version3 = findElementFromElement(test3, globals.ROLE_TREE_ITEM)
+performAction(
+  move(version3),
+  doubleClick()
+)
+tabs = findElements(globals.ROLE_TAB_BUTTON)
+# current selected tab is index 2
+assertTrue(colorMatches(
+  globals.FOCUSED_TAB_COLOR, getElementCssValue(tabs[2], globals.FOCUSED_TAB_COLOR_PROP)
+))
+# switch to tab at index 1
+click(version2)
+assertTrue(colorMatches(
+  globals.FOCUSED_TAB_COLOR, getElementCssValue(tabs[1], globals.FOCUSED_TAB_COLOR_PROP)
+))
+# switch to tab at index 0
+click(version1)
+assertTrue(colorMatches(
+  globals.FOCUSED_TAB_COLOR, getElementCssValue(tabs[0], globals.FOCUSED_TAB_COLOR_PROP)
+))
+# switch to tab at index 2
+click(version3)
+assertTrue(colorMatches(
+  globals.FOCUSED_TAB_COLOR, getElementCssValue(tabs[2], globals.FOCUSED_TAB_COLOR_PROP)
+))
+
+#====================================================================
+#### Test: closing a selected tab sends focus to left adjacent if there is one on left
+# open at least 4 tabs for this test
+openUrl(globals.URL_LOCAL)
+file = findElementFromElement(globals.ROLE_TREE, globals.ROLE_TREE_ITEM)
+click(file)
+tests = findElementsFromElement(file, globals.ROLE_TREE_ITEM)
+test1 = tests[0]
+click(test1)
+version1 = findElementFromElement(test1, globals.ROLE_TREE_ITEM)
+performAction(
+  move(version1),
+  doubleClick()
+)
+test2 = tests[1]
+click(test2)
+version2 = findElementFromElement(test2, globals.ROLE_TREE_ITEM)
+performAction(
+  move(version2),
+  doubleClick()
+)
+test3 = tests[2]
+click(test3)
+version3 = findElementFromElement(test3, globals.ROLE_TREE_ITEM)
+performAction(
+  move(version3),
+  doubleClick()
+)
+test4 = tests[3]
+click(test4)
+version4 = findElementFromElement(test4, globals.ROLE_TREE_ITEM)
+performAction(
+  move(version4),
+  doubleClick()
+)
+tabs = findElements(globals.ROLE_TAB_BUTTON)
+assertTrue(size(tabs) == 4)
+# 4th tab should be selected one
+assertTrue(colorMatches(
+  globals.FOCUSED_TAB_COLOR, getElementCssValue(tabs[3], globals.FOCUSED_TAB_COLOR_PROP)
+))
+# close 4th
+click(findElementFromElement(tabs[3], globals.TEST_ID_CLOSE_ICON))
+# 3rd should get selected
+assertTrue(colorMatches(
+  globals.FOCUSED_TAB_COLOR, getElementCssValue(tabs[2], globals.FOCUSED_TAB_COLOR_PROP)
+))
+
+#====================================================================
+#### Test: closing a selected tab sends focus to right adjacent if there is none of left
+openUrl(globals.URL_LOCAL)
+file = findElementFromElement(globals.ROLE_TREE, globals.ROLE_TREE_ITEM)
+click(file)
+tests = findElementsFromElement(file, globals.ROLE_TREE_ITEM)
+test1 = tests[0]
+click(test1)
+version1 = findElementFromElement(test1, globals.ROLE_TREE_ITEM)
+performAction(
+  move(version1),
+  doubleClick()
+)
+test2 = tests[1]
+click(test2)
+version2 = findElementFromElement(test2, globals.ROLE_TREE_ITEM)
+performAction(
+  move(version2),
+  doubleClick()
+)
+test3 = tests[2]
+click(test3)
+version3 = findElementFromElement(test3, globals.ROLE_TREE_ITEM)
+performAction(
+  move(version3),
+  doubleClick()
+)
+tabs = findElements(globals.ROLE_TAB_BUTTON)
+assertTrue(size(tabs) == 3)
+# first select 1st tab
+click(tabs[0])
+# now close it
+click(findElementFromElement(tabs[0], globals.TEST_ID_CLOSE_ICON))
+# 2nd should get selected
+assertTrue(colorMatches(
+  globals.FOCUSED_TAB_COLOR, getElementCssValue(tabs[1], globals.FOCUSED_TAB_COLOR_PROP)
+))
+
+#====================================================================
+#### Test: switching tabs shows tab panel of focused tab
+openUrl(globals.URL_LOCAL)
+file = findElementFromElement(globals.ROLE_TREE, globals.ROLE_TREE_ITEM)
+fileName = getElementText(findElementFromElement(file, globals.TEST_ID_FILE_TREE_ITEM))
+click(file)
+tests = findElementsFromElement(file, globals.ROLE_TREE_ITEM)
+test1 = tests[0]
+click(test1)
+version1 = findElementFromElement(test1, globals.ROLE_TREE_ITEM)
+performAction(
+  move(version1),
+  doubleClick()
+)
+test2 = tests[1]
+click(test2)
+version2 = findElementFromElement(test2, globals.ROLE_TREE_ITEM)
+performAction(
+  move(version2),
+  doubleClick()
+)
+tabs = findElements(globals.ROLE_TAB_BUTTON)
+# assert tab panel for version2's tab is shown
+breadcrumb = findElement(globals.TEST_ID_BREADCRUMB_TAB_PANEL)
+assertTrue(getElementText(breadcrumb) ==
+    format(
+      globals.BREADCRUMB_FORMAT,
+      fileName,
+      getElementText(findElementFromElement(test2, globals.TEST_ID_TEST_TREE_ITEM)),
+      getElementText(findElementFromElement(version2, globals.TEST_ID_VERSION_TREE_ITEM))
+    )
+)
+# now click on version 1's tab and see the tab panel change to version1
+click(tabs[0])
+assertTrue(getElementText(breadcrumb) ==
+    format(
+      globals.BREADCRUMB_FORMAT,
+      fileName,
+      getElementText(findElementFromElement(test1, globals.TEST_ID_TEST_TREE_ITEM)),
+      getElementText(findElementFromElement(version1, globals.TEST_ID_VERSION_TREE_ITEM))
+    )
+)
+*/
+#====================================================================
+#### Test: deleting a version deletes it's tab respecting left/right adjacent selection
+openUrl(globals.URL_LOCAL)
+file = findElementFromElement(globals.ROLE_TREE, globals.ROLE_TREE_ITEM)
+click(file)
+tests = findElementsFromElement(file, globals.ROLE_TREE_ITEM)
+test1 = tests[0]
+click(test1)
+version1 = findElementFromElement(test1, globals.ROLE_TREE_ITEM)
+performAction(
+  move(version1),
+  doubleClick()
+)
+test2 = tests[1]
+click(test2)
+version2 = findElementFromElement(test2, globals.ROLE_TREE_ITEM)
+performAction(
+  move(version2),
+  doubleClick()
+)
+test3 = tests[2]
+click(test3)
+version3 = findElementFromElement(test3, globals.ROLE_TREE_ITEM)
+performAction(
+  move(version3),
+  doubleClick()
+)
+tabs = findElements(globals.ROLE_TAB_BUTTON)
+# version3's tab is currently selected, delete this version
+# for deleting version, delete it's test so that there is no need to check whether the version is
+# current (as current versions can't be deleted)
+# hover mouse over test element which should display the delete button
+performAction(
+  move(findElementFromElement(test3, "*[data-testid='TEST-treeItemContent']"))
+  #move(test3)
+)
+click(findElementFromElement(test3, "button[title='Delete']"))
+click(findElement("*[role='dialog'] button[aria-label='delete']"))
+# test3 is deleted, deleting tab3, tab2 should be the selected tab
+assertTrue(colorMatches(
+  globals.FOCUSED_TAB_COLOR, getElementCssValue(tabs[1], globals.FOCUSED_TAB_COLOR_PROP)
+))
+# select tab1
+click(tabs[0])
+assertTrue(colorMatches(
+  globals.FOCUSED_TAB_COLOR, getElementCssValue(tabs[0], globals.FOCUSED_TAB_COLOR_PROP)
+))
+# now delete test1
+performAction(
+  move(test1)
+)
+click(findElementFromElement(test1, "button[title='Delete']"))
+click(findElement("*[role='dialog'] button[aria-label='delete']"))
+# test1 is deleted, deleting tab1, tab2 should be the selected tab
+assertTrue(colorMatches(
+  globals.FOCUSED_TAB_COLOR, getElementCssValue(tabs[1], globals.FOCUSED_TAB_COLOR_PROP)
+))
+assertTrue(size(findElements(globals.ROLE_TAB_BUTTON)) == 1)

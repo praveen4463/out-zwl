@@ -59,6 +59,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 public class WebdriverTests {
   
+  // Note that ConsoleErrorListener does prints line and message in the console, just find output
+  // by 'line'
   private static final List<ANTLRErrorListener> DEFAULT_TEST_LISTENERS =
       ImmutableList.of(ConsoleErrorListener.INSTANCE, new DiagnosticErrorListener());
   
@@ -268,7 +270,7 @@ public class WebdriverTests {
   @ParameterizedTest
   @EnumSource(value = Browsers.class)
   void tabsTest(Browsers browser) throws Exception {
-    run(browser, AllWebdriverTests.TABS_TEST.getFile());
+    run(browser, AllWebdriverTests.EDITOR_TABS_TEST.getFile());
   }
   
   private void run(Browsers browser, String file) throws Exception {
@@ -526,7 +528,7 @@ public class WebdriverTests {
           @Nullable
           @Override
           public Map<String, String> getGlobal() {
-            return null;
+            return new ZwlMainAppGlobals().get();
           }
         };
       }
