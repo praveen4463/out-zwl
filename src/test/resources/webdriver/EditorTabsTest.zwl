@@ -1,7 +1,7 @@
 # TAB_SELECTOR_BY_TITLE = "*[title='%s/%s/%s'] > :first-child"
 # Tests expect at least one file with a at least 4 tests loaded into IDE
 # These tests are ready to load into IDE when it's up and running, every test runs independently.
-/*
+
 #====================================================================
 #### Test: clicking on a version opens temporary tab
 openUrl(globals.URL_LOCAL)
@@ -227,8 +227,8 @@ tabs = findElements(globals.ROLE_TAB_BUTTON)
 assertTrue(colorMatches(
   globals.FOCUSED_TAB_COLOR, getElementCssValue(tabs[0], globals.FOCUSED_TAB_COLOR_PROP)
 ))
-assertTrue(getElementCssValue(findElementFromElement(tabs[0], globals.SELECTOR_TAB_TEXT_NODE)
-    , "opacity") >= 0.8)
+assertTrue(getElementCssValue(findElementFromElement(tabs[0], "*[data-testid=tabContainer]")
+    , "opacity") == 0.87)
 # open another tab
 click(tests[1])
 version = findElementFromElement(tests[1], globals.ROLE_TREE_ITEM)
@@ -257,8 +257,8 @@ assertTrue(colorMatches(
 assertTrue(colorMatches(
   colors.black, getElementCssValue(tabs[0], globals.FOCUSED_TAB_COLOR_PROP)
 ))
-assertTrue(getElementCssValue(findElementFromElement(tabs[0], globals.SELECTOR_TAB_TEXT_NODE)
-    , "opacity") <= 0.6)
+assertTrue(getElementCssValue(findElementFromElement(tabs[0], "*[data-testid=tabContainer]")
+    , "opacity") == 0.6)
 # now select tab at index 0 to let new tab stuff between 0 and 1
 click(tabs[0])
 # assert that now 0 is selected and 1 deselected
@@ -473,62 +473,176 @@ assertTrue(getElementText(breadcrumb) ==
       getElementText(findElementFromElement(version1, globals.TEST_ID_VERSION_TREE_ITEM))
     )
 )
-*/
+
 #====================================================================
-#### Test: deleting a version deletes it's tab respecting left/right adjacent selection
+#### Test: deleting a single version deletes it's tab respecting left/right adjacent selection
+# Note: Following are test cases related to this test, not written due to time constraint
+# another test, version that is not selected version is deleted, no change in selection.
 openUrl(globals.URL_LOCAL)
 file = findElementFromElement(globals.ROLE_TREE, globals.ROLE_TREE_ITEM)
 click(file)
 tests = findElementsFromElement(file, globals.ROLE_TREE_ITEM)
-test1 = tests[0]
-click(test1)
-version1 = findElementFromElement(test1, globals.ROLE_TREE_ITEM)
-performAction(
-  move(version1),
-  doubleClick()
-)
-test2 = tests[1]
-click(test2)
-version2 = findElementFromElement(test2, globals.ROLE_TREE_ITEM)
-performAction(
-  move(version2),
-  doubleClick()
-)
-test3 = tests[2]
-click(test3)
-version3 = findElementFromElement(test3, globals.ROLE_TREE_ITEM)
-performAction(
-  move(version3),
-  doubleClick()
-)
+test = tests[0]
+requiredVersions = 5 # test needs 4 deletable versions, thus 5 including the latest one
+click(test)
+versions = findElementsFromElement(test, globals.ROLE_TREE_ITEM)
+if size(versions) < requiredVersions {
+  performAction(move(findElementFromElement(test, globals.TEST_ID_TEST_TREE_ITEM_CONTENT)))
+  newVersionButton = findElementFromElement(test, globals.BUTTON_NEW_VERSION_TREE_ITEM)
+  for i = 1 to requiredVersions - size(versions) {
+    # mouse should remain at new version button while keyboard types and presses enter in sequence,
+    # thus not loosing hover on the test element.
+    click(newVersionButton)
+    typeActive(uuid(), keys.enter)
+    sleep(20)
+    # this wait helps slowing down wd, sometimes too fast wildly clicking and submitting causes input box to not appear.
+  }
+  # wait until all new versions are added
+  # TODO: this v2 function should be change to original variant once original has been updated to accept
+  # all required arguments.
+  versions = untilTotalElementsGTv2(test, globals.ROLE_TREE_ITEM, requiredVersions - 1)
+}
+# new versions added, let's open all of them excluding latest
+for v in versions {
+  # exclude latest
+  if size(findElementsFromElement(v, "*[data-testid='latestVersion']", true)) == 1 {
+    latestVersion = v
+  } else {
+    performAction(
+      move(v),
+      doubleClick()
+    )
+  }
+}
+if exists(latestVersion) {
+  versions = removeElements(versions, latestVersion)
+}
 tabs = findElements(globals.ROLE_TAB_BUTTON)
-# version3's tab is currently selected, delete this version
-# for deleting version, delete it's test so that there is no need to check whether the version is
-# current (as current versions can't be deleted)
-# hover mouse over test element which should display the delete button
-performAction(
-  move(findElementFromElement(test3, "*[data-testid='TEST-treeItemContent']"))
-  #move(test3)
-)
-click(findElementFromElement(test3, "button[title='Delete']"))
-click(findElement("*[role='dialog'] button[aria-label='delete']"))
-# test3 is deleted, deleting tab3, tab2 should be the selected tab
+assertTrue(size(tabs) >= requiredVersions - 1)
+version4 = versions[3]
+performAction(move(version4))
+click(findElementFromElement(version4, globals.BUTTON_DELETE_TREE_ITEM))
+click(findElement(globals.BUTTON_DELETE_DIALOG))
+# version4 is deleted, deleting tab4, tab3 should be the selected tab
 assertTrue(colorMatches(
-  globals.FOCUSED_TAB_COLOR, getElementCssValue(tabs[1], globals.FOCUSED_TAB_COLOR_PROP)
+  globals.FOCUSED_TAB_COLOR, getElementCssValue(tabs[2], globals.FOCUSED_TAB_COLOR_PROP)
 ))
 # select tab1
 click(tabs[0])
 assertTrue(colorMatches(
   globals.FOCUSED_TAB_COLOR, getElementCssValue(tabs[0], globals.FOCUSED_TAB_COLOR_PROP)
 ))
-# now delete test1
-performAction(
-  move(test1)
-)
-click(findElementFromElement(test1, "button[title='Delete']"))
-click(findElement("*[role='dialog'] button[aria-label='delete']"))
-# test1 is deleted, deleting tab1, tab2 should be the selected tab
+# now delete version1
+version1 = versions[0]
+performAction(move(version1))
+click(findElementFromElement(version1, globals.BUTTON_DELETE_TREE_ITEM))
+click(findElement(globals.BUTTON_DELETE_DIALOG))
+# version1 is deleted, deleting tab1, tab2 should be the selected tab
 assertTrue(colorMatches(
   globals.FOCUSED_TAB_COLOR, getElementCssValue(tabs[1], globals.FOCUSED_TAB_COLOR_PROP)
 ))
-assertTrue(size(findElements(globals.ROLE_TAB_BUTTON)) == 1)
+assertTrue(size(findElements(globals.ROLE_TAB_BUTTON)) == size(tabs) - 2)
+
+#====================================================================
+#### Test: deleting a test having versions selects tab on the left that is not deleting
+# Note: there are lot of test cases relating to tabs when a test is deleted, not writing now due to
+# time constraint.
+# - when selected tab's versions isn't present in deleting test's versions, tabs are removed and
+#   no change happens in selection.
+# - when selected tab is at index 0 or 1, deleting a test having selected version, selects the
+#   tab at first index in remaining tabs
+# - when only one tab remains after deleting a test, that becomes selected
+# - when selected tab is deleting together with all tabs on the left, just selected first tab in
+#   remaining tabs.
+openUrl(globals.URL_LOCAL)
+file = findElementFromElement(globals.ROLE_TREE, globals.ROLE_TREE_ITEM)
+click(file)
+requiredVersions = 3
+tests = findElementsFromElement(file, globals.ROLE_TREE_ITEM)
+test1 = tests[0]
+click(test1)
+test1Versions = findElementsFromElement(test1, globals.ROLE_TREE_ITEM)
+if size(test1Versions) < requiredVersions {
+  performAction(move(findElementFromElement(test1, globals.TEST_ID_TEST_TREE_ITEM_CONTENT)))
+  newVersionButton = findElementFromElement(test1, globals.BUTTON_NEW_VERSION_TREE_ITEM)
+  for i = 1 to requiredVersions - size(test1Versions) {
+    click(newVersionButton)
+    typeActive(uuid(), keys.enter)
+    sleep(20)
+  }
+  test1Versions = untilTotalElementsGTv2(test1, globals.ROLE_TREE_ITEM, requiredVersions - 1)
+}
+for v in test1Versions {
+  performAction(
+    move(v),
+    doubleClick()
+  )
+}
+test2 = tests[1]
+click(test2)
+test2Versions = findElementsFromElement(test2, globals.ROLE_TREE_ITEM)
+if size(test2Versions) < requiredVersions {
+  performAction(move(findElementFromElement(test2, globals.TEST_ID_TEST_TREE_ITEM_CONTENT)))
+  newVersionButton = findElementFromElement(test2, globals.BUTTON_NEW_VERSION_TREE_ITEM)
+  for i = 1 to requiredVersions - size(test2Versions) {
+    click(newVersionButton)
+    typeActive(uuid(), keys.enter)
+    sleep(20)
+  }
+  test2Versions = untilTotalElementsGTv2(test2, globals.ROLE_TREE_ITEM, requiredVersions - 1)
+}
+for v in test2Versions {
+  performAction(
+    move(v),
+    doubleClick()
+  )
+}
+tabs = findElements(globals.ROLE_TAB_BUTTON)
+assertTrue(size(tabs) == requiredVersions * 2)
+# last tab is selected which is of test2, let's delete test2, deleting all it's versions
+assertTrue(colorMatches(
+  globals.FOCUSED_TAB_COLOR, getElementCssValue(tabs[(requiredVersions * 2) - 1],
+      globals.FOCUSED_TAB_COLOR_PROP)
+))
+performAction(
+  move(findElementFromElement(test2, globals.TEST_ID_TEST_TREE_ITEM_CONTENT))
+  # why not move(test3)? rather than moving mouse onto test element (li), we should move it on the inner
+  # element that has it's content. This is because test element when expanded contains it's versions
+  # too so when move is called, webdriver finds the middle of the element which may point to either
+  # test or version. For precise mouse hovering, hover it on test element only rather than the root
+  # of it.
+)
+click(findElementFromElement(test2, globals.BUTTON_DELETE_TREE_ITEM))
+click(findElement(globals.BUTTON_DELETE_DIALOG))
+tabs = findElements(globals.ROLE_TAB_BUTTON)
+assertTrue(size(tabs) == requiredVersions)
+# last tab should be selected as it was the first on the left of test2's tab that was not deleting
+assertTrue(colorMatches(
+  globals.FOCUSED_TAB_COLOR, getElementCssValue(tabs[requiredVersions - 1],
+      globals.FOCUSED_TAB_COLOR_PROP)
+))
+
+#====================================================================
+#### Test: renaming version renames it's tab
+openUrl(globals.URL_LOCAL)
+file = findElementFromElement(globals.ROLE_TREE, globals.ROLE_TREE_ITEM)
+fileName = getElementText(findElementFromElement(file, globals.TEST_ID_FILE_TREE_ITEM))
+click(file)
+tests = findElementsFromElement(file, globals.ROLE_TREE_ITEM)
+test = tests[0]
+click(test)
+version = findElementFromElement(test, globals.ROLE_TREE_ITEM)
+click(version)
+performAction(move(version))
+click(findElementFromElement(version, globals.BUTTON_RENAME_TREE_ITEM))
+newName = uuid()
+typeActive(newName, keys.enter)
+breadcrumb = findElement(globals.TEST_ID_BREADCRUMB_TAB_PANEL)
+assertTrue(getElementText(breadcrumb) ==
+    format(
+      globals.BREADCRUMB_FORMAT,
+      fileName,
+      getElementText(findElementFromElement(test, globals.TEST_ID_TEST_TREE_ITEM)),
+      newName
+    )
+)

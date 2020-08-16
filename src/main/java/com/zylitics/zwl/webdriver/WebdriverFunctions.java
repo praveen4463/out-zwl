@@ -269,6 +269,7 @@ public class WebdriverFunctions {
         new UntilTitleContains(wdProps, buildCapability, driver, printStream),
         new UntilTitleIs(wdProps, buildCapability, driver, printStream),
         new UntilTotalElementsEQ(wdProps, buildCapability, driver, printStream),
+        new UntilTotalElementsGTv2(wdProps, buildCapability, driver, printStream),
         new UntilTotalElementsGT(wdProps, buildCapability, driver, printStream),
         new UntilTotalElementsLT(wdProps, buildCapability, driver, printStream),
         new UntilTotalWindowsAre(wdProps, buildCapability, driver, printStream),

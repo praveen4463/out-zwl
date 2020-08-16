@@ -40,6 +40,7 @@ public final class BuiltInFunction {
         new Merge(),
         new NonEmptyFirst(),
         new RemoveEmpty(),
+        new RemoveElements(),
         new Size(),
         new Values(),
         
