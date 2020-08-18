@@ -273,6 +273,13 @@ public class WebdriverTests {
     run(browser, AllWebdriverTests.EDITOR_TABS_TEST.getFile());
   }
   
+  @Tag("explorer")
+  @ParameterizedTest
+  @EnumSource(value = Browsers.class)
+  void explorerTest(Browsers browser) throws Exception {
+    run(browser, AllWebdriverTests.EXPLORER_TEST.getFile());
+  }
+  
   private void run(Browsers browser, String file) throws Exception {
     Assumptions.assumeFalse(shouldSkip(browser), "Skipped");
     setup(browser);

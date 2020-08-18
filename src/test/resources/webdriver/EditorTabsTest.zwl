@@ -1,16 +1,15 @@
-# TAB_SELECTOR_BY_TITLE = "*[title='%s/%s/%s'] > :first-child"
-# Tests expect at least one file with a at least 4 tests loaded into IDE
+# Tests expect one file with at least 4 tests loaded into IDE
 # These tests are ready to load into IDE when it's up and running, every test runs independently.
 
 #====================================================================
 #### Test: clicking on a version opens temporary tab
 openUrl(globals.URL_LOCAL)
-file = findElementFromElement(globals.ROLE_TREE, globals.ROLE_TREE_ITEM) # first file
-fileName = getElementText(findElementFromElement(file, globals.TEST_ID_FILE_TREE_ITEM))
+file = findElementFromElement(globals.ROLE_TREE, globals.TEST_ID_FILE_TREE_ITEM) # first file
+fileName = getElementText(findElementFromElement(file, globals.TEST_ID_FILE_TREE_ITEM_NAME))
 click(file)
-tests = findElementsFromElement(file, globals.ROLE_TREE_ITEM) # all tests in file
+tests = findElementsFromElement(file, globals.TEST_ID_TEST_TREE_ITEM) # all tests in file
 click(tests[0])
-version = findElementFromElement(tests[0], globals.ROLE_TREE_ITEM) # first version in a test
+version = findElementFromElement(tests[0], globals.TEST_ID_VERSION_TREE_ITEM) # first version in a test
 click(version)
 tabs = findElements(globals.ROLE_TAB_BUTTON) # all tabs
 assertTrue(size(tabs) == 1)
@@ -24,14 +23,14 @@ assertTrue(
       format(
         globals.TITLE_TAB_FORMAT,
         fileName,
-        getElementText(findElementFromElement(tests[0], globals.TEST_ID_TEST_TREE_ITEM)),
-        getElementText(findElementFromElement(version, globals.TEST_ID_VERSION_TREE_ITEM))
+        getElementText(findElementFromElement(tests[0], globals.TEST_ID_TEST_TREE_ITEM_NAME)),
+        getElementText(findElementFromElement(version, globals.TEST_ID_VERSION_TREE_ITEM_NAME))
       )
 )
 # a temp tab is replaced when another tab is opened, open another version in another test, clicking
 # it should replace tab of previous version
 click(tests[1])
-version = findElementFromElement(tests[1], globals.ROLE_TREE_ITEM)
+version = findElementFromElement(tests[1], globals.TEST_ID_VERSION_TREE_ITEM)
 click(version)
 tabs = findElements(globals.ROLE_TAB_BUTTON) # all tabs
 assertTrue(size(tabs) == 1)
@@ -41,19 +40,19 @@ assertTrue(
       format(
         globals.TITLE_TAB_FORMAT,
         fileName,
-        getElementText(findElementFromElement(tests[1], globals.TEST_ID_TEST_TREE_ITEM)),
-        getElementText(findElementFromElement(version, globals.TEST_ID_VERSION_TREE_ITEM))
+        getElementText(findElementFromElement(tests[1], globals.TEST_ID_TEST_TREE_ITEM_NAME)),
+        getElementText(findElementFromElement(version, globals.TEST_ID_VERSION_TREE_ITEM_NAME))
       )
 )
 
 #====================================================================
 #### Test: clicking on version having temporary tab opened has no effect on it's tab
 openUrl(globals.URL_LOCAL)
-file = findElementFromElement(globals.ROLE_TREE, globals.ROLE_TREE_ITEM)
+file = findElementFromElement(globals.ROLE_TREE, globals.TEST_ID_FILE_TREE_ITEM)
 click(file)
-tests = findElementsFromElement(file, globals.ROLE_TREE_ITEM)
+tests = findElementsFromElement(file, globals.TEST_ID_TEST_TREE_ITEM)
 click(tests[0])
-version = findElementFromElement(tests[0], globals.ROLE_TREE_ITEM)
+version = findElementFromElement(tests[0], globals.TEST_ID_VERSION_TREE_ITEM)
 click(version)
 # now click again
 click(version)
@@ -66,11 +65,11 @@ assertTrue(size(findElements(globals.ROLE_TAB_BUTTON)) == 1)
 #====================================================================
 #### Test: double clicking on version having temporary tab opened turns tab permanent
 openUrl(globals.URL_LOCAL)
-file = findElementFromElement(globals.ROLE_TREE, globals.ROLE_TREE_ITEM)
+file = findElementFromElement(globals.ROLE_TREE, globals.TEST_ID_FILE_TREE_ITEM)
 click(file)
-tests = findElementsFromElement(file, globals.ROLE_TREE_ITEM)
+tests = findElementsFromElement(file, globals.TEST_ID_TEST_TREE_ITEM)
 click(tests[0])
-version = findElementFromElement(tests[0], globals.ROLE_TREE_ITEM)
+version = findElementFromElement(tests[0], globals.TEST_ID_VERSION_TREE_ITEM)
 # first click
 click(version)
 # now dbl click
@@ -86,17 +85,17 @@ assertTrue(size(tabs) == 1)
 # to make sure tab is really permanent, click some other version, if this is not temp anymore, 2
 # tabs should open else it should get replaced which fails the test.
 click(tests[1])
-click(findElementFromElement(tests[1], globals.ROLE_TREE_ITEM))
+click(findElementFromElement(tests[1], globals.TEST_ID_VERSION_TREE_ITEM))
 assertTrue(size(findElements(globals.ROLE_TAB_BUTTON)) == 2)
 
 #====================================================================
 #### Test: A temporary tab could also be made permanent by dbl clicking on it's tab
 openUrl(globals.URL_LOCAL)
-file = findElementFromElement(globals.ROLE_TREE, globals.ROLE_TREE_ITEM)
+file = findElementFromElement(globals.ROLE_TREE, globals.TEST_ID_FILE_TREE_ITEM)
 click(file)
-tests = findElementsFromElement(file, globals.ROLE_TREE_ITEM)
+tests = findElementsFromElement(file, globals.TEST_ID_TEST_TREE_ITEM)
 click(tests[0])
-version = findElementFromElement(tests[0], globals.ROLE_TREE_ITEM)
+version = findElementFromElement(tests[0], globals.TEST_ID_VERSION_TREE_ITEM)
 # first click
 click(version)
 tabs = findElements(globals.ROLE_TAB_BUTTON)
@@ -108,17 +107,17 @@ assertTrue(getElementCssValue(
     findElementFromElement(tabs[0], globals.SELECTOR_TAB_TEXT_NODE), "font-style") == "normal")
 # make sure tab is really permanent
 click(tests[1])
-click(findElementFromElement(tests[1], globals.ROLE_TREE_ITEM))
+click(findElementFromElement(tests[1], globals.TEST_ID_VERSION_TREE_ITEM))
 assertTrue(size(findElements(globals.ROLE_TAB_BUTTON)) == 2)
 
 #====================================================================
 #### Test: Dbl clicking on a version opens permanent tab
 openUrl(globals.URL_LOCAL)
-file = findElementFromElement(globals.ROLE_TREE, globals.ROLE_TREE_ITEM)
+file = findElementFromElement(globals.ROLE_TREE, globals.TEST_ID_FILE_TREE_ITEM)
 click(file)
-tests = findElementsFromElement(file, globals.ROLE_TREE_ITEM)
+tests = findElementsFromElement(file, globals.TEST_ID_TEST_TREE_ITEM)
 click(tests[0])
-version = findElementFromElement(tests[0], globals.ROLE_TREE_ITEM)
+version = findElementFromElement(tests[0], globals.TEST_ID_VERSION_TREE_ITEM)
 performAction(
   move(version),
   doubleClick()
@@ -127,17 +126,17 @@ tabs = findElements(globals.ROLE_TAB_BUTTON)
 assertTrue(getElementCssValue(
     findElementFromElement(tabs[0], globals.SELECTOR_TAB_TEXT_NODE), "font-style") == "normal")
 click(tests[1])
-click(findElementFromElement(tests[1], globals.ROLE_TREE_ITEM))
+click(findElementFromElement(tests[1], globals.TEST_ID_VERSION_TREE_ITEM))
 assertTrue(size(findElements(globals.ROLE_TAB_BUTTON)) == 2)
 
 #====================================================================
 #### Test: single or dbl clicking on version having permanent tab opened has no effect on it's tab
 openUrl(globals.URL_LOCAL)
-file = findElementFromElement(globals.ROLE_TREE, globals.ROLE_TREE_ITEM)
+file = findElementFromElement(globals.ROLE_TREE, globals.TEST_ID_FILE_TREE_ITEM)
 click(file)
-tests = findElementsFromElement(file, globals.ROLE_TREE_ITEM)
+tests = findElementsFromElement(file, globals.TEST_ID_TEST_TREE_ITEM)
 click(tests[0])
-version = findElementFromElement(tests[0], globals.ROLE_TREE_ITEM)
+version = findElementFromElement(tests[0], globals.TEST_ID_VERSION_TREE_ITEM)
 performAction(
   move(version),
   doubleClick()
@@ -157,12 +156,12 @@ assertTrue(size(tabs) == 1)
 #====================================================================
 #### Test: new tab has it's own panel
 openUrl(globals.URL_LOCAL)
-file = findElementFromElement(globals.ROLE_TREE, globals.ROLE_TREE_ITEM)
-fileName = getElementText(findElementFromElement(file, globals.TEST_ID_FILE_TREE_ITEM))
+file = findElementFromElement(globals.ROLE_TREE, globals.TEST_ID_FILE_TREE_ITEM)
+fileName = getElementText(findElementFromElement(file, globals.TEST_ID_FILE_TREE_ITEM_NAME))
 click(file)
-tests = findElementsFromElement(file, globals.ROLE_TREE_ITEM)
+tests = findElementsFromElement(file, globals.TEST_ID_TEST_TREE_ITEM)
 click(tests[0])
-version = findElementFromElement(tests[0], globals.ROLE_TREE_ITEM)
+version = findElementFromElement(tests[0], globals.TEST_ID_VERSION_TREE_ITEM)
 performAction(
   move(version),
   doubleClick()
@@ -172,13 +171,13 @@ assertTrue(getElementText(breadcrumb) ==
     format(
       globals.BREADCRUMB_FORMAT,
       fileName,
-      getElementText(findElementFromElement(tests[0], globals.TEST_ID_TEST_TREE_ITEM)),
-      getElementText(findElementFromElement(version, globals.TEST_ID_VERSION_TREE_ITEM))
+      getElementText(findElementFromElement(tests[0], globals.TEST_ID_TEST_TREE_ITEM_NAME)),
+      getElementText(findElementFromElement(version, globals.TEST_ID_VERSION_TREE_ITEM_NAME))
     )
 )
 # open another version
 click(tests[1])
-version = findElementFromElement(tests[1], globals.ROLE_TREE_ITEM)
+version = findElementFromElement(tests[1], globals.TEST_ID_VERSION_TREE_ITEM)
 performAction(
   move(version),
   doubleClick()
@@ -188,13 +187,13 @@ assertTrue(getElementText(breadcrumb) ==
     format(
       globals.BREADCRUMB_FORMAT,
       fileName,
-      getElementText(findElementFromElement(tests[1], globals.TEST_ID_TEST_TREE_ITEM)),
-      getElementText(findElementFromElement(version, globals.TEST_ID_VERSION_TREE_ITEM))
+      getElementText(findElementFromElement(tests[1], globals.TEST_ID_TEST_TREE_ITEM_NAME)),
+      getElementText(findElementFromElement(version, globals.TEST_ID_VERSION_TREE_ITEM_NAME))
     )
 )
 # open another version
 click(tests[2])
-version = findElementFromElement(tests[2], globals.ROLE_TREE_ITEM)
+version = findElementFromElement(tests[2], globals.TEST_ID_VERSION_TREE_ITEM)
 performAction(
   move(version),
   doubleClick()
@@ -203,20 +202,20 @@ assertTrue(getElementText(breadcrumb) ==
     format(
       globals.BREADCRUMB_FORMAT,
       fileName,
-      getElementText(findElementFromElement(tests[2], globals.TEST_ID_TEST_TREE_ITEM)),
-      getElementText(findElementFromElement(version, globals.TEST_ID_VERSION_TREE_ITEM))
+      getElementText(findElementFromElement(tests[2], globals.TEST_ID_TEST_TREE_ITEM_NAME)),
+      getElementText(findElementFromElement(version, globals.TEST_ID_VERSION_TREE_ITEM_NAME))
     )
 )
 
 #====================================================================
 #### Test: new tab opens next to selected tab and becomes selected tab
 openUrl(globals.URL_LOCAL)
-file = findElementFromElement(globals.ROLE_TREE, globals.ROLE_TREE_ITEM)
-fileName = getElementText(findElementFromElement(file, globals.TEST_ID_FILE_TREE_ITEM))
+file = findElementFromElement(globals.ROLE_TREE, globals.TEST_ID_FILE_TREE_ITEM)
+fileName = getElementText(findElementFromElement(file, globals.TEST_ID_FILE_TREE_ITEM_NAME))
 click(file)
-tests = findElementsFromElement(file, globals.ROLE_TREE_ITEM)
+tests = findElementsFromElement(file, globals.TEST_ID_TEST_TREE_ITEM)
 click(tests[0])
-version = findElementFromElement(tests[0], globals.ROLE_TREE_ITEM)
+version = findElementFromElement(tests[0], globals.TEST_ID_VERSION_TREE_ITEM)
 performAction(
   move(version),
   doubleClick()
@@ -231,7 +230,7 @@ assertTrue(getElementCssValue(findElementFromElement(tabs[0], "*[data-testid=tab
     , "opacity") == 0.87)
 # open another tab
 click(tests[1])
-version = findElementFromElement(tests[1], globals.ROLE_TREE_ITEM)
+version = findElementFromElement(tests[1], globals.TEST_ID_VERSION_TREE_ITEM)
 performAction(
   move(version),
   doubleClick()
@@ -245,8 +244,8 @@ assertTrue(
       format(
         globals.TITLE_TAB_FORMAT,
         fileName,
-        getElementText(findElementFromElement(tests[1], globals.TEST_ID_TEST_TREE_ITEM)),
-        getElementText(findElementFromElement(version, globals.TEST_ID_VERSION_TREE_ITEM))
+        getElementText(findElementFromElement(tests[1], globals.TEST_ID_TEST_TREE_ITEM_NAME)),
+        getElementText(findElementFromElement(version, globals.TEST_ID_VERSION_TREE_ITEM_NAME))
       )
 )
 # tab at index 1 should be selected (match just color, no need to match both the thing repeatedly)
@@ -270,7 +269,7 @@ assertTrue(colorMatches(
 ))
 # open a new tab
 click(tests[2])
-version = findElementFromElement(tests[2], globals.ROLE_TREE_ITEM)
+version = findElementFromElement(tests[2], globals.TEST_ID_VERSION_TREE_ITEM)
 performAction(
   move(version),
   doubleClick()
@@ -282,8 +281,8 @@ assertTrue(
       format(
         globals.TITLE_TAB_FORMAT,
         fileName,
-        getElementText(findElementFromElement(tests[2], globals.TEST_ID_TEST_TREE_ITEM)),
-        getElementText(findElementFromElement(version, globals.TEST_ID_VERSION_TREE_ITEM))
+        getElementText(findElementFromElement(tests[2], globals.TEST_ID_TEST_TREE_ITEM_NAME)),
+        getElementText(findElementFromElement(version, globals.TEST_ID_VERSION_TREE_ITEM_NAME))
       )
 )
 # tab at index 1 should be selected
@@ -298,28 +297,28 @@ assertTrue(colorMatches(
 #====================================================================
 #### Test: navigating versions switches their tabs
 openUrl(globals.URL_LOCAL)
-file = findElementFromElement(globals.ROLE_TREE, globals.ROLE_TREE_ITEM)
-fileName = getElementText(findElementFromElement(file, globals.TEST_ID_FILE_TREE_ITEM))
+file = findElementFromElement(globals.ROLE_TREE, globals.TEST_ID_FILE_TREE_ITEM)
+fileName = getElementText(findElementFromElement(file, globals.TEST_ID_FILE_TREE_ITEM_NAME))
 click(file)
-tests = findElementsFromElement(file, globals.ROLE_TREE_ITEM)
+tests = findElementsFromElement(file, globals.TEST_ID_TEST_TREE_ITEM)
 # open several versions
 test1 = tests[0]
 click(test1)
-version1 = findElementFromElement(test1, globals.ROLE_TREE_ITEM)
+version1 = findElementFromElement(test1, globals.TEST_ID_VERSION_TREE_ITEM)
 performAction(
   move(version1),
   doubleClick()
 )
 test2 = tests[1]
 click(test2)
-version2 = findElementFromElement(test2, globals.ROLE_TREE_ITEM)
+version2 = findElementFromElement(test2, globals.TEST_ID_VERSION_TREE_ITEM)
 performAction(
   move(version2),
   doubleClick()
 )
 test3 = tests[2]
 click(test3)
-version3 = findElementFromElement(test3, globals.ROLE_TREE_ITEM)
+version3 = findElementFromElement(test3, globals.TEST_ID_VERSION_TREE_ITEM)
 performAction(
   move(version3),
   doubleClick()
@@ -349,33 +348,33 @@ assertTrue(colorMatches(
 #### Test: closing a selected tab sends focus to left adjacent if there is one on left
 # open at least 4 tabs for this test
 openUrl(globals.URL_LOCAL)
-file = findElementFromElement(globals.ROLE_TREE, globals.ROLE_TREE_ITEM)
+file = findElementFromElement(globals.ROLE_TREE, globals.TEST_ID_FILE_TREE_ITEM)
 click(file)
-tests = findElementsFromElement(file, globals.ROLE_TREE_ITEM)
+tests = findElementsFromElement(file, globals.TEST_ID_TEST_TREE_ITEM)
 test1 = tests[0]
 click(test1)
-version1 = findElementFromElement(test1, globals.ROLE_TREE_ITEM)
+version1 = findElementFromElement(test1, globals.TEST_ID_VERSION_TREE_ITEM)
 performAction(
   move(version1),
   doubleClick()
 )
 test2 = tests[1]
 click(test2)
-version2 = findElementFromElement(test2, globals.ROLE_TREE_ITEM)
+version2 = findElementFromElement(test2, globals.TEST_ID_VERSION_TREE_ITEM)
 performAction(
   move(version2),
   doubleClick()
 )
 test3 = tests[2]
 click(test3)
-version3 = findElementFromElement(test3, globals.ROLE_TREE_ITEM)
+version3 = findElementFromElement(test3, globals.TEST_ID_VERSION_TREE_ITEM)
 performAction(
   move(version3),
   doubleClick()
 )
 test4 = tests[3]
 click(test4)
-version4 = findElementFromElement(test4, globals.ROLE_TREE_ITEM)
+version4 = findElementFromElement(test4, globals.TEST_ID_VERSION_TREE_ITEM)
 performAction(
   move(version4),
   doubleClick()
@@ -396,26 +395,26 @@ assertTrue(colorMatches(
 #====================================================================
 #### Test: closing a selected tab sends focus to right adjacent if there is none of left
 openUrl(globals.URL_LOCAL)
-file = findElementFromElement(globals.ROLE_TREE, globals.ROLE_TREE_ITEM)
+file = findElementFromElement(globals.ROLE_TREE, globals.TEST_ID_FILE_TREE_ITEM)
 click(file)
-tests = findElementsFromElement(file, globals.ROLE_TREE_ITEM)
+tests = findElementsFromElement(file, globals.TEST_ID_TEST_TREE_ITEM)
 test1 = tests[0]
 click(test1)
-version1 = findElementFromElement(test1, globals.ROLE_TREE_ITEM)
+version1 = findElementFromElement(test1, globals.TEST_ID_VERSION_TREE_ITEM)
 performAction(
   move(version1),
   doubleClick()
 )
 test2 = tests[1]
 click(test2)
-version2 = findElementFromElement(test2, globals.ROLE_TREE_ITEM)
+version2 = findElementFromElement(test2, globals.TEST_ID_VERSION_TREE_ITEM)
 performAction(
   move(version2),
   doubleClick()
 )
 test3 = tests[2]
 click(test3)
-version3 = findElementFromElement(test3, globals.ROLE_TREE_ITEM)
+version3 = findElementFromElement(test3, globals.TEST_ID_VERSION_TREE_ITEM)
 performAction(
   move(version3),
   doubleClick()
@@ -434,20 +433,20 @@ assertTrue(colorMatches(
 #====================================================================
 #### Test: switching tabs shows tab panel of focused tab
 openUrl(globals.URL_LOCAL)
-file = findElementFromElement(globals.ROLE_TREE, globals.ROLE_TREE_ITEM)
-fileName = getElementText(findElementFromElement(file, globals.TEST_ID_FILE_TREE_ITEM))
+file = findElementFromElement(globals.ROLE_TREE, globals.TEST_ID_FILE_TREE_ITEM)
+fileName = getElementText(findElementFromElement(file, globals.TEST_ID_FILE_TREE_ITEM_NAME))
 click(file)
-tests = findElementsFromElement(file, globals.ROLE_TREE_ITEM)
+tests = findElementsFromElement(file, globals.TEST_ID_TEST_TREE_ITEM)
 test1 = tests[0]
 click(test1)
-version1 = findElementFromElement(test1, globals.ROLE_TREE_ITEM)
+version1 = findElementFromElement(test1, globals.TEST_ID_VERSION_TREE_ITEM)
 performAction(
   move(version1),
   doubleClick()
 )
 test2 = tests[1]
 click(test2)
-version2 = findElementFromElement(test2, globals.ROLE_TREE_ITEM)
+version2 = findElementFromElement(test2, globals.TEST_ID_VERSION_TREE_ITEM)
 performAction(
   move(version2),
   doubleClick()
@@ -459,8 +458,8 @@ assertTrue(getElementText(breadcrumb) ==
     format(
       globals.BREADCRUMB_FORMAT,
       fileName,
-      getElementText(findElementFromElement(test2, globals.TEST_ID_TEST_TREE_ITEM)),
-      getElementText(findElementFromElement(version2, globals.TEST_ID_VERSION_TREE_ITEM))
+      getElementText(findElementFromElement(test2, globals.TEST_ID_TEST_TREE_ITEM_NAME)),
+      getElementText(findElementFromElement(version2, globals.TEST_ID_VERSION_TREE_ITEM_NAME))
     )
 )
 # now click on version 1's tab and see the tab panel change to version1
@@ -469,8 +468,8 @@ assertTrue(getElementText(breadcrumb) ==
     format(
       globals.BREADCRUMB_FORMAT,
       fileName,
-      getElementText(findElementFromElement(test1, globals.TEST_ID_TEST_TREE_ITEM)),
-      getElementText(findElementFromElement(version1, globals.TEST_ID_VERSION_TREE_ITEM))
+      getElementText(findElementFromElement(test1, globals.TEST_ID_TEST_TREE_ITEM_NAME)),
+      getElementText(findElementFromElement(version1, globals.TEST_ID_VERSION_TREE_ITEM_NAME))
     )
 )
 
@@ -479,13 +478,13 @@ assertTrue(getElementText(breadcrumb) ==
 # Note: Following are test cases related to this test, not written due to time constraint
 # another test, version that is not selected version is deleted, no change in selection.
 openUrl(globals.URL_LOCAL)
-file = findElementFromElement(globals.ROLE_TREE, globals.ROLE_TREE_ITEM)
+file = findElementFromElement(globals.ROLE_TREE, globals.TEST_ID_FILE_TREE_ITEM)
 click(file)
-tests = findElementsFromElement(file, globals.ROLE_TREE_ITEM)
+tests = findElementsFromElement(file, globals.TEST_ID_TEST_TREE_ITEM)
 test = tests[0]
 requiredVersions = 5 # test needs 4 deletable versions, thus 5 including the latest one
 click(test)
-versions = findElementsFromElement(test, globals.ROLE_TREE_ITEM)
+versions = findElementsFromElement(test, globals.TEST_ID_VERSION_TREE_ITEM)
 if size(versions) < requiredVersions {
   performAction(move(findElementFromElement(test, globals.TEST_ID_TEST_TREE_ITEM_CONTENT)))
   newVersionButton = findElementFromElement(test, globals.BUTTON_NEW_VERSION_TREE_ITEM)
@@ -500,12 +499,12 @@ if size(versions) < requiredVersions {
   # wait until all new versions are added
   # TODO: this v2 function should be change to original variant once original has been updated to accept
   # all required arguments.
-  versions = untilTotalElementsGTv2(test, globals.ROLE_TREE_ITEM, requiredVersions - 1)
+  versions = untilTotalElementsGTv2(test, globals.TEST_ID_VERSION_TREE_ITEM, requiredVersions - 1)
 }
 # new versions added, let's open all of them excluding latest
 for v in versions {
   # exclude latest
-  if size(findElementsFromElement(v, "*[data-testid='latestVersion']", true)) == 1 {
+  if size(findElementsFromElement(v, globals.TEST_ID_LATEST_VERSION, true)) == 1 {
     latestVersion = v
   } else {
     performAction(
@@ -554,14 +553,15 @@ assertTrue(size(findElements(globals.ROLE_TAB_BUTTON)) == size(tabs) - 2)
 # - when only one tab remains after deleting a test, that becomes selected
 # - when selected tab is deleting together with all tabs on the left, just selected first tab in
 #   remaining tabs.
+# - Unloading a file follows the same rules as above.
 openUrl(globals.URL_LOCAL)
-file = findElementFromElement(globals.ROLE_TREE, globals.ROLE_TREE_ITEM)
+file = findElementFromElement(globals.ROLE_TREE, globals.TEST_ID_FILE_TREE_ITEM)
 click(file)
 requiredVersions = 3
-tests = findElementsFromElement(file, globals.ROLE_TREE_ITEM)
+tests = findElementsFromElement(file, globals.TEST_ID_TEST_TREE_ITEM)
 test1 = tests[0]
 click(test1)
-test1Versions = findElementsFromElement(test1, globals.ROLE_TREE_ITEM)
+test1Versions = findElementsFromElement(test1, globals.TEST_ID_VERSION_TREE_ITEM)
 if size(test1Versions) < requiredVersions {
   performAction(move(findElementFromElement(test1, globals.TEST_ID_TEST_TREE_ITEM_CONTENT)))
   newVersionButton = findElementFromElement(test1, globals.BUTTON_NEW_VERSION_TREE_ITEM)
@@ -570,7 +570,7 @@ if size(test1Versions) < requiredVersions {
     typeActive(uuid(), keys.enter)
     sleep(20)
   }
-  test1Versions = untilTotalElementsGTv2(test1, globals.ROLE_TREE_ITEM, requiredVersions - 1)
+  test1Versions = untilTotalElementsGTv2(test1, globals.TEST_ID_VERSION_TREE_ITEM, requiredVersions - 1)
 }
 for v in test1Versions {
   performAction(
@@ -580,7 +580,7 @@ for v in test1Versions {
 }
 test2 = tests[1]
 click(test2)
-test2Versions = findElementsFromElement(test2, globals.ROLE_TREE_ITEM)
+test2Versions = findElementsFromElement(test2, globals.TEST_ID_VERSION_TREE_ITEM)
 if size(test2Versions) < requiredVersions {
   performAction(move(findElementFromElement(test2, globals.TEST_ID_TEST_TREE_ITEM_CONTENT)))
   newVersionButton = findElementFromElement(test2, globals.BUTTON_NEW_VERSION_TREE_ITEM)
@@ -589,7 +589,8 @@ if size(test2Versions) < requiredVersions {
     typeActive(uuid(), keys.enter)
     sleep(20)
   }
-  test2Versions = untilTotalElementsGTv2(test2, globals.ROLE_TREE_ITEM, requiredVersions - 1)
+  test2Versions = untilTotalElementsGTv2(test2, globals.TEST_ID_VERSION_TREE_ITEM,
+      requiredVersions - 1)
 }
 for v in test2Versions {
   performAction(
@@ -606,7 +607,7 @@ assertTrue(colorMatches(
 ))
 performAction(
   move(findElementFromElement(test2, globals.TEST_ID_TEST_TREE_ITEM_CONTENT))
-  # why not move(test3)? rather than moving mouse onto test element (li), we should move it on the inner
+  # why not move(test2)? rather than moving mouse onto test element (li), we should move it on the inner
   # element that has it's content. This is because test element when expanded contains it's versions
   # too so when move is called, webdriver finds the middle of the element which may point to either
   # test or version. For precise mouse hovering, hover it on test element only rather than the root
@@ -625,13 +626,13 @@ assertTrue(colorMatches(
 #====================================================================
 #### Test: renaming version renames it's tab
 openUrl(globals.URL_LOCAL)
-file = findElementFromElement(globals.ROLE_TREE, globals.ROLE_TREE_ITEM)
-fileName = getElementText(findElementFromElement(file, globals.TEST_ID_FILE_TREE_ITEM))
+file = findElementFromElement(globals.ROLE_TREE, globals.TEST_ID_FILE_TREE_ITEM)
+fileName = getElementText(findElementFromElement(file, globals.TEST_ID_FILE_TREE_ITEM_NAME))
 click(file)
-tests = findElementsFromElement(file, globals.ROLE_TREE_ITEM)
+tests = findElementsFromElement(file, globals.TEST_ID_TEST_TREE_ITEM)
 test = tests[0]
 click(test)
-version = findElementFromElement(test, globals.ROLE_TREE_ITEM)
+version = findElementFromElement(test, globals.TEST_ID_VERSION_TREE_ITEM)
 click(version)
 performAction(move(version))
 click(findElementFromElement(version, globals.BUTTON_RENAME_TREE_ITEM))
@@ -642,7 +643,11 @@ assertTrue(getElementText(breadcrumb) ==
     format(
       globals.BREADCRUMB_FORMAT,
       fileName,
-      getElementText(findElementFromElement(test, globals.TEST_ID_TEST_TREE_ITEM)),
+      getElementText(findElementFromElement(test, globals.TEST_ID_TEST_TREE_ITEM_NAME)),
       newName
     )
 )
+
+# TODO: pending test
+#====================================================================
+#### Test: when tabs are switched, versions get selected in explorer
