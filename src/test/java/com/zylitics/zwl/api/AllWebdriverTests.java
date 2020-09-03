@@ -21,7 +21,8 @@ public enum AllWebdriverTests {
   UNTIL_TEST ("UntilTest.zwl"),
   ELEMENT_CAPTURE_TEST ("ElementCaptureTest.zwl"),
   EDITOR_TABS_TEST ("EditorTabsTest.zwl"),
-  EXPLORER_TEST ("ExplorerTest.zwl");
+  EXPLORER_TEST ("ExplorerTest.zwl"),
+  EDITOR_TEST ("EditorTest.zwl");
   
   private final String file;
   

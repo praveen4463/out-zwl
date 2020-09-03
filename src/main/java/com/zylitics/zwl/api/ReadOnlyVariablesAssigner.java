@@ -44,7 +44,7 @@ class ReadOnlyVariablesAssigner {
   }
   
   void assignBuildVariables(@Nullable Map<String, String> buildVariables) {
-    assignFromMap("build", buildVariables);
+    assignFromMap("buildVars", buildVariables);
   }
   
   void assignPreferences(@Nullable Map<String, String> preferences) {

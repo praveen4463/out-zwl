@@ -280,6 +280,13 @@ public class WebdriverTests {
     run(browser, AllWebdriverTests.EXPLORER_TEST.getFile());
   }
   
+  @Tag("editor")
+  @ParameterizedTest
+  @EnumSource(value = Browsers.class)
+  void editorTest(Browsers browser) throws Exception {
+    run(browser, AllWebdriverTests.EDITOR_TEST.getFile());
+  }
+  
   private void run(Browsers browser, String file) throws Exception {
     Assumptions.assumeFalse(shouldSkip(browser), "Skipped");
     setup(browser);

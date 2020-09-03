@@ -48,7 +48,7 @@ public class FindElementWithSelectors extends AbstractWebdriverFunction {
     
     return handleWDExceptions(() -> {
       if (args.size() == 0) {
-        throw unexpectedEndOfFunctionOverload(args.size());
+        throw unexpectedEndOfFunctionOverload(0);
       }
       RuntimeException lastException = null;
       for (int i = 0; i < args.size(); i++) {

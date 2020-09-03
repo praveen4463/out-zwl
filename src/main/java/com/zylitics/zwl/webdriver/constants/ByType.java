@@ -9,5 +9,9 @@ public enum ByType {
   TAG_NAME,
   XPATH,
   CLASS_NAME,
-  CSS_SELECTOR
+  CSS_SELECTOR,
+  TEXT,
+  TEST_ID,
+  ROLE,
+  TITLE,
 }

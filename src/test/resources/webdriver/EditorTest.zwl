@@ -1,0 +1,281 @@
+# Tests expect one file with at least 4 tests loaded into IDE
+# These tests are ready to load into IDE when it's up and running, every test runs independently.
+/*
+#====================================================================
+#### Test: syntax highlighting works expected
+openUrl(globals.URL_LOCAL)
+file = findElementFromElement(globals.ROLE_TREE, globals.TEST_ID_FILE_TREE_ITEM)
+click(file)
+tests = findElementsFromElement(file, globals.TEST_ID_TEST_TREE_ITEM)
+click(tests[0])
+version = findElementFromElement(tests[0], globals.TEST_ID_VERSION_TREE_ITEM)
+click(version)
+# editor should now be focused
+performAction(
+  cmdDown(),
+  sendKeys("a"),
+  cmdUp(),
+  sendKeys(keys.delete)
+)
+# don't put the closing } because when first {, it's closing appears on it's own in IDE
+typeActive(globals.SAMPLE_CODE)
+editor = findElement(globals.TEST_ID_EDITOR, by.testId)
+stringColor = "#85CF84"
+string = findElementFromElement(editor, "/^\"[a-z]+\\[[a-z]+='[a-z]+'\\]\"$/", by.text)
+assertTrue(colorMatches(stringColor, getElementCssValue(string, "color")))
+variableColor = "#DAECEC"
+variable = findElementFromElement(editor, "chromeHomePageOffer", by.text)
+assertTrue(colorMatches(variableColor, getElementCssValue(variable, "color")))
+keywordColor = "#C792EA"
+keyword = findElementFromElement(editor, "if", by.text)
+assertTrue(colorMatches(keywordColor, getElementCssValue(keyword, "color")))
+operatorColor = "#89DDFF"
+operator = findElementFromElement(editor, ">", by.text)
+assertTrue(colorMatches(operatorColor, getElementCssValue(operator, "color")))
+defColor = "#86A8F0"
+def = findElementFromElement(editor, "findElements", by.text)
+assertTrue(colorMatches(defColor, getElementCssValue(def, "color")))
+atomColor = "#F78C6C"
+atom = findElementFromElement(editor, "true", by.text)
+assertTrue(colorMatches(atomColor, getElementCssValue(atom, "color")))
+numberColor = "#FF5370"
+number = findElementFromElement(editor, "0", by.text)
+assertTrue(colorMatches(numberColor, getElementCssValue(number, "color")))
+commentColor = "#7D7878"
+comment = findElementFromElement(editor, "/^#\\s*.*?/", by.text)
+assertTrue(colorMatches(commentColor, getElementCssValue(comment, "color")))
+
+#====================================================================
+#### Test: line and column appears and changes on cursor move
+openUrl(globals.URL_LOCAL)
+file = findElementFromElement(globals.ROLE_TREE, globals.TEST_ID_FILE_TREE_ITEM)
+click(file)
+tests = findElementsFromElement(file, globals.TEST_ID_TEST_TREE_ITEM)
+click(tests[0])
+version = findElementFromElement(tests[0], globals.TEST_ID_VERSION_TREE_ITEM)
+click(version)
+lnCol = findElement(format(globals.LINE_COL_FORMAT, 1, 1), by.text)
+performAction(sendKeys(keys.enter))
+assertTrue(getElementText(lnCol) == format(globals.LINE_COL_FORMAT, 2, 1))
+performAction(sendKeys(keys.space, keys.space, keys.space, keys.space))
+assertTrue(getElementText(lnCol) == format(globals.LINE_COL_FORMAT, 2, 5))
+
+#====================================================================
+#TODO: more tests like goto line, search, selecting text highlight all, match pair, trailing space,
+# active line and gutter
+
+#====================================================================
+#### Test: hinting and filtering works for functions
+openUrl(globals.URL_LOCAL)
+file = findElementFromElement(globals.ROLE_TREE, globals.TEST_ID_FILE_TREE_ITEM)
+click(file)
+tests = findElementsFromElement(file, globals.TEST_ID_TEST_TREE_ITEM)
+click(tests[0])
+version = findElementFromElement(tests[0], globals.TEST_ID_VERSION_TREE_ITEM)
+click(version)
+performAction(
+  cmdDown(),
+  sendKeys("a"),
+  cmdUp(),
+  sendKeys(keys.delete)
+)
+active = activeElement()
+type(active, "f")
+hints = findElement(globals.SELECTOR_HINT)
+funFindElmFrom = findElementFromElement(hints, "/^findElementFromElement\\(.+?\\)$/", by.text)
+assertTrue(isElementDisplayed(funFindElmFrom))
+# now try typing more and see where list refined itself
+type(active, "indElements")
+# we've to find hints again cause typing more creates new instance of list
+hints = findElement(globals.SELECTOR_HINT)
+assertThrows(exceptions.noSuchElemEx,
+    findElementFromElement(hints, "/^findElementFromElement\\(.+?\\)$/", by.text, true))
+# findElementxx are gone but findElementsxx should be visibile
+funFindElms = findElementFromElement(hints, "/^findElements\\(.+?\\)$/", by.text)
+assertTrue(isElementDisplayed(funFindElms))
+
+#====================================================================
+#### Test: hinting and filtering works for constants
+# TODO: more hinting tests such as no duplicate build vars
+openUrl(globals.URL_LOCAL)
+file = findElementFromElement(globals.ROLE_TREE, globals.TEST_ID_FILE_TREE_ITEM)
+click(file)
+tests = findElementsFromElement(file, globals.TEST_ID_TEST_TREE_ITEM)
+click(tests[0])
+version = findElementFromElement(tests[0], globals.TEST_ID_VERSION_TREE_ITEM)
+click(version)
+performAction(
+  cmdDown(),
+  sendKeys("a"),
+  cmdUp(),
+  sendKeys(keys.delete)
+)
+active = activeElement()
+type(active, "ex")
+hints = findElement(globals.SELECTOR_HINT)
+varExceptions = findElementFromElement(hints, "exceptions", by.text)
+assertTrue(isElementDisplayed(varExceptions))
+click(varExceptions)
+isStale(hints)
+type(active, ".")
+assertTrue(isElementDisplayed(findElement(globals.SELECTOR_HINT)))
+type(active, "nosuch")
+hints = findElement(globals.SELECTOR_HINT)
+assertTrue(size(findElementsFromElement(hints, "/^nosuch/i", by.text)) > 5)
+type(active, "elem")
+hints = findElement(globals.SELECTOR_HINT)
+exNoSuchElem = findElementsFromElement(hints, "/^nosuch/i", by.text)
+assertTrue(size(exNoSuchElem) == 1)
+click(exNoSuchElem)
+editor = findElement(globals.TEST_ID_EDITOR, by.testId)
+assertTrue(getElementText(findElementFromElement(editor, ".CodeMirror-line")) ==
+    "exceptions.noSuchElemEx")
+
+#====================================================================
+#### Test: hinting and filtering works for variables declared above
+openUrl(globals.URL_LOCAL)
+file = findElementFromElement(globals.ROLE_TREE, globals.TEST_ID_FILE_TREE_ITEM)
+click(file)
+tests = findElementsFromElement(file, globals.TEST_ID_TEST_TREE_ITEM)
+click(tests[0])
+version = findElementFromElement(tests[0], globals.TEST_ID_VERSION_TREE_ITEM)
+click(version)
+performAction(
+  cmdDown(),
+  sendKeys("a"),
+  cmdUp(),
+  sendKeys(keys.delete)
+)
+active = activeElement()
+type(active, "arrangedRecords", keys.enter)
+type(active, "checkedRecords", keys.enter)
+type(active, "arranged")
+hints = findElement(globals.SELECTOR_HINT)
+assertTrue(isElementDisplayed(findElementFromElement(hints, "arrangedRecords", by.text)))
+type(active, keys.enter, keys.enter, "checked")
+hints = findElement(globals.SELECTOR_HINT)
+assertTrue(isElementDisplayed(findElementFromElement(hints, "checkedRecords", by.text)))
+type(active, keys.enter) # this will select the hint
+# now move 3 up, touch the top and then move cursor to end, then hit enter so that cursor is above
+# checkedRecords
+performAction(sendKeys(keys.up, keys.up, keys.up), ctrlDown(), sendKeys("e"), ctrlUp(),
+    sendKeys(keys.enter))
+type(active, "checked")
+# there shouldn't be any hint when we're above variable checkedRecords
+assertThrows(exceptions.noSuchElemEx, findElement(globals.SELECTOR_HINT, true))
+
+#====================================================================
+#### Test: scroll and cursor position maintains on tab switch
+openUrl(globals.URL_LOCAL)
+file = findElementFromElement(globals.ROLE_TREE, globals.TEST_ID_FILE_TREE_ITEM)
+click(file)
+tests = findElementsFromElement(file, globals.TEST_ID_TEST_TREE_ITEM)
+click(tests[0])
+version = findElementFromElement(tests[0], globals.TEST_ID_VERSION_TREE_ITEM)
+performAction(
+  move(version),
+  doubleClick()
+)
+click(tests[1])
+version = findElementFromElement(tests[1], globals.TEST_ID_VERSION_TREE_ITEM)
+click(version) # don't dbl click else editor looses out focus, let's keep the focus simple way
+performAction(
+  cmdDown(),
+  sendKeys("a"),
+  cmdUp(),
+  sendKeys(keys.delete)
+)
+active = activeElement()
+# type lot of code for this version so that there will be a scroll
+for i = 1 to 10 {
+  type(active, globals.SAMPLE_CODE, keys.down, keys.right, keys.enter)
+}
+# varAtLastTabs serves as a check for scroll position for this tab
+type(active, "varAtLastTab2")
+# keep cursor position for this tab
+lnColTab2 = getElementText(findElement(globals.TEST_ID_LINE_COL, by.testId))
+
+tabs = findElements(globals.ROLE_TAB_BUTTON)
+# move to tab1, enter code and record positions
+click(tabs[0])
+performAction(
+  cmdDown(),
+  sendKeys("a"),
+  cmdUp(),
+  sendKeys(keys.delete)
+)
+# add few more lines so that cursor is different for both tabs
+for i = 1 to 12 {
+  type(active, globals.SAMPLE_CODE, keys.down, keys.right, keys.enter)
+}
+type(active, "varAtLastTab1")
+lnColTab1 = getElementText(findElement(globals.TEST_ID_LINE_COL, by.testId))
+# move to 2nd tab
+click(tabs[1])
+editor = findElement(globals.TEST_ID_EDITOR, by.testId)
+# !!this is enough to test that the last written variable is displayed, codemirror render lines those
+# are in viewport when the viewport is scrolled and remove those are not in viewport, thus if we
+# can search and see variable, that means the editor is correctly scrolled to it.
+assertTrue(isElementDisplayed(findElementFromElement(editor, "varAtLastTab2", by.text, true)))
+assertTrue(lnColTab2 == getElementText(findElement(globals.TEST_ID_LINE_COL, by.testId)))
+# move to 1st tab
+click(tabs[0])
+assertTrue(isElementDisplayed(findElementFromElement(editor, "varAtLastTab1", by.text, true)))
+assertTrue(lnColTab1 == getElementText(findElement(globals.TEST_ID_LINE_COL, by.testId)))
+*/
+#====================================================================
+#### Test: code is getting saved on content change and save message appears/disappears
+# TODO: more tests when api is integrated:
+#  - refresh page and check code is there once
+#  - write invalid code and see parsing is failing
+openUrl(globals.URL_LOCAL)
+file = findElementFromElement(globals.ROLE_TREE, globals.TEST_ID_FILE_TREE_ITEM)
+click(file)
+tests = findElementsFromElement(file, globals.TEST_ID_TEST_TREE_ITEM)
+click(tests[0])
+version = findElementFromElement(tests[0], globals.TEST_ID_VERSION_TREE_ITEM)
+click(version)
+performAction(
+  cmdDown(),
+  sendKeys("a"),
+  cmdUp(),
+  sendKeys(keys.delete)
+)
+active = activeElement()
+type(active, "shouldPersist = 0")
+tabs = findElements(globals.ROLE_TAB_BUTTON)
+# close the only tab opened, this will unmount whole component but the code should save detecting
+# an unmount in global state and via api. Reopen tab and check.
+click(findElementFromElement(tabs[0], globals.TEST_ID_CLOSE_ICON))
+version = findElementFromElement(tests[0], globals.TEST_ID_VERSION_TREE_ITEM)
+click(version)
+editor = findElement(globals.TEST_ID_EDITOR, by.testId)
+assertTrue(isElementDisplayed(findElementFromElement(editor, "shouldPersist", by.text)))
+performAction(
+  ctrlDown(),
+  sendKeys("e"),
+  ctrlUp(),
+  sendKeys(keys.enter)
+)
+active = activeElement()
+type(active, "allowSave = 1")
+# we've entered some text, wait until it gets saved and save message appears then disappears
+status = findElement(globals.TEST_ID_EDITOR_STATUS, by.testId)
+untilTextContains(status, "changes saved")
+assertTrue(
+  containsString(
+    getElementText(findElement(globals.TEST_ID_EDITOR_OUTPUT, by.testId),
+    "Parsing completed"
+  )
+)
+untilTextIs(status, "")
+
+#====================================================================
+# TODO: More tests that can't be written for now until api is integrated:
+# - writing lexically invalid code will fail parsing automatically, verify error test on status,
+#   and in output, it's color, message and the char where error occurred should be marked with waved
+#   underline in red. version's test/ version/file becomes red in explorer. output panel doesn't open
+#   when error occurs.
+# - writing lexically valid code will succeed parsing automatically, any previously marked red file/test
+#   will turn normal color, there will be no status message, and output should say parsing completed..
+#

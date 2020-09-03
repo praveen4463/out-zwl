@@ -56,8 +56,8 @@ public abstract class AbstractExecuteScript extends AbstractWebdriverFunction {
       throw unexpectedEndOfFunctionOverload(argsCount);
     }
     String script = tryCastString(0, args.get(0));
-    // don't let capacity be 0. The type is list of objects cause args may contain different type
-    // of items.
+    // don't let capacity be 0.
+    // The type is list of objects cause args may contain different type of items.
     List<Object> scriptArgs = new ArrayList<>(CollectionUtil.getInitialCapacity(argsCount));
     if (argsCount > 1) {
       args.subList(1, argsCount).forEach(z -> scriptArgs.add(convertFromZwlValue(z)));

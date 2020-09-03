@@ -11,6 +11,10 @@ import com.zylitics.zwl.webdriver.BuildCapability;
 import com.zylitics.zwl.webdriver.Configuration;
 import com.zylitics.zwl.webdriver.TimeoutType;
 import com.zylitics.zwl.webdriver.constants.ByType;
+import com.zylitics.zwl.webdriver.locators.ByRole;
+import com.zylitics.zwl.webdriver.locators.ByTestId;
+import com.zylitics.zwl.webdriver.locators.ByText;
+import com.zylitics.zwl.webdriver.locators.ByTitle;
 import org.openqa.selenium.*;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.RemoteWebElement;
@@ -350,6 +354,18 @@ public abstract class AbstractWebdriverFunction extends AbstractFunction {
       case CSS_SELECTOR:
       default:
         by = By.cssSelector(using);
+        break;
+      case TEXT:
+        by = new ByText(using);
+        break;
+      case TEST_ID:
+        by = new ByTestId(using);
+        break;
+      case ROLE:
+        by = new ByRole(using);
+        break;
+      case TITLE:
+        by = new ByTitle(using);
         break;
     }
     return by;

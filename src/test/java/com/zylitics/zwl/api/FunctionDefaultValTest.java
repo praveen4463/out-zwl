@@ -17,12 +17,12 @@ public class FunctionDefaultValTest {
   void defaultValueTest() {
     String code = String.join(StringUtil.getPlatformLineSeparator(),
         "a = \"Hi there\"",
-        "a = lower(a)??{\"a_default_value_instead\"}",
+        "a = lower_v1(a)??{\"a_default_value_instead\"}",
         "assert(a == \"a_default_value_instead\")");
     
     ZwlApi zwlApi = new ZwlApi(code, ZwlLangTests.DEFAULT_TEST_LISTENERS);
     // set our overridden function that should overwrite the existing one.
-    zwlApi.interpretDevOnly(null, null, zwlInterpreter -> zwlInterpreter.addFunction(new Lower()));
+    zwlApi.interpretDevOnly(null, null, zwlInterpreter -> zwlInterpreter.addFunction(new LowerV1()));
   }
   
   /**
@@ -31,7 +31,12 @@ public class FunctionDefaultValTest {
    * functions should preferably extend {@link com.zylitics.zwl.function.AbstractFunction} for
    * convenience.
    */
-  public static class Lower extends com.zylitics.zwl.function.string.Lower {
+  public static class LowerV1 extends com.zylitics.zwl.function.string.Lower {
+  
+    @Override
+    public String getName() {
+      return "lower_v1";
+    }
   
     @Override
     public ZwlValue invoke(List<ZwlValue> args, Supplier<ZwlValue> defaultValue,

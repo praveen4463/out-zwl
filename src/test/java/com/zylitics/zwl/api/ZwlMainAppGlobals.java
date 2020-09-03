@@ -38,7 +38,19 @@ public class ZwlMainAppGlobals {
         .put("EXPLORER", "*[data-testid='explorer']")
         .put("BUTTON_NEW_FILE", "button[aria-label='New File']")
         .put("EXPLORER_ERROR", "*[data-testid='explorerError']")
+        .put("3URL_LOCAL", "http://localhost:3000/") // kept to see non identifiers work
         .put("URL_LOCAL", "http://localhost:3000/")
+        .put("LINE_COL_FORMAT", "Ln %s, Col %s")
+        .put("SELECTOR_HINT", "ul.CodeMirror-hints")
+        .put("SAMPLE_CODE", "# This code is not typed by hand\n" +
+            "chromeHomePageOffer = findElements(\"div#gbw a.gb_Nd\", true)\n" +
+            "if size(chromeHomePageOffer) > 0 {\n" +
+            "  click(chromeHomePageOffer[0])\n" +
+            "  click(\"input[name='q']\")") // no closing bracket, will be placed by editor
+        .put("TEST_ID_LINE_COL", "lineColContainer")
+        .put("TEST_ID_EDITOR", "codeEditor")
+        .put("TEST_ID_EDITOR_STATUS", "editorStatusMessage")
+        .put("TEST_ID_EDITOR_OUTPUT", "editorOutput")
         .build();
   }
 }

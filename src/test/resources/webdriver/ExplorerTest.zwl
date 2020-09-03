@@ -1,9 +1,10 @@
 # Tests expect one file with at least 4 tests loaded into IDE
 # These tests are ready to load into IDE when it's up and running, every test runs independently.
+# TODO: fix tests, globals and use new by's
 
 #====================================================================
 #### Test: should be able to add new File/Test/Version following new version rules
-openUrl(globals.URL_LOCAL)
+openUrl(globals["3URL_LOCAL"])
 fileName = uuid()
 testName = uuid()
 versionName = uuid()
