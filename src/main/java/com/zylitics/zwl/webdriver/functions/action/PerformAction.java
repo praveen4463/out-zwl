@@ -99,8 +99,14 @@ public class PerformAction extends AbstractWebdriverFunction {
         case ActionFunctions.CMD_DOWN:
           actionFunction = new CmdDown();
           break;
+        case ActionFunctions.CMD_CTRL_DOWN:
+          actionFunction = new CmdCtrlDown();
+          break;
         case ActionFunctions.CMD_UP:
           actionFunction = new CmdUp();
+          break;
+        case ActionFunctions.CMD_CTRL_UP:
+          actionFunction = new CmdCtrlUp();
           break;
         case ActionFunctions.ALT_DOWN:
           actionFunction = new AltDown();

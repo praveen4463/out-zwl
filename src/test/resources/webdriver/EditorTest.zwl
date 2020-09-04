@@ -1,6 +1,6 @@
 # Tests expect one file with at least 4 tests loaded into IDE
 # These tests are ready to load into IDE when it's up and running, every test runs independently.
-/*
+
 #====================================================================
 #### Test: syntax highlighting works expected
 openUrl(globals.URL_LOCAL)
@@ -12,9 +12,9 @@ version = findElementFromElement(tests[0], globals.TEST_ID_VERSION_TREE_ITEM)
 click(version)
 # editor should now be focused
 performAction(
-  cmdDown(),
+  cmdCtrlDown(),
   sendKeys("a"),
-  cmdUp(),
+  cmdCtrlUp(),
   sendKeys(keys.delete)
 )
 # don't put the closing } because when first {, it's closing appears on it's own in IDE
@@ -74,9 +74,9 @@ click(tests[0])
 version = findElementFromElement(tests[0], globals.TEST_ID_VERSION_TREE_ITEM)
 click(version)
 performAction(
-  cmdDown(),
+  cmdCtrlDown(),
   sendKeys("a"),
-  cmdUp(),
+  cmdCtrlUp(),
   sendKeys(keys.delete)
 )
 active = activeElement()
@@ -105,9 +105,9 @@ click(tests[0])
 version = findElementFromElement(tests[0], globals.TEST_ID_VERSION_TREE_ITEM)
 click(version)
 performAction(
-  cmdDown(),
+  cmdCtrlDown(),
   sendKeys("a"),
-  cmdUp(),
+  cmdCtrlUp(),
   sendKeys(keys.delete)
 )
 active = activeElement()
@@ -141,9 +141,9 @@ click(tests[0])
 version = findElementFromElement(tests[0], globals.TEST_ID_VERSION_TREE_ITEM)
 click(version)
 performAction(
-  cmdDown(),
+  cmdCtrlDown(),
   sendKeys("a"),
-  cmdUp(),
+  cmdCtrlUp(),
   sendKeys(keys.delete)
 )
 active = activeElement()
@@ -180,9 +180,9 @@ click(tests[1])
 version = findElementFromElement(tests[1], globals.TEST_ID_VERSION_TREE_ITEM)
 click(version) # don't dbl click else editor looses out focus, let's keep the focus simple way
 performAction(
-  cmdDown(),
+  cmdCtrlDown(),
   sendKeys("a"),
-  cmdUp(),
+  cmdCtrlUp(),
   sendKeys(keys.delete)
 )
 active = activeElement()
@@ -199,9 +199,9 @@ tabs = findElements(globals.ROLE_TAB_BUTTON)
 # move to tab1, enter code and record positions
 click(tabs[0])
 performAction(
-  cmdDown(),
+  cmdCtrlDown(),
   sendKeys("a"),
-  cmdUp(),
+  cmdCtrlUp(),
   sendKeys(keys.delete)
 )
 # add few more lines so that cursor is different for both tabs
@@ -222,7 +222,7 @@ assertTrue(lnColTab2 == getElementText(findElement(globals.TEST_ID_LINE_COL, by.
 click(tabs[0])
 assertTrue(isElementDisplayed(findElementFromElement(editor, "varAtLastTab1", by.text, true)))
 assertTrue(lnColTab1 == getElementText(findElement(globals.TEST_ID_LINE_COL, by.testId)))
-*/
+
 #====================================================================
 #### Test: code is getting saved on content change and save message appears/disappears
 # TODO: more tests when api is integrated:
@@ -236,9 +236,9 @@ click(tests[0])
 version = findElementFromElement(tests[0], globals.TEST_ID_VERSION_TREE_ITEM)
 click(version)
 performAction(
-  cmdDown(),
+  cmdCtrlDown(),
   sendKeys("a"),
-  cmdUp(),
+  cmdCtrlUp(),
   sendKeys(keys.delete)
 )
 active = activeElement()
@@ -262,20 +262,337 @@ type(active, "allowSave = 1")
 # we've entered some text, wait until it gets saved and save message appears then disappears
 status = findElement(globals.TEST_ID_EDITOR_STATUS, by.testId)
 untilTextContains(status, "changes saved")
-assertTrue(
-  containsString(
-    getElementText(findElement(globals.TEST_ID_EDITOR_OUTPUT, by.testId),
-    "Parsing completed"
-  )
-)
 untilTextIs(status, "")
 
+# TODO:
+# Note: All tests related to parse and dry run here are running by simulating an api pass/fail via
+# code workarounds. When there will be api integrated, we can just enter valid/invalid code and can
+# expect the correct dry run/parse behaviour and expected line/characters in error but for now until
+# there is api, when code contains FAIL_TEST text, a predefined error message and line/ch triggers,
+# otherwise it passes. Refer to the code for error messages and line numbers in different contexts
+# NOTE THAT ALL TESTS NEEDS TO BE UPDATED WHEN API IS INTEGRATED TO USE REAL PROCESS AND NOT SIMULATED
 #====================================================================
-# TODO: More tests that can't be written for now until api is integrated:
-# - writing lexically invalid code will fail parsing automatically, verify error test on status,
-#   and in output, it's color, message and the char where error occurred should be marked with waved
-#   underline in red. version's test/ version/file becomes red in explorer. output panel doesn't open
-#   when error occurs.
-# - writing lexically valid code will succeed parsing automatically, any previously marked red file/test
-#   will turn normal color, there will be no status message, and output should say parsing completed..
-#
+#### Test: automatic parsing triggers automatically and fails lexically invalid code
+# TODO: more tests:
+# - when no code in editor, no auto parsing triggers
+openUrl(globals.URL_LOCAL)
+file = findElementFromElement(globals.ROLE_TREE, globals.TEST_ID_FILE_TREE_ITEM)
+click(file)
+tests = findElementsFromElement(file, globals.TEST_ID_TEST_TREE_ITEM)
+click(tests[0])
+version = findElementFromElement(tests[0], globals.TEST_ID_VERSION_TREE_ITEM)
+click(version)
+performAction(
+  cmdCtrlDown(),
+  sendKeys("a"),
+  cmdCtrlUp(),
+  sendKeys(keys.delete)
+)
+errorCode = `a = 1
+a += 1 # this is invalid operator, put it on line 2:1 as the code mentioned the same line
+# Above generates a parse error.FAIL_TEST`
+typeActive(errorCode)
+status = findElement(globals.TEST_ID_EDITOR_STATUS, by.testId)
+untilTextIs(status, format(globals.EDITOR_OUTPUT_FAIL_STATUS_MSG_FORMAT, globals.RUN_TYPE_NAME_PARSE))
+outputPanel = findElement(globals.TEST_ID_EDITOR_OUTPUT, by.testId)
+assertTrue(getElementText(outputPanel) == "") # because it's hidden
+click(status) # now output panel should be visible, it's content should be visible and retrievable
+assertTrue(containsString(getElementText(outputPanel), "no viable alternative at input 'a+'"))
+errorLine = findElements(".CodeMirror-line")[1] # problematic char is on 2nd line
+assertTrue(getElementText(findElementFromElement(errorLine, ".cm-variable.cm-errorText")) == "a")
+# if the variable a has the error css class, this means we've error underlined it.
+assertTrue(getElementText(findElementFromElement(errorLine, ".cm-operator")) == "+=")
+# make sure selected line has the invalid operator and we're not on the wrong line
+assertTrue(
+  colorMatches(
+    globals.COLOR_EXP_ITEM_ERROR,
+    getElementCssValue(findElementFromElement(version, globals.TEST_ID_VERSION_TREE_ITEM_NAME)
+        , "color")
+  )
+)
+assertTrue(
+  colorMatches(
+    globals.COLOR_EXP_ITEM_ERROR,
+    getElementCssValue(findElementFromElement(tests[0], globals.TEST_ID_TEST_TREE_ITEM_NAME)
+        , "color")
+  )
+)
+assertTrue(
+  colorMatches(
+    globals.COLOR_EXP_ITEM_ERROR,
+    getElementCssValue(findElementFromElement(file, globals.TEST_ID_FILE_TREE_ITEM_NAME)
+        , "color")
+  )
+)
+
+#====================================================================
+#### Test: automatic parsing when succeeds after failure, does make resets
+openUrl(globals.URL_LOCAL)
+file = findElementFromElement(globals.ROLE_TREE, globals.TEST_ID_FILE_TREE_ITEM)
+click(file)
+tests = findElementsFromElement(file, globals.TEST_ID_TEST_TREE_ITEM)
+click(tests[0])
+version = findElementFromElement(tests[0], globals.TEST_ID_VERSION_TREE_ITEM)
+click(version)
+performAction(
+  cmdCtrlDown(),
+  sendKeys("a"),
+  cmdCtrlUp(),
+  sendKeys(keys.delete)
+)
+errorCode = `a = 1
+a += 1 # this is invalid operator, put it on line 2:1 as the code mentioned the same line
+# Above generates a parse error.FAIL_TEST`
+typeActive(errorCode)
+status = findElement(globals.TEST_ID_EDITOR_STATUS, by.testId)
+untilTextIs(status, format(globals.EDITOR_OUTPUT_FAIL_STATUS_MSG_FORMAT, globals.RUN_TYPE_NAME_PARSE))
+# we've parse error, let's fix code so parsing succeeds
+# delete the last line and wait for parse to trigger
+performAction(
+  cmdCtrlDown(),
+  sendKeys("d"),
+  cmdCtrlUp()
+)
+untilTextContains(status, "saved")
+outputPanel = findElement(globals.TEST_ID_EDITOR_OUTPUT, by.testId)
+assertTrue(getElementText(outputPanel) == "") # because it's hidden
+click(status) # now output panel should be visible, it's content should be visible and retrievable
+assertTrue(containsString(getElementText(outputPanel), "no problems found"))
+errorLine = findElements(".CodeMirror-line")[1] # problematic char is on 2nd line
+assertTrue(getElementText(findElementFromElement(errorLine, ".cm-operator")) == "+=")
+# make sure selected line has the invalid operator and we're not on the wrong line
+offendingCharClasses = getElementAttribute(findElementFromElement(errorLine, ".cm-variable"),
+    "class")
+assertFalse(containsString(offendingCharClasses, "cm-errorText")) # error underline is removed
+assertFalse(
+  colorMatches(
+    globals.COLOR_EXP_ITEM_ERROR,
+    getElementCssValue(findElementFromElement(version, globals.TEST_ID_VERSION_TREE_ITEM_NAME)
+        , "color")
+  )
+)
+assertFalse(
+  colorMatches(
+    globals.COLOR_EXP_ITEM_ERROR,
+    getElementCssValue(findElementFromElement(tests[0], globals.TEST_ID_TEST_TREE_ITEM_NAME)
+        , "color")
+  )
+)
+assertFalse(
+  colorMatches(
+    globals.COLOR_EXP_ITEM_ERROR,
+    getElementCssValue(findElementFromElement(file, globals.TEST_ID_FILE_TREE_ITEM_NAME)
+        , "color")
+  )
+)
+
+#====================================================================
+#### Test: run controls freezes editor and disables other controls on panel until run completes
+# TODO: more related tests:
+# - check other versions are frozen too while something running
+# - when no code in editor, nothing runs and errors
+openUrl(globals.URL_LOCAL)
+file = findElementFromElement(globals.ROLE_TREE, globals.TEST_ID_FILE_TREE_ITEM)
+click(file)
+tests = findElementsFromElement(file, globals.TEST_ID_TEST_TREE_ITEM)
+click(tests[0])
+version = findElementFromElement(tests[0], globals.TEST_ID_VERSION_TREE_ITEM)
+click(version)
+performAction(
+  cmdCtrlDown(),
+  sendKeys("a"),
+  cmdCtrlUp(),
+  sendKeys(keys.delete)
+)
+active = activeElement()
+type(active, "# comment")
+commentElement = findElement(".CodeMirror-line .cm-comment")
+dryRun = findElement(globals.TEST_ID_EDITOR_OUTPUT_DRY_BTN, by.testId)
+buildRun = findElement(globals.TEST_ID_EDITOR_OUTPUT_BUILD_BTN, by.testId)
+parseRun = findElement(globals.TEST_ID_EDITOR_OUTPUT_PARSE_BTN, by.testId)
+click(dryRun)
+assertFalse(isElementEnabled(dryRun))
+assertFalse(isElementEnabled(buildRun))
+assertFalse(isElementEnabled(parseRun))
+# try delete the comment line from editor, it shouldn't be deleted
+click(".CodeMirror-code")
+performAction(
+  cmdCtrlDown(),
+  sendKeys("d"),
+  cmdCtrlUp()
+)
+assertFalse(isStale(commentElement))
+status = findElement(globals.TEST_ID_EDITOR_STATUS, by.testId)
+untilTextIs(status, format(globals.EDITOR_OUTPUT_PASS_STATUS_MSG_FORMAT, globals.RUN_TYPE_NAME_DRY))
+assertTrue(isElementEnabled(dryRun))
+assertTrue(isElementEnabled(buildRun))
+assertTrue(isElementEnabled(parseRun))
+click(".CodeMirror-code")
+performAction(
+  cmdCtrlDown(),
+  sendKeys("d"),
+  cmdCtrlUp()
+)
+assertTrue(isStale(commentElement))
+
+#====================================================================
+#### Test: dry run fails on invalid code and resets on valid
+openUrl(globals.URL_LOCAL)
+file = findElementFromElement(globals.ROLE_TREE, globals.TEST_ID_FILE_TREE_ITEM)
+click(file)
+tests = findElementsFromElement(file, globals.TEST_ID_TEST_TREE_ITEM)
+click(tests[0])
+version = findElementFromElement(tests[0], globals.TEST_ID_VERSION_TREE_ITEM)
+click(version)
+performAction(
+  cmdCtrlDown(),
+  sendKeys("a"),
+  cmdCtrlUp(),
+  sendKeys(keys.delete)
+)
+errorCode = `openUrl("https://example.com")
+findElement(
+  ".some-selector",
+  "Push Me",
+  by.text,
+  true
+) # this is invalid function definition, put it on line 2:1 to 7:2 as the code mentioned the same
+# Above generates a dry run error.FAIL_TEST`
+typeActive(errorCode)
+dryRun = findElement(globals.TEST_ID_EDITOR_OUTPUT_DRY_BTN, by.testId)
+click(dryRun)
+status = findElement(globals.TEST_ID_EDITOR_STATUS, by.testId)
+untilTextIs(status, format(globals.EDITOR_OUTPUT_FAIL_STATUS_MSG_FORMAT, globals.RUN_TYPE_NAME_DRY))
+outputPanel = findElement(globals.TEST_ID_EDITOR_OUTPUT, by.testId)
+output = getElementText(outputPanel)
+assertTrue(containsString(output, "Executing function findElement with arguments")) # this is normal output
+assertTrue(containsString(output, "findElement with parameters count: 4 isn't defined")) # this is error output
+errorLineStart = findElements(".CodeMirror-line")[1] # problematic char starts from 2nd line
+errorLineMid = findElements(".CodeMirror-line")[3]
+errorLineEnd = findElements(".CodeMirror-line")[6] # problematic char ends at 7th line
+assertTrue(getElementText(findElementFromElement(errorLineStart, ".cm-def.cm-errorText")) ==
+    "findElement")
+assertTrue(getElementText(findElementFromElement(errorLineMid, ".cm-string.cm-errorText")) ==
+    "\"Push Me\"")
+assertTrue(getElementText(findElementFromElement(errorLineEnd, ".cm-errorText")) == ")")
+# if the tokens have error css class, this means we've error underlined it.
+# now lets fix code
+click(".CodeMirror-code")
+if platform == "windows" {keyEnd = sendKeys(keys.end)} else {keyEnd = sendKeys(keys.down)}
+# go to end of document and delete last line
+performAction(
+  cmdCtrlDown(),
+  keyEnd,
+  sendKeys("d"),
+  cmdCtrlUp()
+)
+click(dryRun)
+untilTextIs(status, format(globals.EDITOR_OUTPUT_PASS_STATUS_MSG_FORMAT, globals.RUN_TYPE_NAME_DRY))
+output = getElementText(outputPanel)
+assertFalse(containsString(output, "findElement with parameters count: 4 isn't defined"))
+# find lines again as when error underline removes, those lines recreate
+errorLineStart = findElements(".CodeMirror-line")[1]
+errorLineMid = findElements(".CodeMirror-line")[3]
+errorLineEnd = findElements(".CodeMirror-line")[6]
+offendingCharClasses = getElementAttribute(findElementFromElement(errorLineStart, ".cm-def"),
+    "class")
+assertFalse(containsString(offendingCharClasses, "cm-errorText"))
+offendingCharClasses = getElementAttribute(findElementFromElement(errorLineMid, ".cm-string"),
+    "class")
+assertFalse(containsString(offendingCharClasses, "cm-errorText"))
+offendingCharClasses =
+    getElementAttribute(findElementFromElement(errorLineEnd, "presentation", by.role), "class")
+assertFalse(containsString(offendingCharClasses, "cm-errorText"))
+
+#====================================================================
+#### Test: parsing fails on invalid code and resets on valid
+openUrl(globals.URL_LOCAL)
+file = findElementFromElement(globals.ROLE_TREE, globals.TEST_ID_FILE_TREE_ITEM)
+click(file)
+tests = findElementsFromElement(file, globals.TEST_ID_TEST_TREE_ITEM)
+click(tests[0])
+version = findElementFromElement(tests[0], globals.TEST_ID_VERSION_TREE_ITEM)
+click(version)
+performAction(
+  cmdCtrlDown(),
+  sendKeys("a"),
+  cmdCtrlUp(),
+  sendKeys(keys.delete)
+)
+errorCode = `openUrl("https://example.com")
+findElement("Push Me", by.text)
+assertTrue(@ == @) # this is invalid token at line 3:12
+# Above generates a dry run error.FAIL_TEST`
+typeActive(errorCode)
+parse = findElement(globals.TEST_ID_EDITOR_OUTPUT_PARSE_BTN, by.testId)
+click(parse)
+status = findElement(globals.TEST_ID_EDITOR_STATUS, by.testId)
+untilTextIs(status, format(globals.EDITOR_OUTPUT_FAIL_STATUS_MSG_FORMAT, globals.RUN_TYPE_NAME_PARSE))
+outputPanel = findElement(globals.TEST_ID_EDITOR_OUTPUT, by.testId)
+output = getElementText(outputPanel)
+assertTrue(containsString(output, "token recognition error at: '@'"))
+errorLine = findElements(".CodeMirror-line")[2] # problematic char is on 3rd line
+assertTrue(getElementText(findElementFromElement(errorLine, ".cm-errorText")) == "@")
+assertTrue(
+  colorMatches(
+    globals.COLOR_EXP_ITEM_ERROR,
+    getElementCssValue(findElementFromElement(version, globals.TEST_ID_VERSION_TREE_ITEM_NAME)
+        , "color")
+  )
+)
+assertTrue(
+  colorMatches(
+    globals.COLOR_EXP_ITEM_ERROR,
+    getElementCssValue(findElementFromElement(tests[0], globals.TEST_ID_TEST_TREE_ITEM_NAME)
+        , "color")
+  )
+)
+assertTrue(
+  colorMatches(
+    globals.COLOR_EXP_ITEM_ERROR,
+    getElementCssValue(findElementFromElement(file, globals.TEST_ID_FILE_TREE_ITEM_NAME)
+        , "color")
+  )
+)
+# now lets fix code (we're not actually fixing code but remove keyword that will trigger success,
+# when api integrated, remove existing code and type valid to let it pass)
+click(".CodeMirror-code")
+if platform == "windows" {keyEnd = sendKeys(keys.end)} else {keyEnd = sendKeys(keys.down)}
+# go to end of document and delete last line
+performAction(
+  cmdCtrlDown(),
+  keyEnd,
+  sendKeys("d"),
+  cmdCtrlUp()
+)
+click(parse)
+untilTextIs(status, format(globals.EDITOR_OUTPUT_PASS_STATUS_MSG_FORMAT,
+    globals.RUN_TYPE_NAME_PARSE))
+output = getElementText(outputPanel)
+assertFalse(containsString(output, "token recognition error at: '@'"))
+errorLine = findElements(".CodeMirror-line")[2]
+assertThrows(exceptions.noSuchElemEx, findElementFromElement(errorLine, ".cm-errorText", true))
+assertFalse(
+  colorMatches(
+    globals.COLOR_EXP_ITEM_ERROR,
+    getElementCssValue(findElementFromElement(version, globals.TEST_ID_VERSION_TREE_ITEM_NAME)
+        , "color")
+  )
+)
+assertFalse(
+  colorMatches(
+    globals.COLOR_EXP_ITEM_ERROR,
+    getElementCssValue(findElementFromElement(tests[0], globals.TEST_ID_TEST_TREE_ITEM_NAME)
+        , "color")
+  )
+)
+assertFalse(
+  colorMatches(
+    globals.COLOR_EXP_ITEM_ERROR,
+    getElementCssValue(findElementFromElement(file, globals.TEST_ID_FILE_TREE_ITEM_NAME)
+        , "color")
+  )
+)
+
+#====================================================================
+#### Test: build run TODO: do it once supporting stuff is done.

@@ -151,6 +151,10 @@ public abstract class AbstractWebdriverFunction extends AbstractFunction {
     return getElement(elemIdOrSelector, true);
   }
   
+  public BuildCapability getBuildCapability() {
+    return buildCapability;
+  }
+  
   protected RemoteWebElement getElement(String elemIdOrSelector,
                                         boolean wait) {
     if (isValidElemId(elemIdOrSelector)) {

@@ -1,9 +1,11 @@
 package com.zylitics.zwl.webdriver.functions.action;
 
+import com.zylitics.zwl.webdriver.BuildCapability;
 import com.zylitics.zwl.webdriver.functions.AbstractSignatureReturningFunctions;
 import com.zylitics.zwl.webdriver.functions.AbstractWebdriverFunction;
 import com.zylitics.zwl.datatype.ZwlValue;
 import org.openqa.selenium.Keys;
+import org.openqa.selenium.Platform;
 import org.openqa.selenium.interactions.Actions;
 
 import java.time.Duration;
@@ -25,6 +27,10 @@ public class ActionFunctions {
   public static final String CMD_DOWN = "cmdDown";
   
   public static final String CMD_UP = "cmdUp";
+  
+  public static final String CMD_CTRL_DOWN = "cmdCtrlDown";
+  
+  public static final String CMD_CTRL_UP = "cmdCtrlUp";
   
   public static final String ALT_DOWN = "altDown";
   
@@ -150,6 +156,38 @@ public class ActionFunctions {
     @Override
     public void process(AbstractWebdriverFunction wd, Actions actions, List<ZwlValue> args) {
       actions.keyUp(Keys.COMMAND);
+    }
+  }
+  
+  public static class CmdCtrlDown extends AbstractSignatureReturningFunctions
+      implements ActionFunction {
+    
+    @Override
+    public String getName() {
+      return CMD_CTRL_DOWN;
+    }
+    
+    @Override
+    public void process(AbstractWebdriverFunction wd, Actions actions, List<ZwlValue> args) {
+      BuildCapability buildCapability = wd.getBuildCapability();
+      actions.keyDown(
+          buildCapability.getWdPlatformName().equals("mac") ? Keys.COMMAND : Keys.CONTROL);
+    }
+  }
+  
+  public static class CmdCtrlUp extends AbstractSignatureReturningFunctions
+      implements ActionFunction {
+    
+    @Override
+    public String getName() {
+      return CMD_CTRL_UP;
+    }
+    
+    @Override
+    public void process(AbstractWebdriverFunction wd, Actions actions, List<ZwlValue> args) {
+      BuildCapability buildCapability = wd.getBuildCapability();
+      actions.keyUp(
+          buildCapability.getWdPlatformName().equals("mac") ? Keys.COMMAND : Keys.CONTROL);
     }
   }
   

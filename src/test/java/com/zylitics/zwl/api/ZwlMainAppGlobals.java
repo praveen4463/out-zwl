@@ -51,6 +51,15 @@ public class ZwlMainAppGlobals {
         .put("TEST_ID_EDITOR", "codeEditor")
         .put("TEST_ID_EDITOR_STATUS", "editorStatusMessage")
         .put("TEST_ID_EDITOR_OUTPUT", "editorOutput")
+        .put("TEST_ID_EDITOR_OUTPUT_BUILD_BTN", "outputPanelRunBuild")
+        .put("TEST_ID_EDITOR_OUTPUT_PARSE_BTN", "outputPanelParse")
+        .put("TEST_ID_EDITOR_OUTPUT_DRY_BTN", "outputPanelDryRun")
+        .put("COLOR_EXP_ITEM_ERROR", "#f63a56")
+        .put("EDITOR_OUTPUT_PASS_STATUS_MSG_FORMAT", "%s passed, expand for output")
+        .put("EDITOR_OUTPUT_FAIL_STATUS_MSG_FORMAT", "%s failed, expand for error")
+        .put("RUN_TYPE_NAME_PARSE", "parsing")
+        .put("RUN_TYPE_NAME_DRY", "dry run")
+        .put("RUN_TYPE_NAME_BUILD", "build run")
         .build();
   }
 }

@@ -109,6 +109,8 @@ public class WebdriverFunctions {
         new ActionFunctions.AltUp(),
         new ActionFunctions.CmdDown(),
         new ActionFunctions.CmdUp(),
+        new ActionFunctions.CmdCtrlDown(),
+        new ActionFunctions.CmdCtrlUp(),
         new ActionFunctions.SendKeys(),
         new ActionFunctions.Move(),
         new ActionFunctions.Hold(),
