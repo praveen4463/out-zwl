@@ -1,0 +1,89 @@
+#====================================================================
+#### Test: new build capability shows up
+openUrl(globals.URL_LOCAL)
+editIcon = findElement(globals.EDIT_ICON)
+click(editIcon)
+buildCapsMenu = findElement(globals.BUILD_CAPS_MENU_TEXT, by.text)
+click(buildCapsMenu)
+dlg = findElement("dialog", by.role)
+untilClicked(findElementFromElement(dlg, "Add New Build Capability", by.text))
+capsName = "Unique_Caps"
+typeActive(capsName)
+os = findElementFromElement(dlg, "Select an OS", by.text)
+click(os)
+click(findElementFromElement(dlg, "Windows 10", by.text))
+brw = findElementFromElement(dlg, "Select a browser", by.text)
+click(brw)
+click(findElementFromElement(dlg, "85", by.text))
+saveButton = findElementFromElement(dlg, "Save", by.text)
+click(saveButton)
+untilStale(saveButton)
+click(findElementsFromElement(dlg, capsName, by.text))
+# caps that's clicked is the only one that renders
+rows = findElementsFromElement(dlg, "viewRow", by.testId)
+for row in rows {
+  if size(findElementsFromElement(row, "OS:", by.text, true)) > 0 {
+    osRow = row
+  } else if size(findElementsFromElement(row, "Browser:", by.text, true)) > 0 {
+    brwRow = row
+  }
+}
+assertTrue(isElementDisplayed(findElementsFromElement(osRow, "Windows 10", by.text)))
+assertTrue(isElementDisplayed(findElementsFromElement(brwRow, "Chrome 85", by.text)))
+
+#====================================================================
+#### Test: Build caps could be edited
+openUrl(globals.URL_LOCAL)
+editIcon = findElement(globals.EDIT_ICON)
+click(editIcon)
+buildCapsMenu = findElement(globals.BUILD_CAPS_MENU_TEXT, by.text)
+click(buildCapsMenu)
+dlg = findElement("dialog", by.role)
+untilClicked(findElementFromElement(dlg, "Add New Build Capability", by.text))
+capsName = "Kiki Caps"
+typeActive(capsName)
+os = findElementFromElement(dlg, "Select an OS", by.text)
+click(os)
+click(findElementFromElement(dlg, "Windows 8.1", by.text))
+brw = findElementFromElement(dlg, "Select a browser", by.text)
+click(brw)
+click(findElementFromElement(dlg, "11", by.text))
+saveButton = findElementFromElement(dlg, "Save", by.text)
+click(saveButton)
+untilStale(saveButton)
+summaries = findElementsFromElement(dlg, "capSummary", by.testId)
+for summary in summaries {
+  if size(findElementsFromElement(summary, capsName, by.text, true)) > 0 {
+    click(findElementFromElement(summary, "Edit Capability", by.title))
+  }
+}
+assertTrue(isElementDisplayed(
+  findElementFromElement(dlg, format("Edit Capability %s", capsName), by.text)
+))
+capsName = "Kiki Caps Edited"
+typeActive(" Edited")
+# currently 8.1 is selected in Os select element
+click(findElementFromElement(dlg, "Windows 8.1", by.text))
+click(findElementFromElement(dlg, "Windows 10", by.text))
+click(findElementFromElement(dlg, "IE 11", by.text))
+click(findElementFromElement(dlg, "74", by.text))
+aicId = getElementAttribute(findElementFromElement(dlg, "Accept Insecure Certificate", by.text), "for")
+click(findElement(aicId, by.id))
+saveButton = findElementFromElement(dlg, "Save", by.text)
+click(saveButton)
+untilStale(saveButton)
+click(findElementsFromElement(dlg, capsName, by.text))
+# caps that's clicked is the only one that renders
+rows = findElementsFromElement(dlg, "viewRow", by.testId)
+for row in rows {
+  if size(findElementsFromElement(row, "OS:", by.text, true)) > 0 {
+    osRow = row
+  } else if size(findElementsFromElement(row, "Browser:", by.text, true)) > 0 {
+    brwRow = row
+  } else if size(findElementsFromElement(row, "Accept Insecure Certificate:", by.text, true)) > 0 {
+    aicRow = row
+  }
+}
+assertTrue(isElementDisplayed(findElementsFromElement(osRow, "Windows 10", by.text)))
+assertTrue(isElementDisplayed(findElementsFromElement(brwRow, "Chrome 74", by.text)))
+assertTrue(isElementDisplayed(findElementsFromElement(aicRow, "Yes", by.text)))

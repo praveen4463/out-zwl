@@ -1,0 +1,47 @@
+#====================================================================
+#### Test: added build vars shows up in group
+openUrl(globals.URL_LOCAL)
+editIcon = findElement(globals.EDIT_ICON)
+click(editIcon)
+buildVarMenu = findElement(globals.BUILD_VAR_MENU_TEXT, by.text)
+click(buildVarMenu)
+dlg = findElement("dialog", by.role)
+assertTrue(isElementDisplayed(findElementFromElement(dlg, globals.BUILD_VAR_MENU_TEXT, by.text)))
+add = findElementFromElement(dlg, globals.VARS_ADD_BUTTON)
+click(add)
+key = "ADMIN SITE"
+value1 = "https://prod.zl/io"
+value2 = "https://dev.zl/io"
+value3 = "https://staging.zl/io"
+active = activeElement()
+click(findElement("Add multiple", by.title))
+click(active)
+typeActive(key, keys.tab, value1, keys.tab, keys.tab, keys.enter)
+typeActive(key, keys.tab, value2, keys.tab, keys.space, keys.tab, keys.enter) # primary
+typeActive(key, keys.tab, value3, keys.tab, keys.tab, keys.enter)
+click(findElement("Cancel", by.text))
+# new variables are not displayed until we click on group
+table = findElement("table")
+assertThrows(exceptions.noSuchElemEx, findElementFromElement(table, value1, by.text, true))
+group = findElementFromElement(table, format("%s (%s)", key, 3), by.text)
+click(group)
+assertTrue(isElementDisplayed(findElementFromElement(table, value1, by.text)))
+assertTrue(isElementDisplayed(findElementFromElement(table, value3, by.text)))
+# make sure that the value2 is primary is un deletable
+# to do that, get all rows from table, find row that has value2 and then look for primary and delete
+# element in that row
+rows = findElementsFromElement(table, "tbody tr")
+for row in rows {
+  el = findElementsFromElement(row, value2, by.text, true)
+  if size(el) == 1 && isElementDisplayed(el[0]) {
+    primaryRow = row
+  }
+}
+assertFalse(isElementEnabled(findElementFromElement(primaryRow, "Delete Variable", by.title)))
+assertTrue(isElementSelected(findElementFromElement(primaryRow, "input[type='radio']")))
+
+# TODO: more tests:
+# - search, sorting, updating records, closing and opening again dialogs, deleting, build var after
+# creation available in code editor.
+#====================================================================
+#### Test:

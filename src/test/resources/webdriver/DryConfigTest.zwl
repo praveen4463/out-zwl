@@ -1,0 +1,73 @@
+#====================================================================
+#### Test: browser changes made persists
+openUrl(globals.URL_LOCAL)
+editIcon = findElement(globals.EDIT_ICON)
+click(editIcon)
+dryConfigMenu = findElement(globals.DRY_CONFIG_MENU_TEXT, by.text)
+click(dryConfigMenu)
+browserSelect = findElement("browserSelect-header", by.id)
+untilClicked(browserSelect)
+content = findElement("browserSelect-content", by.id)
+# select first found version
+click(findElementFromElement(content, "11", by.text))
+# verify IE 11 is selected
+assertTrue(getElementText(browserSelect) == "IE 11")
+sendKeysToPageF(keys.esc)
+untilClicked(editIcon)
+dryConfigMenu = findElement(globals.DRY_CONFIG_MENU_TEXT, by.text)
+click(dryConfigMenu)
+browserSelect = findElement("browserSelect-header", by.id)
+untilTextIs(browserSelect, "IE 11")
+
+#====================================================================
+#### Test: build variables changes persists
+# first add new build variable
+openUrl(globals.URL_LOCAL)
+editIcon = findElement(globals.EDIT_ICON)
+click(editIcon)
+buildVarMenu = findElement(globals.BUILD_VAR_MENU_TEXT, by.text)
+click(buildVarMenu)
+add = findElementFromElement(findElement("dialog", by.role), globals.VARS_ADD_BUTTON)
+click(add)
+key = "ADMIN SITE"
+value1 = "https://prod.zl/io"
+value2 = "https://dev.zl/io"
+value3 = "https://staging.zl/io"
+active = activeElement()
+click(findElement("Add multiple", by.title))
+click(active)
+typeActive(key, keys.tab, value1, keys.tab, keys.tab, keys.enter)
+typeActive(key, keys.tab, value2, keys.tab, keys.space, keys.tab, keys.enter) # primary
+typeActive(key, keys.tab, value3, keys.tab, keys.tab, keys.enter, keys.esc)
+untilStale(active) # wait until the add dialog disappears
+sendKeysToPageF(keys.esc)
+untilClicked(editIcon)
+dryConfigMenu = findElement(globals.DRY_CONFIG_MENU_TEXT, by.text)
+click(dryConfigMenu)
+click(findElement("selectBuildVars-header", by.id))
+content = findElement("selectBuildVars-content", by.id)
+for g in findElementsFromElement(content, "keyGroup", by.testId) {
+  summary = findElementFromElement(g, "keyGroupSummary", by.testId)
+  if size(findElementsFromElement(summary, key, by.text, true)) > 0 {
+    # primary variable is in summary row means it's currently selected
+    assertTrue(size(findElementsFromElement(summary, value2, by.text)) > 0)
+    targetGroup = g
+    targetSummary = summary
+  }
+}
+click(targetSummary)
+groupVars = findElementsFromElement(targetGroup, "keyGroupVars", by.testId)
+assertTrue(size(groupVars) == 2)
+varText1 = getElementText(findElementFromElement(groupVars[0], "varText", by.testId))
+varText2 = getElementText(findElementFromElement(groupVars[1], "varText", by.testId))
+assertTrue(varText1 == value1 || varText1 == value3)
+assertTrue(varText2 == value1 || varText2 == value3)
+click(findElementFromElement(groupVars[0], "button"))
+# get summary row for key again as clicking creates new elements
+for g in findElementsFromElement(content, "keyGroup", by.testId) {
+  summary = findElementFromElement(g, "keyGroupSummary", by.testId)
+  if size(findElementsFromElement(summary, key, by.text, true)) > 0 {
+    targetSummary = summary
+  }
+}
+assertTrue(size(findElementsFromElement(targetSummary, varText1, by.text)) > 0)

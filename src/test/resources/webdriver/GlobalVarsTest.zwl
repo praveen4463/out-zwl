@@ -1,0 +1,24 @@
+#====================================================================
+#### Test: added global vars shows up
+openUrl(globals.URL_LOCAL)
+editIcon = findElement(globals.EDIT_ICON)
+click(editIcon)
+globalVarMenu = findElement(globals.GLOBAL_VAR_MENU_TEXT, by.text)
+click(globalVarMenu)
+dlg = findElement("dialog", by.role)
+assertTrue(isElementDisplayed(findElementFromElement(dlg, globals.GLOBAL_VAR_MENU_TEXT, by.text)))
+add = findElementFromElement(dlg, globals.VARS_ADD_BUTTON)
+click(add)
+key = "ADMIN SITE"
+value = "https://prod.zl/io"
+typeActive(key, keys.tab, value, keys.tab, keys.enter)
+click(findElement("Cancel", by.text))
+table = findElement("table")
+assertTrue(isElementDisplayed(findElementFromElement(table, key, by.text)))
+assertTrue(isElementDisplayed(findElementFromElement(table, value, by.text)))
+
+# TODO: more tests:
+# - search, sorting, updating records, closing and opening again dialogs, deleting, global var after
+# creation available in code editor.
+#====================================================================
+#### Test:

@@ -22,7 +22,12 @@ public enum AllWebdriverTests {
   ELEMENT_CAPTURE_TEST ("ElementCaptureTest.zwl"),
   EDITOR_TABS_TEST ("EditorTabsTest.zwl"),
   EXPLORER_TEST ("ExplorerTest.zwl"),
-  EDITOR_TEST ("EditorTest.zwl");
+  EDITOR_TEST ("EditorTest.zwl"),
+  BUILD_VARS_TEST ("BuildVarsTest.zwl"),
+  GLOBAL_VARS_TEST ("GlobalVarsTest.zwl"),
+  DRY_CONFIG_TEST ("DryConfigTest.zwl"),
+  BUILD_CONFIG_TEST ("BuildConfigTest.zwl"),
+  BUILD_CAPABILITIES_TEST ("BuildCapabilitiesTest.zwl");
   
   private final String file;
   

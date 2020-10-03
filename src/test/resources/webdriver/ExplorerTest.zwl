@@ -1,4 +1,5 @@
-# Tests expect one file with at least 4 tests loaded into IDE
+# TODO, important: write tests when there is no file exist.
+# Following tests expect one file with at least 4 tests loaded into IDE
 # These tests are ready to load into IDE when it's up and running, every test runs independently.
 # TODO: fix tests, globals and use new by's
 

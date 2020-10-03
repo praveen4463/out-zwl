@@ -60,6 +60,13 @@ public class ZwlMainAppGlobals {
         .put("RUN_TYPE_NAME_PARSE", "parsing")
         .put("RUN_TYPE_NAME_DRY", "dry run")
         .put("RUN_TYPE_NAME_BUILD", "build run")
+        .put("EDIT_ICON", "*[aria-label='edit menu']")
+        .put("BUILD_VAR_MENU_TEXT", "Build Variables")
+        .put("GLOBAL_VAR_MENU_TEXT", "Global Variables")
+        .put("DRY_CONFIG_MENU_TEXT", "Dry Run Config")
+        .put("BUILD_CONFIG_MENU_TEXT", "Build Config")
+        .put("BUILD_CAPS_MENU_TEXT", "Build Capabilities")
+        .put("VARS_ADD_BUTTON", "button[aria-label='add']")
         .build();
   }
 }

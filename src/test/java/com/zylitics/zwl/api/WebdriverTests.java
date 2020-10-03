@@ -287,6 +287,41 @@ public class WebdriverTests {
     run(browser, AllWebdriverTests.EDITOR_TEST.getFile());
   }
   
+  @Tag("buildVars")
+  @ParameterizedTest
+  @EnumSource(value = Browsers.class)
+  void buildVarsTest(Browsers browser) throws Exception {
+    run(browser, AllWebdriverTests.BUILD_VARS_TEST.getFile());
+  }
+  
+  @Tag("globalVars")
+  @ParameterizedTest
+  @EnumSource(value = Browsers.class)
+  void globalVarsTest(Browsers browser) throws Exception {
+    run(browser, AllWebdriverTests.GLOBAL_VARS_TEST.getFile());
+  }
+  
+  @Tag("dryConfig")
+  @ParameterizedTest
+  @EnumSource(value = Browsers.class)
+  void dryConfigTest(Browsers browser) throws Exception {
+    run(browser, AllWebdriverTests.DRY_CONFIG_TEST.getFile());
+  }
+  
+  @Tag("buildConfig")
+  @ParameterizedTest
+  @EnumSource(value = Browsers.class)
+  void buildConfigTest(Browsers browser) throws Exception {
+    run(browser, AllWebdriverTests.BUILD_CONFIG_TEST.getFile());
+  }
+  
+  @Tag("buildCaps")
+  @ParameterizedTest
+  @EnumSource(value = Browsers.class)
+  void buildCapsTest(Browsers browser) throws Exception {
+    run(browser, AllWebdriverTests.BUILD_CAPABILITIES_TEST.getFile());
+  }
+  
   private void run(Browsers browser, String file) throws Exception {
     Assumptions.assumeFalse(shouldSkip(browser), "Skipped");
     setup(browser);
