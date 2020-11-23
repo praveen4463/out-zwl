@@ -34,3 +34,23 @@ v0.2.0
 9. Fully upgraded the contract of ZwlApi to make it more clearer, now clients of ZwlApi will see
    what is required thru interfaces for various calls like parse, dry run, interpret.
 10. Redundant dependencies fixed.
+
+**********
+v0.4.0
+**********
+1. Build variables are now supported and can be passed to interpreter.
+2. By's now have full names rather than acronyms, new by's text, role, testId, title added.
+3. Added new actions functions CmdCtrlDown, CmdCtrlUp to let cmd related functions work in all platforms.
+4. Functions that uses just selectors now accept fromElement, using, by so that users dont just have to use a css selector
+5. Fixed tests to use functions like elementExists/untilTotalElementsGT as they now accept bys and parent element
+6. Functions that must use only css selector are deprecated
+7. Collections manipulation functions added are addTo, putIn, removeAt, removeFrom, removeAll, setAt
+8. removeElements renamed to removeFrom and now accepts map together with list
+9. wrote tests for all new functions
+10. single quoted strings are now supported
+11. added browsers and platforms constants
+12. exists function now added at interpreter level to support non existent variables
+13. length now support length of string together with size of collections
+14. new functions clearActive, dblClick
+15. while loop will now be broken after 100000 iterations by default
+16. untilTotalElements.. functions default value fixed to list of elements
