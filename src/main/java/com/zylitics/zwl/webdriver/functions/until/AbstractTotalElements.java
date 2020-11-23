@@ -20,19 +20,19 @@ abstract class AbstractTotalElements extends AbstractUntilExpectation {
                                BuildCapability buildCapability,
                                RemoteWebDriver driver,
                                PrintStream printStream) {
-    super(wdProps, buildCapability, driver, printStream, 2, 2);
+    super(wdProps, buildCapability, driver, printStream, 2, 4);
   }
   
   @Override
   public ZwlValue invoke(List<ZwlValue> args, Supplier<ZwlValue> defaultValue,
                          Supplier<String> lineNColumn) {
     super.invoke(args, defaultValue, lineNColumn);
+    int argsCount = args.size();
     
-    if (args.size() != 2) {
-      throw unexpectedEndOfFunctionOverload(args.size());
+    if (argsCount < 2) {
+      throw unexpectedEndOfFunctionOverload(argsCount);
     }
-    String selector = tryCastString(0, args.get(0));
-    int total = parseDouble(1, args.get(1)).intValue();
+    int total = parseDouble(0, args.get(0)).intValue();
   
     if (buildCapability.isDryRunning()) {
       return evaluateDefValue(defaultValue);
@@ -41,7 +41,7 @@ abstract class AbstractTotalElements extends AbstractUntilExpectation {
     WebDriverWait wait = getWait(TimeoutType.ELEMENT_ACCESS);
     return handleWDExceptions(() ->
         wait.until(d -> {
-          List<RemoteWebElement> e = findElements(driver, selector, false);
+          List<RemoteWebElement> e = findElementsDetectingArgs(args.subList(1, argsCount), false);
           if (e.size() == 0) {
             return null;
           }
@@ -53,11 +53,11 @@ abstract class AbstractTotalElements extends AbstractUntilExpectation {
   
   @Override
   protected ZwlValue getFuncDefReturnValue() {
-    return FuncDefReturnValue.TRUE.getDefValue();
+    return FuncDefReturnValue.ELEMENT_IDS.getDefValue();
   }
   
   @Override
   protected String getFuncReturnType() {
-    return Types.BOOLEAN;
+    return Types.LIST;
   }
 }

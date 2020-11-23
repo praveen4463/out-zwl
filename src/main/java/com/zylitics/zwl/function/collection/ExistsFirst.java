@@ -3,7 +3,6 @@ package com.zylitics.zwl.function.collection;
 import com.zylitics.zwl.datatype.NothingZwlValue;
 import com.zylitics.zwl.datatype.ZwlValue;
 import com.zylitics.zwl.function.AbstractFunction;
-import com.zylitics.zwl.function.util.Exists;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -12,7 +11,7 @@ import java.util.function.Supplier;
  * <p>ExistsFirst accepts one or more arguments of any supported type.
  * It returns the first argument that exists.
  * <p>If a non empty value is not found, nothing is returned which can be checked using
- * {@link Exists}</p>
+ * exists</p>
  * <p>A list can also be given as argument which will be expanded internally into arguments.</p>
  */
 public class ExistsFirst extends AbstractFunction {

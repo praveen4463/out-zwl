@@ -172,10 +172,7 @@ click(file)
 tests = findElementsFromElement(file, globals.TEST_ID_TEST_TREE_ITEM)
 click(tests[0])
 version = findElementFromElement(tests[0], globals.TEST_ID_VERSION_TREE_ITEM)
-performAction(
-  move(version),
-  doubleClick()
-)
+dblClick(version)
 click(tests[1])
 version = findElementFromElement(tests[1], globals.TEST_ID_VERSION_TREE_ITEM)
 click(version) # don't dbl click else editor looses out focus, let's keep the focus simple way
@@ -268,7 +265,7 @@ untilTextIs(status, "")
 # Note: All tests related to parse and dry run here are running by simulating an api pass/fail via
 # code workarounds. When there will be api integrated, we can just enter valid/invalid code and can
 # expect the correct dry run/parse behaviour and expected line/characters in error but for now until
-# there is api, when code contains FAIL_TEST text, a predefined error message and line/ch triggers,
+# there is api, when code contains FAIL_TEST && FAIL_DRY text, a predefined error message and line/ch triggers,
 # otherwise it passes. Refer to the code for error messages and line numbers in different contexts
 # NOTE THAT ALL TESTS NEEDS TO BE UPDATED WHEN API IS INTEGRATED TO USE REAL PROCESS AND NOT SIMULATED
 #====================================================================
@@ -457,7 +454,7 @@ findElement(
   by.text,
   true
 ) # this is invalid function definition, put it on line 2:1 to 7:2 as the code mentioned the same
-# Above generates a dry run error.FAIL_TEST`
+# Above generates a dry run error.FAIL_DRY`
 typeActive(errorCode)
 dryRun = findElement(globals.TEST_ID_EDITOR_OUTPUT_DRY_BTN, by.testId)
 click(dryRun)

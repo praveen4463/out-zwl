@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
 
+@Deprecated
 public class FindElementsWithSelectors extends AbstractWebdriverFunction {
   
   public FindElementsWithSelectors(APICoreProperties.Webdriver wdProps,

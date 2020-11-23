@@ -7,8 +7,8 @@ import com.zylitics.zwl.webdriver.constants.FuncDefReturnValue;
 import com.zylitics.zwl.webdriver.functions.AbstractWebdriverFunction;
 import com.zylitics.zwl.datatype.BooleanZwlValue;
 import com.zylitics.zwl.datatype.ZwlValue;
-import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.remote.RemoteWebElement;
 
 import java.io.PrintStream;
 import java.util.List;
@@ -35,7 +35,7 @@ public class ElementExists extends AbstractWebdriverFunction {
   
   @Override
   public int maxParamsCount() {
-    return 1;
+    return 3;
   }
   
   @Override
@@ -43,22 +43,17 @@ public class ElementExists extends AbstractWebdriverFunction {
                          Supplier<String> lineNColumn) {
     super.invoke(args, defaultValue, lineNColumn);
   
+    if (args.size() == 0) {
+      throw unexpectedEndOfFunctionOverload(0);
+    }
+  
     if (buildCapability.isDryRunning()) {
       return evaluateDefValue(defaultValue);
     }
     
-    if (args.size() == 0) {
-      throw unexpectedEndOfFunctionOverload(args.size());
-    }
-    String selector = tryCastString(0, args.get(0));
     return handleWDExceptions(() -> {
-      boolean exists = true;
-      try {
-        findElement(driver, selector, false);
-      } catch (NoSuchElementException n) {
-        exists = false;
-      }
-      return new BooleanZwlValue(exists);
+      List<RemoteWebElement> e = findElementsDetectingArgs(args, false);
+      return new BooleanZwlValue(e.size() > 0);
     });
   }
   

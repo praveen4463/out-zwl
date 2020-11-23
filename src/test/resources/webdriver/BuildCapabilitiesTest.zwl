@@ -22,9 +22,9 @@ click(findElementsFromElement(dlg, capsName, by.text))
 # caps that's clicked is the only one that renders
 rows = findElementsFromElement(dlg, "viewRow", by.testId)
 for row in rows {
-  if size(findElementsFromElement(row, "OS:", by.text, true)) > 0 {
+  if elementExists(row, "OS:", by.text) {
     osRow = row
-  } else if size(findElementsFromElement(row, "Browser:", by.text, true)) > 0 {
+  } else if elementExists(row, "Browser:", by.text) {
     brwRow = row
   }
 }
@@ -53,7 +53,7 @@ click(saveButton)
 untilStale(saveButton)
 summaries = findElementsFromElement(dlg, "capSummary", by.testId)
 for summary in summaries {
-  if size(findElementsFromElement(summary, capsName, by.text, true)) > 0 {
+  if elementExists(summary, capsName, by.text) {
     click(findElementFromElement(summary, "Edit Capability", by.title))
   }
 }
@@ -76,11 +76,11 @@ click(findElementsFromElement(dlg, capsName, by.text))
 # caps that's clicked is the only one that renders
 rows = findElementsFromElement(dlg, "viewRow", by.testId)
 for row in rows {
-  if size(findElementsFromElement(row, "OS:", by.text, true)) > 0 {
+  if elementExists(row, "OS:", by.text) {
     osRow = row
-  } else if size(findElementsFromElement(row, "Browser:", by.text, true)) > 0 {
+  } else if elementExists(row, "Browser:", by.text) {
     brwRow = row
-  } else if size(findElementsFromElement(row, "Accept Insecure Certificate:", by.text, true)) > 0 {
+  } else if elementExists(row, "Accept Insecure Certificate:", by.text) {
     aicRow = row
   }
 }

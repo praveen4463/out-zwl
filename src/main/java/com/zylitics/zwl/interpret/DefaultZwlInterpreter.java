@@ -12,9 +12,11 @@ import com.zylitics.zwl.exception.*;
 import com.zylitics.zwl.internal.Variables;
 import com.zylitics.zwl.util.ParseUtil;
 import com.zylitics.zwl.util.StringUtil;
+import com.zylitics.zwl.webdriver.constants.Browsers;
 import com.zylitics.zwl.webdriver.constants.By;
 import com.zylitics.zwl.webdriver.constants.Colorz;
 import com.zylitics.zwl.webdriver.constants.Keyz;
+import com.zylitics.zwl.webdriver.constants.Platforms;
 import com.zylitics.zwl.webdriver.constants.Timeouts;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
@@ -26,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.BinaryOperator;
+import java.util.stream.Collectors;
 
 import static com.zylitics.zwl.internal.ReservedKeywords.RESERVED_KEYWORDS;
 
@@ -35,6 +38,8 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
   private static final Logger LOG = LoggerFactory.getLogger(DefaultZwlInterpreter.class);
   
   private static final String FOR_LOOP_MAX_ITERATIONS_KEY = "forLoopMaxIterations";
+  
+  private static final long FOR_LOOP_MAX_ITERATIONS = 100000;
   
   public static final String PREFERENCES_KEY = "preferences";
   
@@ -57,6 +62,12 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
     exceptions.putAll(com.zylitics.zwl.webdriver.constants.Exceptions.asMap());
     addReadOnlyVariable("exceptions",
         new MapZwlValue(Collections.unmodifiableMap(exceptions)));
+    addReadOnlyVariable("browsers", new MapZwlValue(
+        Arrays.stream(Browsers.values()).collect(Collectors.toMap(Browsers::getAlias,
+            browsers -> new StringZwlValue((browsers.getAlias()))))));
+    addReadOnlyVariable("platforms", new MapZwlValue(
+        Arrays.stream(Platforms.values()).collect(Collectors.toMap(Platforms::getName,
+            platforms -> new StringZwlValue((platforms.getName()))))));
     addReadOnlyVariable("colors", new MapZwlValue(Colorz.asMap()));
     addReadOnlyVariable("keys", new MapZwlValue(Keyz.asMap()));
     addReadOnlyVariable("by", new MapZwlValue(By.asMap()));
@@ -361,10 +372,14 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
     compareAndSetCurrentLineInProgram(ctx.WHILE());
     long iterations = 0;
     long forLoopMaxItr = getForLoopMaxIterations();
+    if (forLoopMaxItr < 0) {
+      // set a default when no preferences are set, this should be set as default in front end too.
+      forLoopMaxItr = FOR_LOOP_MAX_ITERATIONS;
+    }
     while (parseBooleanExpr(ctx.expression())) {
       visit(ctx.block());
       iterations++;
-      if (forLoopMaxItr > -1 && iterations > forLoopMaxItr) {
+      if (iterations > forLoopMaxItr) {
         throw new EvalException("While loop was broken after max iterations: " + forLoopMaxItr +
             " reached. Condition needs to be fixed. " + lineNColumn(ctx.WHILE()));
       }
@@ -492,6 +507,23 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
         lineNColumn(ctx.ASSERT_DOES_NOT_THROW());
     throw new AssertionFailedException(customMessage == null
         ? message : customMessage + StringUtil.getPlatformLineSeparator() + message);
+  }
+  
+  /**
+   * Exists takes an expression and expects it to be one of {@link ZwlValue} type. It returns a
+   * {@code true} only if the type is not {@link NothingZwlValue}, otherwise a {@code false} is
+   * returned because {@link NothingZwlValue} points to non-existent value. If a non existent variable
+   * is used, it returns false.
+   */
+  @Override
+  public ZwlValue visitExistsFunc(ExistsFuncContext ctx) {
+    compareAndSetCurrentLineInProgram(ctx.EXISTS());
+    try {
+      ZwlValue value = visit(ctx.expression());
+      return new BooleanZwlValue(!value.getNothingValue().isPresent());
+    } catch (NoSuchVariableException e) {
+      return new BooleanZwlValue(false);
+    }
   }
   
   @Override
@@ -760,8 +792,8 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
   private long getForLoopMaxIterations() {
     Optional<Map<String, ZwlValue>> p = getPreferences();
     if (!(p.isPresent() && p.get().containsKey(FOR_LOOP_MAX_ITERATIONS_KEY))) {
-      LOG.warn("Preferences doesn't contain infinite loop detection key: " +
-          FOR_LOOP_MAX_ITERATIONS_KEY);
+      // LOG.warn("Preferences doesn't contain infinite loop detection key: " +
+         // FOR_LOOP_MAX_ITERATIONS_KEY);
       return -1;
     }
     ZwlValue num = tryConvertNumber(p.get().get(FOR_LOOP_MAX_ITERATIONS_KEY));
@@ -771,10 +803,11 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
     return num.getDoubleValue().get().longValue();
   }
   
+  // Right now there is no preferences option in front end, thus warning logging is disabled.
   private Optional<Map<String, ZwlValue>> getPreferences() {
     Optional<ZwlValue> p = vars.resolve(PREFERENCES_KEY);
     if (!p.isPresent()) {
-      LOG.warn(PREFERENCES_KEY + " were not supplied.");
+      // LOG.warn(PREFERENCES_KEY + " were not supplied.");
       return Optional.empty();
     }
     Optional<Map<String, ZwlValue>> preferences = p.get().getMapValue();

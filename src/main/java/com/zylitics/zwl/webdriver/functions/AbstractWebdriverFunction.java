@@ -1,6 +1,7 @@
 package com.zylitics.zwl.webdriver.functions;
 
 import com.google.api.client.util.Preconditions;
+import com.google.cloud.Tuple;
 import com.zylitics.zwl.datatype.*;
 import com.zylitics.zwl.exception.InvalidTypeException;
 import com.zylitics.zwl.exception.ZwlLangException;
@@ -402,5 +403,55 @@ public abstract class AbstractWebdriverFunction extends AbstractFunction {
     throw new InvalidTypeException(String.format("The type of supplied value is '%s' whereas" +
         " the function '%s' returns value of type '%s'. %s", userSupplied.getType(), getName(),
         funcReturnType, lineNColumn.get()));
+  }
+  
+  private Tuple<SearchContext, By> detectElementSearchArguments(List<ZwlValue> args) {
+    int argsCount = args.size();
+    SearchContext ctx = driver;
+    String using;
+    ByType byType = null;
+    switch (argsCount) {
+      case 3:
+        ctx = getElement(tryCastString(0, args.get(0)));
+        using = tryCastString(1, args.get(1));
+        byType = parseEnum(2, args.get(2), ByType.class);
+        break;
+      case 2:
+        // Check whether last argument is a by, if so first must be using, otherwise first is elements,
+        // and second is using with by being default.
+        try {
+          byType = parseEnum(1, args.get(1), ByType.class);
+        } catch (InvalidTypeException ignore) { }
+        if (byType == null) {
+          byType = ByType.CSS_SELECTOR; // our default By is a css selector.
+          ctx = getElement(tryCastString(0, args.get(0)));
+          using = tryCastString(1, args.get(1));
+        } else {
+          using = tryCastString(0, args.get(0));
+        }
+        break;
+      case 1:
+        byType = ByType.CSS_SELECTOR;
+        using = tryCastString(0, args.get(0));
+        break;
+      default:
+        // args count is checked in calling function, a RunTime exception is thrown only if the function
+        // doesn't mention correct max/min args count which is a bug.
+        throw new RuntimeException("findElementsDetectingArgs got unexpected no of arguments: " +
+            argsCount);
+    }
+    return Tuple.of(ctx, getBy(byType, using));
+  }
+  
+  // Expected position of arguments: fromElement, using, by
+  protected List<RemoteWebElement> findElementsDetectingArgs(List<ZwlValue> args, boolean wait) {
+    Tuple<SearchContext, By> searchArgs = detectElementSearchArguments(args);
+    return findElements(searchArgs.x(), searchArgs.y(), wait);
+  }
+  
+  // Expected position of arguments: fromElement, using, by
+  protected RemoteWebElement findElementDetectingArgs(List<ZwlValue> args, boolean wait) {
+    Tuple<SearchContext, By> searchArgs = detectElementSearchArguments(args);
+    return findElement(searchArgs.x(), searchArgs.y(), wait);
   }
 }

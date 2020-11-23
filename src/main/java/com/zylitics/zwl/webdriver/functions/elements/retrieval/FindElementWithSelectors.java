@@ -13,6 +13,7 @@ import java.io.PrintStream;
 import java.util.List;
 import java.util.function.Supplier;
 
+@Deprecated
 public class FindElementWithSelectors extends AbstractWebdriverFunction {
   
   public FindElementWithSelectors(APICoreProperties.Webdriver wdProps,

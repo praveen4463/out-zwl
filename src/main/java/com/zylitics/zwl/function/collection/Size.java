@@ -36,7 +36,7 @@ public class Size extends AbstractFunction {
     super.invoke(args, defaultValue, lineNColumn);
     
     if (args.size() == 0) {
-      throw unexpectedEndOfFunctionOverload(args.size());
+      throw unexpectedEndOfFunctionOverload(0);
     }
     ZwlValue val = args.get(0);
     if (!(val.getMapValue().isPresent() || val.getListValue().isPresent())) {

@@ -48,9 +48,9 @@ click(findElement("selectBuildVars-header", by.id))
 content = findElement("selectBuildVars-content", by.id)
 for g in findElementsFromElement(content, "keyGroup", by.testId) {
   summary = findElementFromElement(g, "keyGroupSummary", by.testId)
-  if size(findElementsFromElement(summary, key, by.text, true)) > 0 {
+  if elementExists(summary, key, by.text) {
     # primary variable is in summary row means it's currently selected
-    assertTrue(size(findElementsFromElement(summary, value2, by.text)) > 0)
+    assertTrue(elementExists(summary, value2, by.text))
     targetGroup = g
     targetSummary = summary
   }
@@ -66,7 +66,7 @@ click(findElementFromElement(groupVars[0], "button"))
 # get summary row for key again as clicking creates new elements
 for g in findElementsFromElement(content, "keyGroup", by.testId) {
   summary = findElementFromElement(g, "keyGroupSummary", by.testId)
-  if size(findElementsFromElement(summary, key, by.text, true)) > 0 {
+  if elementExists(summary, key, by.text) {
     targetSummary = summary
   }
 }

@@ -3,7 +3,6 @@ package com.zylitics.zwl.function.collection;
 import com.zylitics.zwl.datatype.NothingZwlValue;
 import com.zylitics.zwl.datatype.ZwlValue;
 import com.zylitics.zwl.function.AbstractFunction;
-import com.zylitics.zwl.function.util.Exists;
 import com.zylitics.zwl.util.ParseUtil;
 
 import java.util.List;
@@ -16,7 +15,7 @@ import java.util.function.Supplier;
  * if after trimming whitespaces its length > 0. A List and Map is considered non empty if their
  * size > 0 which means they have at least one element or key-value pair.</p>
  * <p>If a non empty value is not found, nothing is returned which can be checked using
- * {@link Exists}</p>
+ * exists</p>
  * <p>A list can also be given as argument which will be expanded internally into arguments.</p>
  */
 public class NonEmptyFirst extends AbstractFunction {

@@ -152,10 +152,12 @@ public class WebdriverFunctions {
         // interaction
         new Clear(wdProps, buildCapability, driver, printStream),
         new ClearAll(wdProps, buildCapability, driver, printStream),
+        new ClearActive(wdProps, buildCapability, driver, printStream),
         new Click(wdProps, buildCapability, driver, printStream),
         new ClickAll(wdProps, buildCapability, driver, printStream),
         new ClickNoSwitch(wdProps, buildCapability, driver, printStream),
         new ClickSwitchNew(wdProps, buildCapability, driver, printStream),
+        new DblClick(wdProps, buildCapability, driver, printStream),
         new Submit(wdProps, buildCapability, driver, printStream),
         // interaction.keys
         new SendKeysToPage(wdProps, buildCapability, driver, printStream),
@@ -271,7 +273,6 @@ public class WebdriverFunctions {
         new UntilTitleContains(wdProps, buildCapability, driver, printStream),
         new UntilTitleIs(wdProps, buildCapability, driver, printStream),
         new UntilTotalElementsEQ(wdProps, buildCapability, driver, printStream),
-        new UntilTotalElementsGTv2(wdProps, buildCapability, driver, printStream),
         new UntilTotalElementsGT(wdProps, buildCapability, driver, printStream),
         new UntilTotalElementsLT(wdProps, buildCapability, driver, printStream),
         new UntilTotalWindowsAre(wdProps, buildCapability, driver, printStream),

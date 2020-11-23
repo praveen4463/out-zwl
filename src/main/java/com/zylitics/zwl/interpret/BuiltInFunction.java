@@ -12,7 +12,6 @@ import com.zylitics.zwl.function.datetime.Timestamp;
 import com.zylitics.zwl.function.debugging.PrintF;
 import com.zylitics.zwl.function.numeric.*;
 import com.zylitics.zwl.function.string.*;
-import com.zylitics.zwl.function.util.Exists;
 import com.zylitics.zwl.function.debugging.Print;
 import com.zylitics.zwl.function.util.NonEmpty;
 import com.zylitics.zwl.function.util.Uuid;
@@ -32,6 +31,7 @@ public final class BuiltInFunction {
         new AssertFalse(),
         
         // Collection
+        new AddTo(),
         new ContainsElement(),
         new ContainsKey(),
         new ExistsFirst(),
@@ -39,8 +39,12 @@ public final class BuiltInFunction {
         new Keys(),
         new Merge(),
         new NonEmptyFirst(),
+        new PutIn(),
+        new RemoveAll(),
+        new RemoveAt(),
         new RemoveEmpty(),
-        new RemoveElements(),
+        new RemoveFrom(),
+        new SetAt(),
         new Size(),
         new Values(),
         
@@ -87,7 +91,6 @@ public final class BuiltInFunction {
         new Upper(),
         
         // Util
-        new Exists(),
         new NonEmpty(),
         new Uuid()
     );

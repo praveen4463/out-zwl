@@ -5,7 +5,6 @@ import com.zylitics.zwl.webdriver.functions.AbstractSignatureReturningFunctions;
 import com.zylitics.zwl.webdriver.functions.AbstractWebdriverFunction;
 import com.zylitics.zwl.datatype.ZwlValue;
 import org.openqa.selenium.Keys;
-import org.openqa.selenium.Platform;
 import org.openqa.selenium.interactions.Actions;
 
 import java.time.Duration;

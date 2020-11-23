@@ -15,7 +15,7 @@ typeActive(fileName, keys.enter)
 # wait for the new file to appear, we shouldn't rely on findElementsFromElement to get the new file
 # after waiting because there may already be some files in explorer and this function immediately
 # returns when it finds the first element.
-files = untilTotalElementsGTv2(globals.ROLE_TREE, globals.TEST_ID_FILE_TREE_ITEM, size(files))
+files = untilTotalElementsGT(size(files), globals.ROLE_TREE, globals.TEST_ID_FILE_TREE_ITEM)
 for f in files {
   if getElementText(findElementFromElement(f, globals.TEST_ID_FILE_TREE_ITEM_NAME)) == fileName {
     file = f
@@ -38,12 +38,12 @@ assertTrue(getElementText(findElementFromElement(test, globals.TEST_ID_TEST_TREE
 defaultVersion = findElementFromElement(test, globals.TEST_ID_VERSION_TREE_ITEM)
 assertTrue(untilTextNonEmpty(
     findElementFromElement(defaultVersion, globals.TEST_ID_VERSION_TREE_ITEM_NAME)) == "v1")
-assertTrue(size(findElementsFromElement(defaultVersion, globals.TEST_ID_LATEST_VERSION, true)) == 1)
+assertTrue(elementExists(defaultVersion, globals.TEST_ID_LATEST_VERSION))
 performAction(move(findElementFromElement(test, globals.TEST_ID_TEST_TREE_ITEM_CONTENT)))
 newVersionButton = findElementFromElement(test, globals.BUTTON_NEW_VERSION_TREE_ITEM)
 click(newVersionButton)
 typeActive(versionName, keys.enter)
-versions = untilTotalElementsGTv2(test, globals.TEST_ID_VERSION_TREE_ITEM, 1)
+versions = untilTotalElementsGT(1, test, globals.TEST_ID_VERSION_TREE_ITEM)
 # in a new test a default version is always there
 for v in versions {
   if getElementText(findElementFromElement(v, globals.TEST_ID_VERSION_TREE_ITEM_NAME)) ==
@@ -54,8 +54,8 @@ for v in versions {
 assertTrue(exists(newVersion))
 assertTrue(size(versions) == 2)
 # assert that default is now not latest but new is
-assertTrue(size(findElementsFromElement(defaultVersion, globals.TEST_ID_LATEST_VERSION, true)) == 0)
-assertTrue(size(findElementsFromElement(newVersion, globals.TEST_ID_LATEST_VERSION, true)) == 1)
+assertFalse(elementExists(defaultVersion, globals.TEST_ID_LATEST_VERSION))
+assertTrue(elementExists(newVersion, globals.TEST_ID_LATEST_VERSION))
 
 #====================================================================
 #### Test: load existing file
@@ -74,16 +74,14 @@ for f in files {
   click(findElementFromElement(f, globals.BUTTON_UNLOAD))
   click(findElement(globals.BUTTON_UNLOAD_DIALOG))
 }
-# !should have used elementExists but it doesn't accept a fromElement argument yet.
-assertTrue(size(findElementsFromElement(globals.ROLE_TREE, globals.TEST_ID_FILE_TREE_ITEM, true)) ==
-    0)
+assertFalse(elementExists(globals.ROLE_TREE, globals.TEST_ID_FILE_TREE_ITEM))
 newFileButton = findElementFromElement(globals.EXPLORER, globals.BUTTON_NEW_FILE)
 click(newFileButton)
 typeActive("Change Test", keys.enter)
 sleep(20) # slow down before next new file
 click(newFileButton)
 typeActive("Anchor Test", keys.enter)
-files = untilTotalElementsGTv2(globals.ROLE_TREE, globals.TEST_ID_FILE_TREE_ITEM, 1)
+files = untilTotalElementsGT(1, globals.ROLE_TREE, globals.TEST_ID_FILE_TREE_ITEM)
 # after 2nd file added, it should render at 1st after sorting
 assertTrue(getElementText(findElementFromElement(files[0], globals.TEST_ID_FILE_TREE_ITEM_NAME)) ==
     "Anchor Test")
@@ -117,7 +115,7 @@ for t in tests {
   click(findElementFromElement(t, globals.BUTTON_DELETE_TREE_ITEM))
   click(findElement(globals.BUTTON_DELETE_DIALOG))
 }
-assertTrue(size(findElementsFromElement(file, globals.TEST_ID_TEST_TREE_ITEM, true)) == 0)
+assertFalse(elementExists(file, globals.TEST_ID_TEST_TREE_ITEM))
 performAction(move(findElementFromElement(file, globals.TEST_ID_FILE_TREE_ITEM_CONTENT)))
 newTestButton = findElementFromElement(file, globals.BUTTON_NEW_TEST)
 click(newTestButton)
@@ -125,7 +123,7 @@ typeActive("adding new variant changes color", keys.enter)
 sleep(20)
 click(newTestButton)
 typeActive("ab testing triggers on click", keys.enter)
-tests = untilTotalElementsGTv2(file, globals.TEST_ID_TEST_TREE_ITEM, 1)
+tests = untilTotalElementsGT(1, file, globals.TEST_ID_TEST_TREE_ITEM)
 assertTrue(getElementText(findElementFromElement(tests[0], globals.TEST_ID_TEST_TREE_ITEM_NAME)) ==
     "ab testing triggers on click")
 performAction(move(findElementFromElement(tests[0], globals.TEST_ID_TEST_TREE_ITEM_CONTENT)))
@@ -147,7 +145,7 @@ performAction(move(findElementFromElement(file, globals.TEST_ID_FILE_TREE_ITEM_C
 click(findElementFromElement(file, globals.BUTTON_NEW_TEST))
 newTestName = uuid()
 typeActive(newTestName, keys.enter)
-tests = untilTotalElementsGTv2(file, globals.TEST_ID_TEST_TREE_ITEM, size(tests))
+tests = untilTotalElementsGT(size(tests), file, globals.TEST_ID_TEST_TREE_ITEM)
 for t in tests {
   if getElementText(findElementFromElement(t, globals.TEST_ID_TEST_TREE_ITEM_NAME))
       == newTestName {
@@ -163,7 +161,7 @@ typeActive("added-jun1", keys.enter)
 sleep(20)
 click(newVersionButton)
 typeActive("zl-v1", keys.enter)
-versions = untilTotalElementsGTv2(test, globals.TEST_ID_VERSION_TREE_ITEM, 2)
+versions = untilTotalElementsGT(2, test, globals.TEST_ID_VERSION_TREE_ITEM)
 assertTrue(getElementText(
     findElementFromElement(versions[0], globals.TEST_ID_VERSION_TREE_ITEM_NAME)) ==
         "added-jun1")
@@ -192,7 +190,7 @@ files = findElementsFromElement(globals.ROLE_TREE, globals.TEST_ID_FILE_TREE_ITE
 newFileButton = findElementFromElement(globals.EXPLORER, globals.BUTTON_NEW_FILE)
 click(newFileButton)
 typeActive("Some Test", keys.enter)
-files = untilTotalElementsGTv2(globals.ROLE_TREE, globals.TEST_ID_FILE_TREE_ITEM, size(files))
+files = untilTotalElementsGT(size(files), globals.ROLE_TREE, globals.TEST_ID_FILE_TREE_ITEM)
 # try adding duplicates and verify they shouldn't be allowed
 # a new file name can't be same as existing, irrespective to the case.
 click(newFileButton)
@@ -212,7 +210,7 @@ type(input, keys.esc)
 click(newFileButton)
 typeActive("Other Test")
 click(globals.EXPLORER) # this will blur edit input, which in turn commits it.
-files = untilTotalElementsGTv2(globals.ROLE_TREE, globals.TEST_ID_FILE_TREE_ITEM, size(files))
+files = untilTotalElementsGT(size(files), globals.ROLE_TREE, globals.TEST_ID_FILE_TREE_ITEM)
 # renaming can't rename to existing, irrespective to the case. The same name can be changed to a
 # different case though.
 for f in files {
@@ -259,5 +257,4 @@ for m in menus {
 assertTrue(exists(unloadMenu))
 click(unloadMenu)
 click(findElement(globals.BUTTON_UNLOAD_DIALOG))
-assertTrue(
-    size(findElementsFromElement(globals.ROLE_TREE, globals.TEST_ID_FILE_TREE_ITEM, true)) == 0)
+assertFalse(elementExists(globals.ROLE_TREE, globals.TEST_ID_FILE_TREE_ITEM))

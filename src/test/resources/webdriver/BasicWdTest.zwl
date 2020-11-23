@@ -18,10 +18,9 @@ if size(chromeHomePageOffer) > 0 {
 
 typeActive("apple.com", keys.enter)
 # this selector gives all results but findElement will return the first one
-firstResult = findElement("div.r > a > h3")
-assertTrue(getElementText(firstResult) == "Apple")
+firstResult = findElement('Apple', by.partialLinkText)
 click(firstResult)
-untilTitleIs("Apple")
+untilTitleContains("Apple")
 
 
 # 2. open a page, send keys to it and check if the intended effect took place.
@@ -32,7 +31,7 @@ sendKeysToPage(".doc-click", keys.shift, "r")
 assertTrue(trim(getElementText(".doc-click")) == "document clicked")
 assertTrue(trim(getElementText(".doc-keydown-key")) == "Shift R")
 # key's code property isn't supported in IE, thus not asserting there.
-if browser.name != "IE" {
+if browser.name != browsers.IE {
   assertTrue(trim(getElementText(".doc-keydown-code")) == "ShiftLeft KeyR")
 }
 # again send keys this time lower cased and see lower case is printed since shift went up
@@ -41,10 +40,10 @@ assertTrue(trim(getElementText(".doc-click")) == "document clicked")
 # shift went up in last sendKeysToPage call, thus 'r' will print as is without upper case
 assertTrue(trim(getElementText(".doc-keydown-key")) == "Shift R r")
 # key's code property isn't supported in IE, thus not asserting there.
-if browser.name != "IE" {
+if browser.name != browsers.IE {
   assertTrue(trim(getElementText(".doc-keydown-code")) == "ShiftLeft KeyR KeyR")
 }
-
+# print(format('platform is %s', platforms.windows))
 
 
 # 3. text matching single line

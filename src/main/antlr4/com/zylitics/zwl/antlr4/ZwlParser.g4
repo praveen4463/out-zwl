@@ -99,6 +99,7 @@ decrement
 builtInLanguageFunction
   : ASSERT_THROWS LPAREN expression COMMA (block | expression) (COMMA expression)? RPAREN      #assertThrowsFunc
   | ASSERT_DOES_NOT_THROW LPAREN (block | expression) (COMMA expression)? RPAREN               #assertDoesNotThrowFunc
+  | EXISTS LPAREN expression RPAREN                                                            #existsFunc
   ;
 
 listLiteral
@@ -138,6 +139,7 @@ expression
   | functionInvocation                                  #functionInvocationExpression
   | identifierExpr                                      #identifierExpression
   | LPAREN expression RPAREN                            #parenthesizedExpression
+  | builtInLanguageFunction                             #builtInLanguageFunctionExpression
   ;
 
 expressionList

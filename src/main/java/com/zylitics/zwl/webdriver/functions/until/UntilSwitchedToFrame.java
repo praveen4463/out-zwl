@@ -12,6 +12,7 @@ import com.zylitics.zwl.webdriver.constants.FuncDefReturnValue;
 import org.openqa.selenium.NoSuchFrameException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.remote.RemoteWebElement;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.io.PrintStream;
@@ -24,7 +25,7 @@ public class UntilSwitchedToFrame extends AbstractUntilExpectation {
                               BuildCapability buildCapability,
                               RemoteWebDriver driver,
                               PrintStream printStream) {
-    super(wdProps, buildCapability, driver, printStream, 1, 1);
+    super(wdProps, buildCapability, driver, printStream, 1, 3);
   }
   
   @Override
@@ -36,37 +37,29 @@ public class UntilSwitchedToFrame extends AbstractUntilExpectation {
   public ZwlValue invoke(List<ZwlValue> args, Supplier<ZwlValue> defaultValue,
                          Supplier<String> lineNColumn) {
     super.invoke(args, defaultValue, lineNColumn);
-  
+    
+    if (args.size() == 0) {
+      throw unexpectedEndOfFunctionOverload(0);
+    }
     if (buildCapability.isDryRunning()) {
       return evaluateDefValue(defaultValue);
-    }
-    
-    if (args.size() != 1) {
-      throw unexpectedEndOfFunctionOverload(args.size());
     }
     WebDriverWait wait = getWait(TimeoutType.ELEMENT_ACCESS);
     wait.ignoring(NoSuchFrameException.class);
     
+    // if first argument is int, it must be index
     try {
       int index = ParseUtil.parseDouble(args.get(0), () -> new InvalidTypeException("")).intValue();
-      return processWithIndex(wait, index);
+      return handleWDExceptions(() ->
+          new BooleanZwlValue(wait.until(d -> {
+            targetLocator.frame(index);
+            return true;
+          })));
     } catch (InvalidTypeException ignore) {}
-    
-    return processWithSelector(wait, tryCastString(0, args.get(0)));
-  }
   
-  private ZwlValue processWithIndex(WebDriverWait wait, int index) {
     return handleWDExceptions(() ->
         new BooleanZwlValue(wait.until(d -> {
-          targetLocator.frame(index);
-          return true;
-        })));
-  }
-  
-  private ZwlValue processWithSelector(WebDriverWait wait, String selector) {
-    return handleWDExceptions(() ->
-        new BooleanZwlValue(wait.until(d -> {
-          WebElement e = findElement(driver, selector, false);
+          WebElement e = findElementDetectingArgs(args, false);
           targetLocator.frame(e);
           return true;
         })));

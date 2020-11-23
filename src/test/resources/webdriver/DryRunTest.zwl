@@ -316,11 +316,11 @@ assertTrue(untilTitleContains("welcome"))
 
 assertTrue(untilTitleIs("welcome to facebook"))
 
-assertTrue(untilTotalElementsEQ("div", 3))
+assertTrue(size(untilTotalElementsEQ(3, 'div', by.tagName)) > 1)
 
-assertTrue(untilTotalElementsGT("div", 3))
+assertTrue(size(untilTotalElementsGT(3, 'div', by.tagName)) > 1)
 
-assertTrue(untilTotalElementsLT("div", 2))
+assertTrue(size(untilTotalElementsLT(2, 'div', by.tagName)) > 1)
 
 assertTrue(untilTotalWindowsAre(2))
 

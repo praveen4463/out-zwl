@@ -209,6 +209,8 @@ assertTrue(lastIndexOf("how's going", "g") == 10)
 
 # length
 assertTrue(length("praveen") == 7)
+assertTrue(length([2, 3, 4]) == 3)
+assertTrue(length({name: 'cap america', age: 26}) == 2)
 
 # lower
 assertTrue(lower("АЛЛО!") == "алло!")
@@ -315,4 +317,6 @@ assertTrue(trimStart(",$#hey man", ",$#") == "hey man")
 assertTrue(upper("алло!") == "АЛЛО!")
 assertTrue(upper("hey") == "HEY")
 
+# exists should work with non existent var
+assertFalse(exists(NON_EXISTENT))
 

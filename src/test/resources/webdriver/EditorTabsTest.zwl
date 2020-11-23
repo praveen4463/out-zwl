@@ -74,10 +74,7 @@ version = findElementFromElement(tests[0], globals.TEST_ID_VERSION_TREE_ITEM)
 # first click
 click(version)
 # now dbl click
-performAction(
-  move(version),
-  doubleClick()
-)
+dblClick(version)
 tabs = findElements(globals.ROLE_TAB_BUTTON)
 # tab font should turn normal
 assertTrue(getElementCssValue(
@@ -100,10 +97,7 @@ version = findElementFromElement(tests[0], globals.TEST_ID_VERSION_TREE_ITEM)
 # first click
 click(version)
 tabs = findElements(globals.ROLE_TAB_BUTTON)
-performAction(
-  move(tabs[0]),
-  doubleClick()
-)
+dblClick(tabs[0])
 assertTrue(getElementCssValue(
     findElementFromElement(tabs[0], globals.SELECTOR_TAB_TEXT_NODE), "font-style") == "normal")
 # make sure tab is really permanent
@@ -119,10 +113,7 @@ click(file)
 tests = findElementsFromElement(file, globals.TEST_ID_TEST_TREE_ITEM)
 click(tests[0])
 version = findElementFromElement(tests[0], globals.TEST_ID_VERSION_TREE_ITEM)
-performAction(
-  move(version),
-  doubleClick()
-)
+dblClick(version)
 tabs = findElements(globals.ROLE_TAB_BUTTON)
 assertTrue(getElementCssValue(
     findElementFromElement(tabs[0], globals.SELECTOR_TAB_TEXT_NODE), "font-style") == "normal")
@@ -138,17 +129,11 @@ click(file)
 tests = findElementsFromElement(file, globals.TEST_ID_TEST_TREE_ITEM)
 click(tests[0])
 version = findElementFromElement(tests[0], globals.TEST_ID_VERSION_TREE_ITEM)
-performAction(
-  move(version),
-  doubleClick()
-)
+dblClick(version)
 # single click
 click(version)
 # dbl click
-performAction(
-  move(version),
-  doubleClick()
-)
+dblClick(version)
 tabs = findElements(globals.ROLE_TAB_BUTTON)
 assertTrue(getElementCssValue(
     findElementFromElement(tabs[0], globals.SELECTOR_TAB_TEXT_NODE), "font-style") == "normal")
@@ -163,10 +148,7 @@ click(file)
 tests = findElementsFromElement(file, globals.TEST_ID_TEST_TREE_ITEM)
 click(tests[0])
 version = findElementFromElement(tests[0], globals.TEST_ID_VERSION_TREE_ITEM)
-performAction(
-  move(version),
-  doubleClick()
-)
+dblClick(version)
 breadcrumb = findElement(globals.TEST_ID_BREADCRUMB_TAB_PANEL)
 assertTrue(getElementText(breadcrumb) ==
     format(
@@ -179,10 +161,7 @@ assertTrue(getElementText(breadcrumb) ==
 # open another version
 click(tests[1])
 version = findElementFromElement(tests[1], globals.TEST_ID_VERSION_TREE_ITEM)
-performAction(
-  move(version),
-  doubleClick()
-)
+dblClick(version)
 # react doesn't remove old breadcrumb but just updates it in DOM, thus we can use same reference
 assertTrue(getElementText(breadcrumb) ==
     format(
@@ -195,10 +174,7 @@ assertTrue(getElementText(breadcrumb) ==
 # open another version
 click(tests[2])
 version = findElementFromElement(tests[2], globals.TEST_ID_VERSION_TREE_ITEM)
-performAction(
-  move(version),
-  doubleClick()
-)
+dblClick(version)
 assertTrue(getElementText(breadcrumb) ==
     format(
       globals.BREADCRUMB_FORMAT,
@@ -217,10 +193,7 @@ click(file)
 tests = findElementsFromElement(file, globals.TEST_ID_TEST_TREE_ITEM)
 click(tests[0])
 version = findElementFromElement(tests[0], globals.TEST_ID_VERSION_TREE_ITEM)
-performAction(
-  move(version),
-  doubleClick()
-)
+dblClick(version)
 tabs = findElements(globals.ROLE_TAB_BUTTON)
 # tab should be selected as it's the only tab, a tab is selected when it has colored bottom and
 # highlighted text
@@ -232,10 +205,7 @@ assertTrue(getElementCssValue(findElementFromElement(tabs[0], "*[data-testid=tab
 # open another tab
 click(tests[1])
 version = findElementFromElement(tests[1], globals.TEST_ID_VERSION_TREE_ITEM)
-performAction(
-  move(version),
-  doubleClick()
-)
+dblClick(version)
 tabs = findElements(globals.ROLE_TAB_BUTTON)
 # assert that tab opened at index = 1 (which should be the new tab) belongs to the current version
 # to make sure the new tab opened next to last selected tab (since new tab is at index = 1) and
@@ -271,10 +241,7 @@ assertTrue(colorMatches(
 # open a new tab
 click(tests[2])
 version = findElementFromElement(tests[2], globals.TEST_ID_VERSION_TREE_ITEM)
-performAction(
-  move(version),
-  doubleClick()
-)
+dblClick(version)
 tabs = findElements(globals.ROLE_TAB_BUTTON)
 # assert that new tab opened at index = 1 rather than 2 cause the selected was index 0
 assertTrue(
@@ -306,24 +273,15 @@ tests = findElementsFromElement(file, globals.TEST_ID_TEST_TREE_ITEM)
 test1 = tests[0]
 click(test1)
 version1 = findElementFromElement(test1, globals.TEST_ID_VERSION_TREE_ITEM)
-performAction(
-  move(version1),
-  doubleClick()
-)
+dblClick(version1)
 test2 = tests[1]
 click(test2)
 version2 = findElementFromElement(test2, globals.TEST_ID_VERSION_TREE_ITEM)
-performAction(
-  move(version2),
-  doubleClick()
-)
+dblClick(version2)
 test3 = tests[2]
 click(test3)
 version3 = findElementFromElement(test3, globals.TEST_ID_VERSION_TREE_ITEM)
-performAction(
-  move(version3),
-  doubleClick()
-)
+dblClick(version3)
 tabs = findElements(globals.ROLE_TAB_BUTTON)
 # current selected tab is index 2
 assertTrue(colorMatches(
@@ -355,31 +313,19 @@ tests = findElementsFromElement(file, globals.TEST_ID_TEST_TREE_ITEM)
 test1 = tests[0]
 click(test1)
 version1 = findElementFromElement(test1, globals.TEST_ID_VERSION_TREE_ITEM)
-performAction(
-  move(version1),
-  doubleClick()
-)
+dblClick(version1)
 test2 = tests[1]
 click(test2)
 version2 = findElementFromElement(test2, globals.TEST_ID_VERSION_TREE_ITEM)
-performAction(
-  move(version2),
-  doubleClick()
-)
+dblClick(version2)
 test3 = tests[2]
 click(test3)
 version3 = findElementFromElement(test3, globals.TEST_ID_VERSION_TREE_ITEM)
-performAction(
-  move(version3),
-  doubleClick()
-)
+dblClick(version3)
 test4 = tests[3]
 click(test4)
 version4 = findElementFromElement(test4, globals.TEST_ID_VERSION_TREE_ITEM)
-performAction(
-  move(version4),
-  doubleClick()
-)
+dblClick(version4)
 tabs = findElements(globals.ROLE_TAB_BUTTON)
 assertTrue(size(tabs) == 4)
 # 4th tab should be selected one
@@ -402,24 +348,15 @@ tests = findElementsFromElement(file, globals.TEST_ID_TEST_TREE_ITEM)
 test1 = tests[0]
 click(test1)
 version1 = findElementFromElement(test1, globals.TEST_ID_VERSION_TREE_ITEM)
-performAction(
-  move(version1),
-  doubleClick()
-)
+dblClick(version1)
 test2 = tests[1]
 click(test2)
 version2 = findElementFromElement(test2, globals.TEST_ID_VERSION_TREE_ITEM)
-performAction(
-  move(version2),
-  doubleClick()
-)
+dblClick(version2)
 test3 = tests[2]
 click(test3)
 version3 = findElementFromElement(test3, globals.TEST_ID_VERSION_TREE_ITEM)
-performAction(
-  move(version3),
-  doubleClick()
-)
+dblClick(version3)
 tabs = findElements(globals.ROLE_TAB_BUTTON)
 assertTrue(size(tabs) == 3)
 # first select 1st tab
@@ -441,17 +378,11 @@ tests = findElementsFromElement(file, globals.TEST_ID_TEST_TREE_ITEM)
 test1 = tests[0]
 click(test1)
 version1 = findElementFromElement(test1, globals.TEST_ID_VERSION_TREE_ITEM)
-performAction(
-  move(version1),
-  doubleClick()
-)
+dblClick(version1)
 test2 = tests[1]
 click(test2)
 version2 = findElementFromElement(test2, globals.TEST_ID_VERSION_TREE_ITEM)
-performAction(
-  move(version2),
-  doubleClick()
-)
+dblClick(version2)
 tabs = findElements(globals.ROLE_TAB_BUTTON)
 # assert tab panel for version2's tab is shown
 breadcrumb = findElement(globals.TEST_ID_BREADCRUMB_TAB_PANEL)
@@ -500,22 +431,19 @@ if size(versions) < requiredVersions {
   # wait until all new versions are added
   # TODO: this v2 function should be change to original variant once original has been updated to accept
   # all required arguments.
-  versions = untilTotalElementsGTv2(test, globals.TEST_ID_VERSION_TREE_ITEM, requiredVersions - 1)
+  versions = untilTotalElementsGT(requiredVersions - 1, test, globals.TEST_ID_VERSION_TREE_ITEM)
 }
 # new versions added, let's open all of them excluding latest
 for v in versions {
   # exclude latest
-  if size(findElementsFromElement(v, globals.TEST_ID_LATEST_VERSION, true)) == 1 {
+  if elementExists(v, globals.TEST_ID_LATEST_VERSION) {
     latestVersion = v
   } else {
-    performAction(
-      move(v),
-      doubleClick()
-    )
+    dblClick(v)
   }
 }
 if exists(latestVersion) {
-  versions = removeElements(versions, latestVersion)
+  removeFrom(versions, latestVersion)
 }
 tabs = findElements(globals.ROLE_TAB_BUTTON)
 assertTrue(size(tabs) >= requiredVersions - 1)
@@ -571,13 +499,11 @@ if size(test1Versions) < requiredVersions {
     typeActive(uuid(), keys.enter)
     sleep(20)
   }
-  test1Versions = untilTotalElementsGTv2(test1, globals.TEST_ID_VERSION_TREE_ITEM, requiredVersions - 1)
+  test1Versions = untilTotalElementsGT(requiredVersions - 1, test1,
+      globals.TEST_ID_VERSION_TREE_ITEM)
 }
 for v in test1Versions {
-  performAction(
-    move(v),
-    doubleClick()
-  )
+  dblClick(v)
 }
 test2 = tests[1]
 click(test2)
@@ -590,14 +516,11 @@ if size(test2Versions) < requiredVersions {
     typeActive(uuid(), keys.enter)
     sleep(20)
   }
-  test2Versions = untilTotalElementsGTv2(test2, globals.TEST_ID_VERSION_TREE_ITEM,
-      requiredVersions - 1)
+  test2Versions = untilTotalElementsGT(requiredVersions - 1, test2,
+      globals.TEST_ID_VERSION_TREE_ITEM)
 }
 for v in test2Versions {
-  performAction(
-    move(v),
-    doubleClick()
-  )
+  dblClick(v)
 }
 tabs = findElements(globals.ROLE_TAB_BUTTON)
 assertTrue(size(tabs) == requiredVersions * 2)

@@ -2,6 +2,7 @@ package com.zylitics.zwl.function;
 
 import com.zylitics.zwl.datatype.*;
 import com.zylitics.zwl.exception.EvalException;
+import com.zylitics.zwl.exception.IndexOutOfRangeException;
 import com.zylitics.zwl.exception.InvalidRegexPatternException;
 import com.zylitics.zwl.exception.InvalidTypeException;
 import com.zylitics.zwl.interpret.Function;
@@ -158,9 +159,15 @@ public abstract class AbstractFunction implements Function {
   // that it doesn't confuse them. For example we could say: When functions accepts a list in place
   // of arguments, that list is expanded to arguments internally and if some element was invalid,
   // we'll report it as if it was an argument.
-  private InvalidTypeException getWrongTypeException(ZwlValue val, String type, int argIndex) {
+  protected InvalidTypeException getWrongTypeException(ZwlValue val, String type, int argIndex) {
     return new InvalidTypeException(String.format("Function %s, value: %s at argument: %s, isn't" +
             " of type '%s'. %s", getName(), val, argIndex, type, lineNColumn.get()));
+  }
+  
+  protected IndexOutOfRangeException getOutOfRange(int index, List<ZwlValue> list) {
+    return new IndexOutOfRangeException(String.format("The specified index isn't within the " +
+            "range of this List. Index given: %s, List size: %s %s", index, list.size(),
+        lineNColumn.get()));
   }
   
   protected ListZwlValue getListZwlValue(List<String> stringsList) {

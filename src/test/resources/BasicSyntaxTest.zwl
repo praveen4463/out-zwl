@@ -13,13 +13,13 @@ assert(c == 301)
 
 # Function invocation ******************************************************************************
 
-a = format("Hi %s, how are you? Are you free around %s in the evening?", "praveen", 7)
-assert(a == "Hi praveen, how are you? Are you free around 7 in the evening?")
+a = format('Hi %s, how are you? Are you free around %s in the evening?', 'praveen', 7)
+assert(a == 'Hi praveen, how are you? Are you free around 7 in the evening?')
 
-regex = "around (?<time>[6-9]) in the evening"
+regex = 'around (?<time>[6-9]) in the evening'
 b = substringRegex(a, regex)[0].time
 printF("b is: %s", b)
-assert(b == 7, "substringRegex assertion failed")
+assert(b == 7, 'substringRegex assertion failed')
 
 # if statement *************************************************************************************
 
@@ -47,12 +47,12 @@ if false {
 # for statements ***********************************************************************************
 
 # for-in with list
-c = ""
-a = ["are we", "going there", "on monday", "at", 9, "?"]
+c = ''
+a = ['are we', 'going there', 'on monday', 'at', 9, '?']
 for e in a {
   c = format("%s %s", c, e)
 }
-assert(trim(c) == "are we going there on monday at 9 ?", "for-list assertion failed")
+assert(trim(c) == 'are we going there on monday at 9 ?', 'for-list assertion failed')
 
 # for-in with map
 c = ""

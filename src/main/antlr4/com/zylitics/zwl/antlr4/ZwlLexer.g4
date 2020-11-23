@@ -9,6 +9,7 @@ IN : 'in';
 TO : 'to';
 ASSERT_THROWS : 'assertThrows';
 ASSERT_DOES_NOT_THROW : 'assertDoesNotThrow';
+EXISTS: 'exists';
 
 // Separators
 LBRACE : '{';
@@ -20,6 +21,7 @@ RBRAC : ']';
 COMMA : ',';
 DOT : '.';
 QUOTE : '"';
+SINGLE_QUOTE : '\'';
 BACKTICK : '`';
 
 // Operators
@@ -76,12 +78,18 @@ RawStringLiteral
 
 // To add an expression with string, use concat(string[]) function or '+' concatenation
 StringLiteral
-  : QUOTE StringCharacters?? QUOTE
+  : QUOTE StringCharacters_Quote?? QUOTE
+  | SINGLE_QUOTE StringCharacters_Single_Quote?? SINGLE_QUOTE
   ;
 
 fragment
-StringCharacters
-  : StringCharacter+
+StringCharacters_Quote
+  : StringCharacter_Quote+
+  ;
+
+fragment
+StringCharacters_Single_Quote
+  : StringCharacter_Single_Quote+
   ;
 
 fragment
@@ -96,9 +104,16 @@ HexDigit
 // it matches other characters using other rules. For example we could write \u32F1praveen, u\32F1
 // is matched as unicode char in BMP and praveen as a different char string.
 fragment
-StringCharacter
+StringCharacter_Quote
   : ~["\\\r\n]
   | '\\' [tnr"\\]
+  | '\\' 'u' HexDigit HexDigit HexDigit HexDigit
+  ;
+
+fragment
+StringCharacter_Single_Quote
+  : ~['\\\r\n]
+  | '\\' [tnr'\\]
   | '\\' 'u' HexDigit HexDigit HexDigit HexDigit
   ;
 

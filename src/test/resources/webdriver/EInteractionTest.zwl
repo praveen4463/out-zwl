@@ -47,6 +47,9 @@ if browser.name != "IE" {
 txtName = findElement("#name")
 click(txtName)
 type(txtName, "praveen tiwari")
+clearActive()
+assertFalse(nonEmpty(getElementValue(txtName)))
+type(txtName, "praveen tiwari")
 
 txtPhone = findElement("#phone")
 click(txtPhone)

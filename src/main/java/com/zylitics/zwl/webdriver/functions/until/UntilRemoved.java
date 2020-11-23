@@ -7,8 +7,8 @@ import com.zylitics.zwl.webdriver.TimeoutType;
 import com.zylitics.zwl.datatype.BooleanZwlValue;
 import com.zylitics.zwl.datatype.ZwlValue;
 import com.zylitics.zwl.webdriver.constants.FuncDefReturnValue;
-import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.remote.RemoteWebElement;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.io.PrintStream;
@@ -21,7 +21,7 @@ public class UntilRemoved extends AbstractUntilExpectation {
                       BuildCapability buildCapability,
                       RemoteWebDriver driver,
                       PrintStream printStream) {
-    super(wdProps, buildCapability, driver, printStream, 1, 1);
+    super(wdProps, buildCapability, driver, printStream, 1, 3);
   }
   
   @Override
@@ -34,10 +34,9 @@ public class UntilRemoved extends AbstractUntilExpectation {
                          Supplier<String> lineNColumn) {
     super.invoke(args, defaultValue, lineNColumn);
     
-    if (args.size() != 1) {
-      throw unexpectedEndOfFunctionOverload(args.size());
+    if (args.size() == 0) {
+      throw unexpectedEndOfFunctionOverload(0);
     }
-    String selector = tryCastString(0, args.get(0));
   
     if (buildCapability.isDryRunning()) {
       return evaluateDefValue(defaultValue);
@@ -47,12 +46,8 @@ public class UntilRemoved extends AbstractUntilExpectation {
     
     return handleWDExceptions(() ->
         new BooleanZwlValue(wait.until(d -> {
-            try {
-              findElement(driver, selector, false);
-              return false; // when successfully found, we need to find again.
-            } catch (NoSuchElementException n) {
-              return true;
-            }
+            List<RemoteWebElement> e = findElementsDetectingArgs(args, false);
+            return e.size() == 0; // when successfully found, we need to find again.
           })));
   }
   

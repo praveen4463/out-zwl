@@ -16,6 +16,9 @@ import java.io.PrintStream;
 import java.util.List;
 import java.util.function.Supplier;
 
+// Don't use as it uses multiple selectors separated by comma, we're not using selector anymore but
+// fromElement and by's with using.
+@Deprecated
 public class UntilAllRemoved extends AbstractUntilExpectation {
   
   public UntilAllRemoved(APICoreProperties.Webdriver wdProps,

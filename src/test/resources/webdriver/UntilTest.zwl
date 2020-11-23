@@ -368,12 +368,12 @@ allDiv = "div"
 
 executeScript(removeOne, div1)
 assertTrue(size(findElements(allDiv)) == 4)
-untilTotalElementsEQ(allDiv, 3)
+untilTotalElementsEQ(3, allDiv, by.tagName)
 assertTrue(size(findElements(allDiv)) == 3)
 
 executeScript(removeOne, div2)
 assertTrue(size(findElements(allDiv)) == 3)
-untilTotalElementsLT(allDiv, 3)
+untilTotalElementsLT(3, allDiv, by.tagName)
 assertTrue(size(findElements(allDiv)) == 2)
 
 executeScript(
@@ -385,7 +385,7 @@ executeScript(
     }, %s)`, elemAccess)
 )
 assertTrue(size(findElements(allDiv)) == 2)
-untilTotalElementsGT(allDiv, 2)
+untilTotalElementsGT(2, allDiv, by.tagName)
 assertTrue(size(findElements(allDiv)) == 3)
 
 # Total windows-------------------------------------------------------------------------------------

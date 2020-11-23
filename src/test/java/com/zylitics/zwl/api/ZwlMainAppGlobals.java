@@ -39,7 +39,7 @@ public class ZwlMainAppGlobals {
         .put("BUTTON_NEW_FILE", "button[aria-label='New File']")
         .put("EXPLORER_ERROR", "*[data-testid='explorerError']")
         .put("3URL_LOCAL", "http://localhost:3000/") // kept to see non identifiers work
-        .put("URL_LOCAL", "http://localhost:3000/")
+        .put("URL_LOCAL", "http://localhost:3000/?project=1&file=1")
         .put("LINE_COL_FORMAT", "Ln %s, Col %s")
         .put("SELECTOR_HINT", "ul.CodeMirror-hints")
         .put("SAMPLE_CODE", "# This code is not typed by hand\n" +

@@ -34,3 +34,40 @@ assertTrue(mixed_map.name + " lives " + mixed_map.address == "praveen lives some
 assertTrue(mixed_map.hobbies[1] == "exercising", "mixed_map's array couldn't be accessed: " + mixed_map.hobbies[1])
 
 assertTrue(mixed_map.relatives.pet == "bond", "mixed_map's map couldn't be accessed")
+
+arr = [1, 2, 3, 6, 7]
+assertTrue(removeFrom(arr, 6))
+assertFalse(removeFrom(arr, 9))
+assertTrue(arr == [1, 2, 3, 7])
+
+assertTrue(removeFrom(mixed_map, 'age'))
+assertFalse(removeFrom(mixed_map, 'age'))
+assertFalse(containsKey(mixed_map, 'age'))
+
+list = []
+addTo(list, 1)
+addTo(list, 2)
+addTo(list, 6)
+assertTrue(list == [1, 2, 6])
+
+map = {}
+putIn(map, 'age', 1)
+putIn(map, 'name', 'harry')
+putIn(map, 'phone', 2)
+assertTrue(map == {age: 1, name: 'harry', phone: 2})
+putIn(map, 'age', 11)
+assertTrue(map.age == 11)
+
+removeAt(list, 1)
+assertTrue(list == [1, 6])
+assertThrows(exceptions.indexOutOfRangeEx, removeAt(list, 2))
+
+setAt(list, 0, 'yo')
+setAt(list, 1, true)
+assertTrue(list == ['yo', true])
+assertThrows(exceptions.indexOutOfRangeEx, setAt(list, 2, 3))
+
+removeAll(list)
+removeAll(map)
+assertTrue(length(list) == 0)
+assertTrue(length(map) == 0)

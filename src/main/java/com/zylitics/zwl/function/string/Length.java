@@ -2,12 +2,18 @@ package com.zylitics.zwl.function.string;
 
 import com.zylitics.zwl.datatype.DoubleZwlValue;
 import com.zylitics.zwl.datatype.ZwlValue;
+import com.zylitics.zwl.exception.EvalException;
 import com.zylitics.zwl.function.AbstractFunction;
 
 import java.util.List;
 import java.util.function.Supplier;
 
 public class Length extends AbstractFunction {
+  
+  @Override
+  protected boolean doNotExpandListToArguments() {
+    return true;
+  }
   
   @Override
   public String getName() {
@@ -29,15 +35,25 @@ public class Length extends AbstractFunction {
                          Supplier<String> lineNColumn) {
     super.invoke(args, defaultValue, lineNColumn);
     int argsCount = args.size();
-    
-    if (argsCount == 1) {
-      return new DoubleZwlValue(length(tryCastString(0, args.get(0))));
+  
+    if (argsCount == 0) {
+      throw unexpectedEndOfFunctionOverload(0);
     }
   
-    throw unexpectedEndOfFunctionOverload(argsCount);
-  }
-  
-  private int length(String s) {
-    return s.length();
+    ZwlValue val = args.get(0);
+    if (!(val.getMapValue().isPresent() || val.getListValue().isPresent() ||
+        val.getStringValue().isPresent())) {
+      throw new EvalException(withLineNCol(getName() +
+          " works for only Map, List and String types."));
+    }
+    int length;
+    if (val.getListValue().isPresent()) {
+      length = val.getListValue().get().size();
+    } else if (val.getMapValue().isPresent()) {
+      length = val.getMapValue().get().size();
+    } else {
+      length = val.getStringValue().get().length();
+    }
+    return new DoubleZwlValue(length);
   }
 }
