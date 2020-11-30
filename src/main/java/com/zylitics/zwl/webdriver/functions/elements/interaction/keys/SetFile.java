@@ -75,7 +75,8 @@ public class SetFile extends AbstractWebdriverFunction {
     // user sent it that way.
     String localFilePathAfterDownload =
         new FileInputFilesProcessor(storage, wdProps.getUserDataBucket(), pathToUploadedFiles,
-            Collections.singleton(fileOnCloud), buildDir, lineNColumn).process().iterator().next();
+            Collections.singleton(fileOnCloud), buildDir, lineNColumn, fromPos, toPos)
+            .process().iterator().next();
     return handleWDExceptions(() -> {
       element.sendKeys(localFilePathAfterDownload);
       return _void;

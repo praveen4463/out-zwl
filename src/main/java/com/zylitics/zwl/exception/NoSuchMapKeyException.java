@@ -4,12 +4,12 @@ public class NoSuchMapKeyException extends EvalException {
   
   private static final long serialVersionUID = -2080522235735549259L;
   
-  public NoSuchMapKeyException(String msg) {
-    super(msg);
+  public NoSuchMapKeyException(String fromPos, String toPos, String msg) {
+    super(fromPos, toPos, msg);
   }
   
   @SuppressWarnings("unused")
-  public NoSuchMapKeyException(String msg, Throwable cause) {
-    super(msg, cause);
+  public NoSuchMapKeyException(String fromPos, String toPos, String msg, Throwable cause) {
+    super(fromPos, toPos, msg, cause);
   }
 }

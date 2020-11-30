@@ -8,11 +8,11 @@ public class EvalException extends ZwlLangException {
   
   private static final long serialVersionUID = -2737215880481504769L;
   
-  public EvalException(String msg) {
-    super(msg);
+  public EvalException(String fromPos, String toPos, String msg) {
+    super(fromPos, toPos, msg);
   }
   
-  public EvalException(String msg, Throwable cause) {
-    super(msg, cause);
+  public EvalException(String fromPos, String toPos, String msg, Throwable cause) {
+    super(fromPos, toPos, msg, cause);
   }
 }

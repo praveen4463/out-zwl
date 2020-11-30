@@ -31,6 +31,22 @@ public abstract class AbstractFunction implements Function {
   
   protected Supplier<String> lineNColumn;
   
+  protected Supplier<String> fromPos;
+  
+  protected Supplier<String> toPos;
+  
+  @Override
+  public AbstractFunction setFromPos(Supplier<String> fromPos) {
+    this.fromPos = fromPos;
+    return this;
+  }
+  
+  @Override
+  public AbstractFunction setToPos(Supplier<String> toPos) {
+    this.toPos = toPos;
+    return this;
+  }
+  
   @Override
   public ZwlValue invoke(List<ZwlValue> args, Supplier<ZwlValue> defaultValue
       , Supplier<String> lineNColumn) {
@@ -45,8 +61,8 @@ public abstract class AbstractFunction implements Function {
     int argsCount = args.size();
     
     if (argsCount < minParamsCount() || argsCount > maxParamsCount()) {
-      throw new EvalException(String.format("function: %s with parameters count: %s isn't " +
-          "defined. %s", getName(), argsCount, lineNColumn.get()));
+      throw new EvalException(fromPos.get(), toPos.get(), String.format("function: %s with" +
+          " parameters count: %s isn't defined. %s", getName(), argsCount, lineNColumn.get()));
     }
     
     // check none of the elements in list is 'null' as we don't expect them, we just expect our own
@@ -160,14 +176,15 @@ public abstract class AbstractFunction implements Function {
   // of arguments, that list is expanded to arguments internally and if some element was invalid,
   // we'll report it as if it was an argument.
   protected InvalidTypeException getWrongTypeException(ZwlValue val, String type, int argIndex) {
-    return new InvalidTypeException(String.format("Function %s, value: %s at argument: %s, isn't" +
-            " of type '%s'. %s", getName(), val, argIndex, type, lineNColumn.get()));
+    return new InvalidTypeException(fromPos.get(), toPos.get(),
+        String.format("Function %s, value: %s at argument: %s, isn't of type '%s'. %s",
+            getName(), val, argIndex, type, lineNColumn.get()));
   }
   
   protected IndexOutOfRangeException getOutOfRange(int index, List<ZwlValue> list) {
-    return new IndexOutOfRangeException(String.format("The specified index isn't within the " +
-            "range of this List. Index given: %s, List size: %s %s", index, list.size(),
-        lineNColumn.get()));
+    return new IndexOutOfRangeException(fromPos.get(), toPos.get(),
+        String.format("The specified index isn't within the range of this List. Index given: %s," +
+            " List size: %s %s", index, list.size(), lineNColumn.get()));
   }
   
   protected ListZwlValue getListZwlValue(List<String> stringsList) {
@@ -183,7 +200,8 @@ public abstract class AbstractFunction implements Function {
       // of flags etc.
       pattern = Pattern.compile(regex);
     } catch (PatternSyntaxException pse) {
-      throw new InvalidRegexPatternException(withLineNCol(pse.getMessage()), pse);
+      throw new InvalidRegexPatternException(fromPos.get(), toPos.get(),
+          withLineNCol(pse.getMessage()), pse);
     }
     return pattern;
   }

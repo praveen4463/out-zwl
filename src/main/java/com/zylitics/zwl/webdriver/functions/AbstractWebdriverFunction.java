@@ -118,7 +118,7 @@ public abstract class AbstractWebdriverFunction extends AbstractFunction {
       throw z;
     } catch (WebDriverException wdEx) {
       // wrap webdriver exceptions and throw.
-      throw new ZwlLangException(lineNColumn.get(), wdEx);
+      throw new ZwlLangException(fromPos.get(), toPos.get(), lineNColumn.get(), wdEx);
     } catch (Exception ex) {
       throw new RuntimeException(ex);
     }
@@ -201,8 +201,8 @@ public abstract class AbstractWebdriverFunction extends AbstractFunction {
   
   protected RemoteWebElement getWebElementUsingElemId(String elemId) {
     if (!isValidElemId(elemId)) {
-      throw new ZwlLangException(withLineNCol("Given string " + elemId + " is not a valid elemId."),
-          new IllegalArgumentException());
+      throw new ZwlLangException(fromPos.get(), toPos.get(), withLineNCol("Given string " + elemId +
+          " is not a valid elemId."), new IllegalArgumentException());
     }
     RemoteWebElement element = new RemoteWebElement();
     element.setParent(driver);
@@ -400,9 +400,10 @@ public abstract class AbstractWebdriverFunction extends AbstractFunction {
       return userSupplied;
     }
     // throw if the type doesn't match.
-    throw new InvalidTypeException(String.format("The type of supplied value is '%s' whereas" +
-        " the function '%s' returns value of type '%s'. %s", userSupplied.getType(), getName(),
-        funcReturnType, lineNColumn.get()));
+    throw new InvalidTypeException(fromPos.get(), toPos.get(),
+        String.format("The type of supplied value is '%s' whereas the function '%s' returns value" +
+                " of type '%s'. %s", userSupplied.getType(), getName(), funcReturnType,
+            lineNColumn.get()));
   }
   
   private Tuple<SearchContext, By> detectElementSearchArguments(List<ZwlValue> args) {

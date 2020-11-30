@@ -49,7 +49,7 @@ public class Merge extends AbstractFunction {
       return new MapZwlValue(merge(args));
     }
   
-    throw new InsufficientArgumentsException(
+    throw new InsufficientArgumentsException(fromPos.get(), toPos.get(),
         withLineNCol(getName() + " requires at least two values."));
   }
   

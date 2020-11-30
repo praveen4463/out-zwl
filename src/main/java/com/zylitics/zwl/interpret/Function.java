@@ -16,6 +16,10 @@ public interface Function {
   
   int maxParamsCount();
   
+  Function setFromPos(Supplier<String> fromPos);
+  
+  Function setToPos(Supplier<String> toPos);
+  
   ZwlValue invoke(List<ZwlValue> args,
                   Supplier<ZwlValue> defaultValue,
                   Supplier<String> lineNColumn);

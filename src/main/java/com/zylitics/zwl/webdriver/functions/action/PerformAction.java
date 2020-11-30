@@ -64,7 +64,7 @@ public class PerformAction extends AbstractWebdriverFunction {
     for (int i = 0; i < args.size(); i++) {
       Optional<Map<String, ZwlValue>> m = args.get(i).getMapValue();
       if (!m.isPresent()) {
-        throw new ZwlLangException(
+        throw new ZwlLangException(fromPos.get(), toPos.get(),
             String.format("Argument at: %s, isn't one of the action function. Please provide" +
                 " only the allowed action functions to perform them. %s", i, lineNColumn.get()),
             new IllegalArgumentException());
@@ -139,7 +139,8 @@ public class PerformAction extends AbstractWebdriverFunction {
           actionFunction = new Pause();
           break;
         default:
-          throw new ZwlLangException(withLineNCol("Unrecognized action function at argument " + i),
+          throw new ZwlLangException(fromPos.get(), toPos.get(),
+              withLineNCol("Unrecognized action function at argument " + i),
               new IllegalArgumentException());
       }
       actionFunction.process(this, actions, actionFunctionArgs);

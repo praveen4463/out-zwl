@@ -52,7 +52,7 @@ public class FormatDate extends AbstractFunction {
   
   private String formatDate(String date, String format) {
     if (Strings.isNullOrEmpty(date) || Strings.isNullOrEmpty(format)) {
-      throw new EvalException(
+      throw new EvalException(fromPos.get(), toPos.get(),
           withLineNCol(getName() + " requires date and format both should be non empty"));
     }
   
@@ -62,9 +62,11 @@ public class FormatDate extends AbstractFunction {
       dateTime = ZonedDateTime.parse(date, DateTimeFormatter.ISO_DATE_TIME);
       formatter = DateTimeFormatter.ofPattern(format);
     } catch (DateTimeParseException d ) {
-      throw new UnknownDateTimeException(withLineNCol(d.getMessage()), d);
+      throw new UnknownDateTimeException(fromPos.get(), toPos.get(),
+          withLineNCol(d.getMessage()), d);
     } catch (IllegalArgumentException i) {
-      throw new DateTimeFormatException(withLineNCol(i.getMessage()), i);
+      throw new DateTimeFormatException(fromPos.get(), toPos.get(),
+          withLineNCol(i.getMessage()), i);
     }
     
     return dateTime.format(formatter);

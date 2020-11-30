@@ -1,13 +1,12 @@
 package com.zylitics.zwl.antlr4;
 
-import com.zylitics.zwl.exception.ZwlLangException;
 import org.antlr.v4.runtime.*;
 
 public class BailErrorStrategy extends DefaultErrorStrategy {
   
   @Override
   public void recover(Parser recognizer, RecognitionException e) {
-    throw new ZwlLangException(e);
+    throw new ExceptionHandler(recognizer.getErrorListeners()).handle(e);
   }
   
   // Doing this per the book so that inline recovery doesn't happen as we want to bail out on first
@@ -30,7 +29,7 @@ public class BailErrorStrategy extends DefaultErrorStrategy {
       e = new InputMismatchException(recognizer, nextTokensState, nextTokensContext);
     }
     reportInputMismatch(recognizer, e);
-    throw new ZwlLangException(e);
+    throw new ExceptionHandler(recognizer.getErrorListeners()).handle(e);
   }
   
   @Override

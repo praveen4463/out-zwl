@@ -58,7 +58,8 @@ public class Substring extends AbstractFunction {
     try {
       return s.substring(beginIndex);
     } catch (IndexOutOfBoundsException i) {
-      throw new IndexOutOfRangeException(withLineNCol(i.getMessage()), i);
+      throw new IndexOutOfRangeException(fromPos.get(), toPos.get(),
+          withLineNCol(i.getMessage()), i);
     }
   }
   
@@ -66,7 +67,8 @@ public class Substring extends AbstractFunction {
     try {
       return s.substring(beginIndex, endIndex);
     } catch (IndexOutOfBoundsException i) {
-      throw new IndexOutOfRangeException(withLineNCol(i.getMessage()), i);
+      throw new IndexOutOfRangeException(fromPos.get(), toPos.get(),
+          withLineNCol(i.getMessage()), i);
     }
   }
 }

@@ -53,7 +53,8 @@ public class Sleep extends AbstractWebdriverFunction {
       Thread.sleep(parseDouble(0, args.get(0)).longValue());
       return _void;
     } catch (InterruptedException i) {
-      throw new ZwlLangException(withLineNCol("Sleep was interrupted due to some problem."), i);
+      throw new ZwlLangException(fromPos.get(), toPos.get(),
+          withLineNCol("Sleep was interrupted due to some problem."), i);
     }
   }
   

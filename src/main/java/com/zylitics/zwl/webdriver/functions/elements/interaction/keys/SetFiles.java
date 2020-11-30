@@ -76,7 +76,7 @@ public class SetFiles extends AbstractWebdriverFunction {
     // user sent it that way.
     Set<String> localFilePathsAfterDownload =
         new FileInputFilesProcessor(storage, wdProps.getUserDataBucket(), pathToUploadedFiles,
-            filesOnCloud, buildDir, lineNColumn).process();
+            filesOnCloud, buildDir, lineNColumn, fromPos, toPos).process();
     return handleWDExceptions(() -> {
       element.sendKeys(String.join("\n", localFilePathsAfterDownload));
       // per the spec https://w3c.github.io/webdriver/#dfn-dispatch-actions-for-a-string

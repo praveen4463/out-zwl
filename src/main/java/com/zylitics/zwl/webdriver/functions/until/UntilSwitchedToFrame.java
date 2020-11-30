@@ -49,7 +49,8 @@ public class UntilSwitchedToFrame extends AbstractUntilExpectation {
     
     // if first argument is int, it must be index
     try {
-      int index = ParseUtil.parseDouble(args.get(0), () -> new InvalidTypeException("")).intValue();
+      int index = ParseUtil.parseDouble(args.get(0), () ->
+          new InvalidTypeException(fromPos.get(), toPos.get(), "")).intValue();
       return handleWDExceptions(() ->
           new BooleanZwlValue(wait.until(d -> {
             targetLocator.frame(index);

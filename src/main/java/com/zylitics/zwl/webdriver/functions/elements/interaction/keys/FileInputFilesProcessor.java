@@ -44,12 +44,18 @@ class FileInputFilesProcessor {
   
   private final Supplier<String> lineNColumn;
   
+  private final Supplier<String> fromPos;
+  
+  private final Supplier<String> toPos;
+  
   FileInputFilesProcessor(Storage storage,
                           String userDataBucket,
                           String pathToUploadedFiles,
                           Set<String> fileNames,
                           Path buildDir,
-                          Supplier<String> lineNColumn) {
+                          Supplier<String> lineNColumn,
+                          Supplier<String> fromPos,
+                          Supplier<String> toPos) {
     Preconditions.checkNotNull(storage, "storage can't be null");
     Preconditions.checkArgument(!Strings.isNullOrEmpty(userDataBucket),
         "userDataBucket can't be empty");
@@ -64,6 +70,8 @@ class FileInputFilesProcessor {
     this.fileNames = fileNames;
     this.buildDir = buildDir;
     this.lineNColumn = lineNColumn;
+    this.fromPos = fromPos;
+    this.toPos = toPos;
   }
   
   /**
@@ -99,8 +107,8 @@ class FileInputFilesProcessor {
       try {
         Blob blob = storage.get(BlobId.of(userDataBucket, constructStorageFilePath(fileName)));
         if (blob == null) {
-          throw new ZwlLangException(fileName + " doesn't exists. Please check whether this file" +
-              " was really uploaded. " + lineNColumn.get());
+          throw new ZwlLangException(fromPos.get(), toPos.get(), fileName + " doesn't exists." +
+              " Please check whether this file was really uploaded. " + lineNColumn.get());
         }
         // currently there is no support for user to put files in a directory structure at cloud
         // storage and they need to put all of them at one place flat. This makes it easier to not

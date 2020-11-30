@@ -16,12 +16,20 @@ public class ZwlLangException extends RuntimeException {
   
   private static final long serialVersionUID = -8954182436250699689L;
   
-  public ZwlLangException(String msg) {
+  private final String fromPos;
+  
+  private final String toPos;
+  
+  public ZwlLangException(String fromPos, String toPos, String msg) {
     super(msg);
+    this.fromPos = fromPos;
+    this.toPos = toPos;
   }
   
-  public ZwlLangException(Throwable cause) {
+  public ZwlLangException(String fromPos, String toPos, Throwable cause) {
     super(cause);
+    this.fromPos = fromPos;
+    this.toPos = toPos;
   }
   
   /**
@@ -29,7 +37,17 @@ public class ZwlLangException extends RuntimeException {
    * @param lineNColumn the ZWL program's line and column number where the error encountered
    * @param cause the actual exception thrown.
    */
-  public ZwlLangException(String lineNColumn, Throwable cause) {
+  public ZwlLangException(String fromPos, String toPos, String lineNColumn, Throwable cause) {
     super(lineNColumn, cause);
+    this.fromPos = fromPos;
+    this.toPos = toPos;
+  }
+  
+  public String getFromPos() {
+    return fromPos;
+  }
+  
+  public String getToPos() {
+    return toPos;
   }
 }

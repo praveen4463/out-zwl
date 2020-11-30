@@ -82,7 +82,7 @@ public abstract class AbstractExecuteScript extends AbstractWebdriverFunction {
    *         Map of these types.
    */
   private Object convertFromZwlValue(ZwlValue val) {
-    InvalidTypeException iEx = new InvalidTypeException("");
+    InvalidTypeException iEx = new InvalidTypeException(fromPos.get(), toPos.get(), "");
     /*First do the internal parsing to help user sending number/boolean as string, otherwise they
     will have to send the correct type to be able to get correct argument. For example if user
     extracted a number from a string and stored in a variable, later used that variable and

@@ -43,7 +43,7 @@ public class Length extends AbstractFunction {
     ZwlValue val = args.get(0);
     if (!(val.getMapValue().isPresent() || val.getListValue().isPresent() ||
         val.getStringValue().isPresent())) {
-      throw new EvalException(withLineNCol(getName() +
+      throw new EvalException(fromPos.get(), toPos.get(), withLineNCol(getName() +
           " works for only Map, List and String types."));
     }
     int length;

@@ -51,7 +51,8 @@ public class Format extends AbstractFunction {
     try {
       return String.format(s, args);
     } catch (IllegalFormatException i) {
-      throw new IllegalStringFormatException(withLineNCol(i.getMessage()), i);
+      throw new IllegalStringFormatException(fromPos.get(), toPos.get(),
+          withLineNCol(i.getMessage()), i);
     }
   }
 }
