@@ -202,7 +202,7 @@ public abstract class AbstractWebdriverFunction extends AbstractFunction {
   protected RemoteWebElement getWebElementUsingElemId(String elemId) {
     if (!isValidElemId(elemId)) {
       throw new ZwlLangException(fromPos.get(), toPos.get(), withLineNCol("Given string " + elemId +
-          " is not a valid elemId."), new IllegalArgumentException());
+          " is not a valid elemId."));
     }
     RemoteWebElement element = new RemoteWebElement();
     element.setParent(driver);

@@ -7,9 +7,4 @@ public class AssertionFailedException extends EvalException {
   public AssertionFailedException(String fromPos, String toPos, String msg) {
     super(fromPos, toPos, msg);
   }
-  
-  @SuppressWarnings("unused")
-  public AssertionFailedException(String fromPos, String toPos, String msg, Throwable cause) {
-    super(fromPos, toPos, msg, cause);
-  }
 }

@@ -5,7 +5,7 @@ import org.antlr.v4.runtime.RecognitionException;
 
 import java.util.List;
 
-public class ExceptionHandler {
+class ExceptionHandler {
   
   private static final String POS_FORMAT = "%s:%s";
   

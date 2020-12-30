@@ -59,7 +59,7 @@ public class Substring extends AbstractFunction {
       return s.substring(beginIndex);
     } catch (IndexOutOfBoundsException i) {
       throw new IndexOutOfRangeException(fromPos.get(), toPos.get(),
-          withLineNCol(i.getMessage()), i);
+          withLineNCol(i.getMessage()));
     }
   }
   
@@ -68,7 +68,7 @@ public class Substring extends AbstractFunction {
       return s.substring(beginIndex, endIndex);
     } catch (IndexOutOfBoundsException i) {
       throw new IndexOutOfRangeException(fromPos.get(), toPos.get(),
-          withLineNCol(i.getMessage()), i);
+          withLineNCol(i.getMessage()));
     }
   }
 }

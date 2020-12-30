@@ -7,9 +7,4 @@ public class IllegalIdentifierException extends EvalException {
   public IllegalIdentifierException(String fromPos, String toPos, String msg) {
     super(fromPos, toPos, msg);
   }
-  
-  @SuppressWarnings("unused")
-  public IllegalIdentifierException(String fromPos, String toPos, String msg, Throwable cause) {
-    super(fromPos, toPos, msg, cause);
-  }
 }

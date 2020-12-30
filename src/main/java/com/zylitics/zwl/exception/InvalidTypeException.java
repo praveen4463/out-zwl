@@ -7,9 +7,4 @@ public class InvalidTypeException extends EvalException {
   public InvalidTypeException(String fromPos, String toPos, String msg) {
     super(fromPos, toPos, msg);
   }
-  
-  @SuppressWarnings("unused")
-  public InvalidTypeException(String fromPos, String toPos, String msg, Throwable cause) {
-    super(fromPos, toPos, msg, cause);
-  }
 }

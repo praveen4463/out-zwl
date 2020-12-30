@@ -7,9 +7,4 @@ public class InsufficientArgumentsException extends EvalException {
   public InsufficientArgumentsException(String fromPos, String toPos, String msg) {
     super(fromPos, toPos, msg);
   }
-  
-  @SuppressWarnings("unused")
-  public InsufficientArgumentsException(String fromPos, String toPos, String msg, Throwable cause) {
-    super(fromPos, toPos, msg, cause);
-  }
 }

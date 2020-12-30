@@ -66,8 +66,7 @@ public class PerformAction extends AbstractWebdriverFunction {
       if (!m.isPresent()) {
         throw new ZwlLangException(fromPos.get(), toPos.get(),
             String.format("Argument at: %s, isn't one of the action function. Please provide" +
-                " only the allowed action functions to perform them. %s", i, lineNColumn.get()),
-            new IllegalArgumentException());
+                " only the allowed action functions to perform them. %s", i, lineNColumn.get()));
       }
       if (m.get().size() != 1) {
         throw new RuntimeException("Action function at argument index " + i + " returned a" +
@@ -140,8 +139,7 @@ public class PerformAction extends AbstractWebdriverFunction {
           break;
         default:
           throw new ZwlLangException(fromPos.get(), toPos.get(),
-              withLineNCol("Unrecognized action function at argument " + i),
-              new IllegalArgumentException());
+              withLineNCol("Unrecognized action function at argument " + i));
       }
       actionFunction.process(this, actions, actionFunctionArgs);
     }

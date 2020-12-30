@@ -26,6 +26,13 @@ public class ZwlLangException extends RuntimeException {
     this.toPos = toPos;
   }
   
+  /**
+   * Should be used when a thrown exception needs to be wrapped in a {@link ZwlLangException} and
+   * exception message is derived from state, such as a {@link org.antlr.v4.runtime.RecognitionException}
+   * All general exceptions that don't require special handling must not this overload.
+   * @param cause the actual exception thrown.
+   * @see "com.zylitics.btbr.runner.ExceptionTranslationProvider"
+   */
   public ZwlLangException(String fromPos, String toPos, Throwable cause) {
     super(cause);
     this.fromPos = fromPos;
@@ -33,9 +40,12 @@ public class ZwlLangException extends RuntimeException {
   }
   
   /**
-   * Should be used when a thrown exception needs to be wrapped in a {@link ZwlLangException}.
+   * Should be used when a thrown exception needs to be wrapped in a {@link ZwlLangException} such
+   * as a {@link org.openqa.selenium.WebDriverException} or {@link org.antlr.v4.runtime.RecognitionException}
+   * All general exceptions that don't require special handling must not this overload.
    * @param lineNColumn the ZWL program's line and column number where the error encountered
    * @param cause the actual exception thrown.
+   * @see "com.zylitics.btbr.runner.ExceptionTranslationProvider"
    */
   public ZwlLangException(String fromPos, String toPos, String lineNColumn, Throwable cause) {
     super(lineNColumn, cause);

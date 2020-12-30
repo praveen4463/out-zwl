@@ -52,7 +52,7 @@ public class Format extends AbstractFunction {
       return String.format(s, args);
     } catch (IllegalFormatException i) {
       throw new IllegalStringFormatException(fromPos.get(), toPos.get(),
-          withLineNCol(i.getMessage()), i);
+          withLineNCol(i.getMessage()));
     }
   }
 }

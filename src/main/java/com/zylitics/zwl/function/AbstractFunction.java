@@ -201,7 +201,7 @@ public abstract class AbstractFunction implements Function {
       pattern = Pattern.compile(regex);
     } catch (PatternSyntaxException pse) {
       throw new InvalidRegexPatternException(fromPos.get(), toPos.get(),
-          withLineNCol(pse.getMessage()), pse);
+          withLineNCol(pse.getMessage()));
     }
     return pattern;
   }

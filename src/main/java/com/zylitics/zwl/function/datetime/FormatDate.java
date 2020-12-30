@@ -63,10 +63,10 @@ public class FormatDate extends AbstractFunction {
       formatter = DateTimeFormatter.ofPattern(format);
     } catch (DateTimeParseException d ) {
       throw new UnknownDateTimeException(fromPos.get(), toPos.get(),
-          withLineNCol(d.getMessage()), d);
+          withLineNCol(d.getMessage()));
     } catch (IllegalArgumentException i) {
       throw new DateTimeFormatException(fromPos.get(), toPos.get(),
-          withLineNCol(i.getMessage()), i);
+          withLineNCol(i.getMessage()));
     }
     
     return dateTime.format(formatter);

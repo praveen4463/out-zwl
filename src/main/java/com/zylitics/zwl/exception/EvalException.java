@@ -11,8 +11,4 @@ public class EvalException extends ZwlLangException {
   public EvalException(String fromPos, String toPos, String msg) {
     super(fromPos, toPos, msg);
   }
-  
-  public EvalException(String fromPos, String toPos, String msg, Throwable cause) {
-    super(fromPos, toPos, msg, cause);
-  }
 }

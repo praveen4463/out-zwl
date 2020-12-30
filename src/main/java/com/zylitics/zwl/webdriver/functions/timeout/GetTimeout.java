@@ -58,7 +58,7 @@ public class GetTimeout extends AbstractWebdriverFunction {
           timeoutType));
     } catch (IllegalArgumentException i) {
       throw new ZwlLangException(fromPos.get(), toPos.get(),
-          "Given timeout type " + t + " isn't valid.", i);
+          "Given timeout type " + t + " isn't valid.");
     }
   }
   

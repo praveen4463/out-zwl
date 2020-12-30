@@ -397,7 +397,7 @@ public class WebdriverTests {
     if (driver == null) {
       return;
     }
-    int hold = Integer.getInteger("holdWdCloseFor", 0); // in seconds.
+    long hold = Integer.getInteger("holdWdCloseFor", 0); // in seconds.
     if (hold > 0) {
       try {
         Thread.sleep(hold * 1000);

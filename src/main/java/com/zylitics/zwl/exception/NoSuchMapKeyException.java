@@ -7,9 +7,4 @@ public class NoSuchMapKeyException extends EvalException {
   public NoSuchMapKeyException(String fromPos, String toPos, String msg) {
     super(fromPos, toPos, msg);
   }
-  
-  @SuppressWarnings("unused")
-  public NoSuchMapKeyException(String fromPos, String toPos, String msg, Throwable cause) {
-    super(fromPos, toPos, msg, cause);
-  }
 }

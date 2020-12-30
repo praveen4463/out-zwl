@@ -37,7 +37,7 @@ public class PrintF extends Format {
       writeTo.println(String.format(s, args));
     } catch (IllegalFormatException i) {
       throw new IllegalStringFormatException(fromPos.get(), toPos.get(),
-          withLineNCol(i.getMessage()), i);
+          withLineNCol(i.getMessage()));
     }
     return "";
   }
