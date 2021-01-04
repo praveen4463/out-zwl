@@ -202,7 +202,7 @@ public abstract class AbstractWebdriverFunction extends AbstractFunction {
   protected RemoteWebElement getWebElementUsingElemId(String elemId) {
     if (!isValidElemId(elemId)) {
       throw new ZwlLangException(fromPos.get(), toPos.get(), withLineNCol("Given string " + elemId +
-          " is not a valid elemId."));
+          " is not a valid elemId"));
     }
     RemoteWebElement element = new RemoteWebElement();
     element.setParent(driver);
@@ -402,7 +402,7 @@ public abstract class AbstractWebdriverFunction extends AbstractFunction {
     // throw if the type doesn't match.
     throw new InvalidTypeException(fromPos.get(), toPos.get(),
         String.format("The type of supplied value is '%s' whereas the function '%s' returns value" +
-                " of type '%s'. %s", userSupplied.getType(), getName(), funcReturnType,
+                " of type '%s'%s", userSupplied.getType(), getName(), funcReturnType,
             lineNColumn.get()));
   }
   

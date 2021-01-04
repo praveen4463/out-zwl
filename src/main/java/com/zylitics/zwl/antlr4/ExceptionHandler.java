@@ -16,16 +16,17 @@ class ExceptionHandler {
   }
   
   ZwlLangException handle(RecognitionException e) {
-    String fromPos = null;
-    String toPos = null;
     if (errorListeners.size() > 0) {
       Object l = errorListeners.get(0);
       if (l instanceof StoringErrorListener) {
         StoringErrorListener s = (StoringErrorListener) l;
-        fromPos = String.format(POS_FORMAT, s.getLine(), s.getCharPositionInLine());
-        toPos = String.format(POS_FORMAT, s.getLine(), s.getCharPositionInLine() + 1);
+        String fromPos = String.format(POS_FORMAT, s.getLine(), s.getCharPositionInLine());
+        String toPos = String.format(POS_FORMAT, s.getLine(), s.getCharPositionInLine() + 1);
+        return new ZwlLangException(fromPos, toPos, String.format("%s - %s:%s", s.getMsg(),
+            s.getLine(), s.getCharPositionInLine() + 1)); // msg formatted same as
+        // DefaultZwlInterpreter's lineNColumn
       }
     }
-    return new ZwlLangException(fromPos, toPos, e);
+    throw new RuntimeException("Couldn't derive intended exception after catching a parse error");
   }
 }

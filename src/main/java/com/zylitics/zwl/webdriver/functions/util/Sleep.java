@@ -54,7 +54,7 @@ public class Sleep extends AbstractWebdriverFunction {
       return _void;
     } catch (InterruptedException i) {
       throw new ZwlLangException(fromPos.get(), toPos.get(),
-          withLineNCol("Sleep was interrupted due to some problem."));
+          withLineNCol("Sleep was interrupted due to some problem"));
     }
   }
   

@@ -62,7 +62,7 @@ public abstract class AbstractFunction implements Function {
     
     if (argsCount < minParamsCount() || argsCount > maxParamsCount()) {
       throw new EvalException(fromPos.get(), toPos.get(), String.format("function: %s with" +
-          " parameters count: %s isn't defined. %s", getName(), argsCount, lineNColumn.get()));
+          " parameters count: %s isn't defined%s", getName(), argsCount, lineNColumn.get()));
     }
     
     // check none of the elements in list is 'null' as we don't expect them, we just expect our own
@@ -177,14 +177,14 @@ public abstract class AbstractFunction implements Function {
   // we'll report it as if it was an argument.
   protected InvalidTypeException getWrongTypeException(ZwlValue val, String type, int argIndex) {
     return new InvalidTypeException(fromPos.get(), toPos.get(),
-        String.format("Function %s, value: %s at argument: %s, isn't of type '%s'. %s",
+        String.format("Function %s, value: %s at argument: %s, isn't of type '%s'%s",
             getName(), val, argIndex, type, lineNColumn.get()));
   }
   
   protected IndexOutOfRangeException getOutOfRange(int index, List<ZwlValue> list) {
     return new IndexOutOfRangeException(fromPos.get(), toPos.get(),
         String.format("The specified index isn't within the range of this List. Index given: %s," +
-            " List size: %s %s", index, list.size(), lineNColumn.get()));
+            " List size: %s%s", index, list.size(), lineNColumn.get()));
   }
   
   protected ListZwlValue getListZwlValue(List<String> stringsList) {
@@ -207,7 +207,7 @@ public abstract class AbstractFunction implements Function {
   }
   
   protected String withLineNCol(String s) {
-    return s + " " + lineNColumn.get();
+    return s + lineNColumn.get();
   }
   
   @Override

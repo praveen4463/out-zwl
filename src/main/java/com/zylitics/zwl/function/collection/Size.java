@@ -41,7 +41,7 @@ public class Size extends AbstractFunction {
     ZwlValue val = args.get(0);
     if (!(val.getMapValue().isPresent() || val.getListValue().isPresent())) {
       throw new EvalException(fromPos.get(), toPos.get(),
-          withLineNCol(getName() + " works for only Map and List types."));
+          withLineNCol(getName() + " works for only Map and List types"));
     }
     return new DoubleZwlValue(val.getListValue().isPresent()
         ? val.getListValue().get().size()

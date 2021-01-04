@@ -158,8 +158,8 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
         .findFirst();
     if (!matched.isPresent()) {
       throw new EvalException(getFromPos(ctx), getToPos(ctx),
-          String.format("function: %s with parameters count: %s isn't defined. " +
-              lineNColumn(idNode), funcName, params.size()));
+          String.format("function: %s with parameters count: %s isn't defined%s",
+              funcName, params.size(), lineNColumn(idNode)));
     }
     ZwlValue val;
     
@@ -175,7 +175,7 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
     } catch (ZwlLangException zlEx) {
       throw zlEx;
     } catch (Throwable e) {
-      throw new RuntimeException(e.getMessage() + " " + lineNColumn(idNode), e);
+      throw new RuntimeException(e.getMessage() + lineNColumn(idNode), e);
     }
     
     // if index is given, apply it and get result
@@ -199,7 +199,7 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
     Optional<ZwlValue> idValue = vars.resolve(id);
     if (!idValue.isPresent()) {
       throw new NoSuchVariableException(getFromPos(idNode), getToPos(idNode),
-          String.format("Variable '%s' doesn't exist. %s", id, lineNColumn(idNode)));
+          String.format("Variable '%s' doesn't exist%s", id, lineNColumn(idNode)));
     }
     LOG.debug("inside identifier exp, id: {}, val: {}", id, idValue);
     return processResolvedIdentifier(idValue.get(), ctx);
@@ -233,13 +233,13 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
     if (!map.isPresent()) {
       throw new EvalException(getFromPos(idNode), getToPos(idNode),
           "Resolving identifier " + id + " with DOT operator failed because" +
-          " left operand is of type " + val.getType() + ". A 'Map' type is required. " +
+          " left operand is of type " + val.getType() + ". A 'Map' type is required" +
           lineNColumn(idNode));
     }
     if (!map.get().containsKey(id)) {
       throw new NoSuchMapKeyException(getFromPos(idNode), getToPos(idNode),
-          String.format("The given map key %s has no mapping in the " +
-              "map. %s", id, lineNColumn(idNode)));
+          String.format("The given map key %s has no mapping in the map%s", id,
+              lineNColumn(idNode)));
     }
     return map.get().get(id);
   }
@@ -256,7 +256,7 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
       if (!(val.getListValue().isPresent() || val.getMapValue().isPresent())) {
         throw new InvalidTypeException(getFromPos(ec), getToPos(ec),
             "Can't resolve indexes on type " + val.getType() + ". A" +
-            " 'List' or 'Map' type is required. " + lineNColumn(ec));
+            " 'List' or 'Map' type is required" + lineNColumn(ec));
       }
       if (val.getListValue().isPresent()) {
         List<ZwlValue> list = val.getListValue().get();
@@ -264,7 +264,7 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
         if (i < 0 || i >= list.size()) {
           throw new IndexOutOfRangeException(getFromPos(ec), getToPos(ec),
               String.format("The specified index isn't within " +
-                  "the range of this List. Index given: %s, List size: %s %s", i, list.size(),
+                  "the range of this List. Index given: %s, List size: %s%s", i, list.size(),
               lineNColumn(ec)));
         }
         val = list.get(i);
@@ -274,7 +274,7 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
         if (!map.containsKey(key)) {
           throw new NoSuchMapKeyException(getFromPos(ec), getToPos(ec),
               String.format("The given map key %s has no mapping in " +
-              " the map. %s", key, lineNColumn(ec)));
+              " the map%s", key, lineNColumn(ec)));
         }
         val = map.get(key);
       }
@@ -315,7 +315,7 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
     Optional<List<ZwlValue>> list = z.getListValue();
     if (!list.isPresent()) {
       throw new InvalidTypeException(getFromPos(ec), getToPos(ec),
-          "Expression of type " + z.getType() + " couldn't be converted to a 'List'. " +
+          "Expression of type " + z.getType() + " couldn't be converted to a 'List'" +
               lineNColumn(ec));
     }
     LOG.debug("inside for-in, list is {}", list);
@@ -323,7 +323,7 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
     String id = idNode.getText();
     if (vars.exists(id)) {
       throw new EvalException(getFromPos(idNode), getToPos(idNode),
-          String.format("Variable %s in 'for' statement is already assigned in outer scope. %s",
+          String.format("Variable %s in 'for' statement is already assigned in outer scope%s",
               id, lineNColumn(idNode)));
     }
     for (ZwlValue val : list.get()) {
@@ -347,7 +347,7 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
     Optional<Map<String, ZwlValue>> map = z.getMapValue();
     if (!map.isPresent()) {
       throw new InvalidTypeException(getFromPos(ec), getToPos(ec), "Expression of type " +
-          z.getType() + " couldn't be converted to a 'Map'." + lineNColumn(ec));
+          z.getType() + " couldn't be converted to a 'Map'" + lineNColumn(ec));
     }
     TerminalNode keyId = ctx.Identifier(0);
     TerminalNode valueId = ctx.Identifier(1);
@@ -356,12 +356,12 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
     
     if (vars.exists(key)) {
       throw new EvalException(getFromPos(keyId), getToPos(keyId),
-          String.format("Variable %s in 'for' statement is already assigned in outer scope. %s",
+          String.format("Variable %s in 'for' statement is already assigned in outer scope%s",
               key, lineNColumn(keyId)));
     }
     if (vars.exists(value)) {
       throw new EvalException(getFromPos(valueId), getToPos(valueId),
-          String.format("Variable %s in 'for' statement is already assigned in outer scope. %s",
+          String.format("Variable %s in 'for' statement is already assigned in outer scope%s",
               value, lineNColumn(valueId)));
     }
     
@@ -397,7 +397,7 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
       if (iterations > forLoopMaxItr) {
         throw new EvalException(getFromPos(idNode), getToPos(idNode),
             "While loop was broken after max iterations: " + forLoopMaxItr +
-            " reached. Condition needs to be fixed. " + lineNColumn(idNode));
+            " reached. Condition needs to be fixed" + lineNColumn(idNode));
       }
     }
     return _void;
@@ -410,7 +410,7 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
     String id = idNode.getText();
     if (vars.exists(id)) {
       throw new EvalException(getFromPos(idNode), getToPos(idNode),
-          String.format("Variable %s in 'for' statement is already assigned in outer scope. %s",
+          String.format("Variable %s in 'for' statement is already assigned in outer scope%s",
               id, lineNColumn(idNode)));
     }
     Double start = parseNumberExpr(ctx.assignment().expression());
@@ -452,7 +452,7 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
       if (!d.isPresent()) {
         throw new InvalidTypeException(getFromPos(node), getToPos(node),
             "Identifier " + id + " couldn't be converted from type " +
-            previous.get().getType() + " to type Number. " + lineNColumn(node));
+            previous.get().getType() + " to type Number" + lineNColumn(node));
       }
       val = d.get();
     }
@@ -492,7 +492,7 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
       return _void;
     }
   
-    String message = String.format("Expected exception: %s, Actual exception: %s. %s", exception,
+    String message = String.format("Expected exception: %s, Actual exception: %s%s", exception,
         thrownException == null ? "NONE"
             : thrownException + (cause == null ? "" : ", cause: " + cause),
         lineNColumn(idNode));
@@ -523,7 +523,7 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
     if (thrownException == null) {
       return _void;
     }
-    String message = "Expected no exception but " + thrownException + " was thrown. " +
+    String message = "Expected no exception but " + thrownException + " was thrown" +
         lineNColumn(idNode);
     throw new AssertionFailedException(getFromPos(idNode), getToPos(idNode), customMessage == null
         ? message : customMessage + StringUtil.getPlatformLineSeparator() + message);
@@ -688,7 +688,7 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
             eqOp == left.getDoubleValue().get().equals(parseNumberExpr(right, ctx)));
       default:
         throw new InvalidTypeException(getFromPos(ctx), getToPos(ctx), "Can't convert type " +
-            right.getType() + " to " + left.getType() + " and vice-versa. " + lineNColumn(ctx));
+            right.getType() + " to " + left.getType() + " and vice-versa" + lineNColumn(ctx));
     }
   }
   
@@ -770,7 +770,7 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
   private Double parseNumberExpr(ZwlValue z, ExpressionContext exp) {
     return ParseUtil.parseDouble(z,
         () -> new InvalidTypeException(getFromPos(exp), getToPos(exp),
-            "Expression of type " + z.getType() + " couldn't be converted to a 'Number'. " +
+            "Expression of type " + z.getType() + " couldn't be converted to a 'Number'" +
                 lineNColumn(exp)));
   }
   
@@ -786,7 +786,7 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
   
     return ParseUtil.parseBoolean(z,
         () -> new InvalidTypeException(getFromPos(exp), getToPos(exp),
-            "Expression of type " + z.getType() + " couldn't be converted to a 'Boolean'. " +
+            "Expression of type " + z.getType() + " couldn't be converted to a 'Boolean'" +
                 lineNColumn(exp)));
   }
   
@@ -799,15 +799,18 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
     return lineNColumn(node.getSymbol());
   }
   
+  // all exception messages must append their line information using this function or if they
+  // can't use it, they must implement the mentioned method.
   private String lineNColumn(Token token) {
-    return String.format("at line %s:%s", token.getLine() + 1
-        , token.getCharPositionInLine() + 1); // add 1 because it's 0 based index
+    return String.format(" - %s:%s", token.getLine()
+        , token.getCharPositionInLine() + 1); // add 1 because char pos is 0 based index but we need to
+    // show 1..n based at client.
   }
   
   private String lineNColumn(ParserRuleContext ctx) {
-    return String.format("at start_line %s:%s, end_line %s:%s",
-        ctx.start.getLine() + 1, ctx.start.getCharPositionInLine() + 1, ctx.stop.getLine() + 1,
-        ctx.stop.getCharPositionInLine() + ctx.stop.getText().length()); // added last token's
+    return String.format(" - %s:%s to %s:%s",
+        ctx.start.getLine(), ctx.start.getCharPositionInLine() + 1, ctx.stop.getLine(),
+        ctx.stop.getCharPositionInLine() + 1 + ctx.stop.getText().length()); // added last token's
     // char length to index to get last char position in line
   }
   
@@ -847,11 +850,11 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
     LOG.debug("RESERVED_KEYWORDS is {}", RESERVED_KEYWORDS);
     if (readOnlyVars.contains(idLower)) {
       throw new IllegalIdentifierException(getFromPos(identifier), getToPos(identifier),
-          "Read only identifier: " + id + " can't be assigned. " + lineNColumn(identifier));
+          "Read only identifier: " + id + " can't be assigned" + lineNColumn(identifier));
     }
     if (RESERVED_KEYWORDS.contains(idLower)) {
       throw new IllegalIdentifierException(getFromPos(identifier), getToPos(identifier),
-          "Restricted keyword: " + id + " can't be used as an identifier. " +
+          "Restricted keyword: " + id + " can't be used as an identifier" +
               lineNColumn(identifier));
     }
   }
@@ -865,7 +868,7 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
   }
   
   private String getFromPos(Token token) {
-    return String.format("%s:%s", token.getLine(), token.getCharPositionInLine()); // pos is 0 index based
+    return String.format("%s:%s", token.getLine(), token.getCharPositionInLine()); // char pos is 0 index based
   }
   
   private String getToPos(TerminalNode node) {
@@ -879,7 +882,7 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
   private String getToPos(Token token) {
     // to pos is after the token ends
     return String.format("%s:%s", token.getLine(),
-        token.getCharPositionInLine() + token.getText().length() - 1); // -1 to keep 0 index based
+        token.getCharPositionInLine() + token.getText().length());
   }
   
   // should be invoked on every statement visit

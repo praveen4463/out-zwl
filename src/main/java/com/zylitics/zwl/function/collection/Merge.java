@@ -50,7 +50,7 @@ public class Merge extends AbstractFunction {
     }
   
     throw new InsufficientArgumentsException(fromPos.get(), toPos.get(),
-        withLineNCol(getName() + " requires at least two values."));
+        withLineNCol(getName() + " requires at least two values"));
   }
   
   private Map<String, ZwlValue> merge(List<ZwlValue> listOfMaps) {

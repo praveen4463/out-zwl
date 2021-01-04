@@ -83,7 +83,7 @@ public class ClickSwitchNew extends AbstractWebdriverFunction {
         targetLocator.window(previousHandle);
         writeBuildOutput("WARNING: " + getName() + " couldn't switch to newly opened window" +
             " because there seems to have more than one new windows. I've switched browser" +
-            " focus back to the window where you clicked.");
+            " focus back to the window where you clicked");
         return;
       }
       targetLocator.window(newHandles.iterator().next());
@@ -93,7 +93,7 @@ public class ClickSwitchNew extends AbstractWebdriverFunction {
       // element that doesn't open new window.
       // give a warning to user that no new window seemed to have opened.
       writeBuildOutput("WARNING: " + getName() + " couldn't find a newly opened window, and" +
-          " didn't switch over. If you think it's a bug, please report us.");
+          " didn't switch over. If you think it's a bug, please report us");
     }
   }
   

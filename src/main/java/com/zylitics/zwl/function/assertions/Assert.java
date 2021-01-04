@@ -62,7 +62,7 @@ public class Assert extends AbstractFunction {
   protected void assertCondition(boolean condition, @Nullable String message) {
     if (!condition) {
       throw new AssertionFailedException(fromPos.get(), toPos.get(),
-          withLineNCol(message != null ? message : "Assertion was failed."));
+          withLineNCol(message != null ? message : "Assertion was failed"));
     }
   }
 }

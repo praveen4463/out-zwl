@@ -44,7 +44,7 @@ public class Length extends AbstractFunction {
     if (!(val.getMapValue().isPresent() || val.getListValue().isPresent() ||
         val.getStringValue().isPresent())) {
       throw new EvalException(fromPos.get(), toPos.get(), withLineNCol(getName() +
-          " works for only Map, List and String types."));
+          " works for only Map, List and String types"));
     }
     int length;
     if (val.getListValue().isPresent()) {
