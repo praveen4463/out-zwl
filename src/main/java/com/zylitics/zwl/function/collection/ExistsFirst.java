@@ -8,12 +8,15 @@ import java.util.List;
 import java.util.function.Supplier;
 
 /**
+ * This method is deprecated because it suffers from the same problem for which we moved exists to
+ * interpreter level. If user supplied non existent value, it will raise an exception.
  * <p>ExistsFirst accepts one or more arguments of any supported type.
  * It returns the first argument that exists.
  * <p>If a non empty value is not found, nothing is returned which can be checked using
  * exists</p>
  * <p>A list can also be given as argument which will be expanded internally into arguments.</p>
  */
+@Deprecated
 public class ExistsFirst extends AbstractFunction {
   
   @Override

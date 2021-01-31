@@ -14,9 +14,9 @@ import java.util.function.Supplier;
  * between current time and previously captured time in the given unit. When no unit is given,
  * default in milliseconds. Unit options are: </p>
  * <ul>
- *   <li>sec</li>
- *   <li>milli</li>
- *   <li>micro</li>
+ *   <li>second</li>
+ *   <li>millisecond</li>
+ *   <li>microsecond</li>
  * </ul>
  */
 public class Elapsed extends AbstractFunction {
@@ -56,9 +56,9 @@ public class Elapsed extends AbstractFunction {
       return TimeUnit.NANOSECONDS.toMillis(elapsed);
     }
     switch (unit.toLowerCase()) {
-      case "sec":
+      case "second":
         return TimeUnit.NANOSECONDS.toSeconds(elapsed);
-      case "micro":
+      case "microsecond":
         return TimeUnit.NANOSECONDS.toMicros(elapsed);
       default:
         return TimeUnit.NANOSECONDS.toMillis(elapsed);

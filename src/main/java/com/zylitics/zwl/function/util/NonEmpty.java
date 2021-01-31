@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.function.Supplier;
 
 /**
- * Works for all Zwl types. To know when those types are considered non empty,
+ * Used for String/List/Map. To know when those types are considered non empty,
  * see {@link com.zylitics.zwl.function.collection.NonEmptyFirst}
  */
 public class NonEmpty extends AbstractFunction {

@@ -11,7 +11,7 @@ import java.util.function.Supplier;
 /**
  * <p>NonEmptyFirst accepts one or more arguments of any supported type.
  * It returns the first argument that exists and is non empty.
- * A Boolean or Number are considered non empty if they exist. A String is considered non empty
+ * A Boolean or Number are always non empty. A String is considered non empty
  * if after trimming whitespaces its length > 0. A List and Map is considered non empty if their
  * size > 0 which means they have at least one element or key-value pair.</p>
  * <p>If a non empty value is not found, nothing is returned which can be checked using
