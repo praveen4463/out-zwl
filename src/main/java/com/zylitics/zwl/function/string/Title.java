@@ -3,7 +3,7 @@ package com.zylitics.zwl.function.string;
 import com.zylitics.zwl.datatype.StringZwlValue;
 import com.zylitics.zwl.datatype.ZwlValue;
 import com.zylitics.zwl.function.AbstractFunction;
-import org.apache.commons.lang3.text.WordUtils;
+import org.apache.commons.text.WordUtils;
 
 import java.util.List;
 import java.util.function.Supplier;
