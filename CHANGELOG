@@ -54,3 +54,16 @@ v0.4.0
 14. new functions clearActive, dblClick
 15. while loop will now be broken after 100000 iterations by default
 16. untilTotalElements.. functions default value fixed to list of elements
+
+**********
+v0.4.1
+**********
+1. whenever some error occurs, a from and to positions are kept with exception detail that can later be retrieved from exception itself
+2. fixed bug in which various exceptions were using a zwlLangException cause overload
+3. updates in line:ch handling in exceptions
+4. Unit in elapsed now have full unit names, wrote function definitions
+
+**********
+v0.4.2
+**********
+1. fixed byText js so it supports IE, using a minified version of it now,

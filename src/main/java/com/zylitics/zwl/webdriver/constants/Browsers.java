@@ -2,6 +2,9 @@ package com.zylitics.zwl.webdriver.constants;
 
 import org.openqa.selenium.remote.BrowserType;
 
+// TODO: previously I had IE as internet explorer esdb browser index and on server, that's
+//  why the alias is taken. Later refactor it to remove this enum and take whatever browser is coming
+//  from user as is.
 public enum Browsers {
   
   CHROME  (BrowserType.CHROME, BrowserType.CHROME),
