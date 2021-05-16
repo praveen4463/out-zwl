@@ -71,7 +71,9 @@ public class ByText extends By implements Serializable {
     if (driver == null) {
       driver = (RemoteWebDriver) context;
     }
-    Object o = driver.executeScript(getAtom(), element, text);
+    Object o = driver.executeScript(
+        getAtom() + "return findAllByText(arguments[0] || document.querySelector('*'), arguments[1]);",
+        element, text);
     if (o instanceof List<?>) {
       List<?> lo = (List<?>) o;
       if (lo.stream().allMatch(w -> w instanceof WebElement)) {
@@ -83,9 +85,9 @@ public class ByText extends By implements Serializable {
   
   private String getAtom() {
     try {
-      String scriptName = "/findElementsByText.js";
+      String scriptName = "/findElementsByText.min.js";
       URL url = getClass().getResource(scriptName);
-  
+      Objects.requireNonNull(url);
       //noinspection UnstableApiUsage
       return Resources.toString(url, StandardCharsets.UTF_8);
     } catch (IOException | NullPointerException e) {
