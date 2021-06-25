@@ -15,6 +15,11 @@ import java.util.function.Supplier;
 public class NonEmpty extends AbstractFunction {
   
   @Override
+  protected boolean doNotExpandListToArguments() {
+    return true;
+  }
+  
+  @Override
   public String getName() {
     return "nonEmpty";
   }

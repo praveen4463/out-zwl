@@ -5,8 +5,8 @@ addCookie(name, value, path, domain, expiry, isSecure, isHttpOnly)
 allElementsDisplayed(...elemIds)
 allElementsEnabled(...elemIds)
 allElementsSelected(...elemIds)
-altDown()
-altUp()
+altDown() - actionFunction,
+altUp() - actionFunction,
 anyElementDisplayed(...elemIds)
 anyElementEnabled(...elemIds)
 anyElementSelected(...elemIds)
@@ -19,17 +19,17 @@ clearAll(...elemIds)
 click(elemId)
 clickAll(...elemIds)
 clickNoSwitch(elemId)
-clickOnce()
+clickOnce() - actionFunction,
 clickSwitchNew(elemId)
 close()
-cmdCtrlDown()
-cmdCtrlUp()
-cmdDown()
-cmdUp()
+cmdCtrlDown() - actionFunction,
+cmdCtrlUp() - actionFunction,
+cmdDown() - actionFunction,
+cmdUp() - actionFunction,
 colorMatches(color1, color2)
-contextClick()
-ctrlDown()
-ctrlUp()
+contextClick() - actionFunction,
+ctrlDown() - actionFunction,
+ctrlUp() - actionFunction,
 dblClick(elemId)
 deleteAllCookies()
 deleteCookie(name)
@@ -38,7 +38,7 @@ deselectByIndex(elemId, index)
 deselectByValue(elemId, value)
 deselectByVisibleText(elemId, text)
 dismissAlert()
-doubleClick()
+doubleClick() - actionFunction,
 dragAndDrop(source, target)
 dragAndDrop(source, x, y)
 elementExists(using, by)
@@ -53,7 +53,7 @@ findElements(using, by)
 findElements(using, by, noWait)
 findElementsFromElement(elemId, using, by)
 findElementsFromElement(elemId, using, by, noWait)
-focus(elemId)
+focus(elemId) - actionFunction,
 forward(number)
 fullScreenWin()
 getAlertText()
@@ -78,7 +78,7 @@ getTimeout(timeoutType)
 getTitle()
 getWinPosition()
 getWinSize()
-hold()
+hold() - actionFunction,
 isElementDisplayed(elemId)
 isElementEnabled(elemId)
 isElementSelected(elemId)
@@ -91,18 +91,18 @@ lsRemoveItem(key)
 lsSetItem(key, value)
 lsSize()
 maximizeWin()
-move(target)
-move(x, y)
-move(source, x, y)
+move(target) - actionFunction,
+move(x, y) - actionFunction,
+move(source, x, y) - actionFunction,
 moveWinBy(x, y)
 newWin(winType)
 openUrl(url)
 openUrlNewWin(url)
 openUrlNewWin(url, winType)
-pause(milliseconds)
+pause(milliseconds) - actionFunction,
 performAction(...actionFunctions)
 refresh()
-release()
+release() - actionFunction,
 resizeWinBy(x, y)
 scroll(target)
 scroll(x, y)
@@ -111,7 +111,7 @@ selectByIndex(elemId, index)
 selectByValue(elemId, value)
 selectByVisibleText(elemId, text)
 sendAlertText(text)
-sendKeys(...keys)
+sendKeys(...keys) - actionFunction,
 sendKeysToPage(elemId, ...keys)
 sendKeysToPageF(...keys)
 setElementAccessTimeout(milliseconds)
@@ -121,8 +121,8 @@ setPageLoadTimeout(milliseconds)
 setScriptTimeout(milliseconds)
 setWinPosition(width, height)
 setWinSize(width, height)
-shiftDown()
-shiftUp()
+shiftDown() - actionFunction,
+shiftUp() - actionFunction,
 sleep(milliseconds)
 ssClear()
 ssGetItem(key)
@@ -154,8 +154,8 @@ untilAttributeValueNonEmpty(elemId, attribute)
 untilClicked(elemId)
 untilDisabled(elemId)
 untilEnabled(elemId)
-untilFlt(timeout)
-untilFlt(timeout, poll)
+untilFlt(timeout) - within another until function only
+untilFlt(timeout, poll) - within another until function only
 untilInvisible(elemId)
 untilJsReturnsAValue(script)
 untilJsThrowsNoException(script)

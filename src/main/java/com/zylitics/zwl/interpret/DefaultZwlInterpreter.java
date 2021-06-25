@@ -12,12 +12,7 @@ import com.zylitics.zwl.exception.*;
 import com.zylitics.zwl.internal.Variables;
 import com.zylitics.zwl.util.ParseUtil;
 import com.zylitics.zwl.util.StringUtil;
-import com.zylitics.zwl.webdriver.constants.Browsers;
-import com.zylitics.zwl.webdriver.constants.By;
-import com.zylitics.zwl.webdriver.constants.Colorz;
-import com.zylitics.zwl.webdriver.constants.Keyz;
-import com.zylitics.zwl.webdriver.constants.Platforms;
-import com.zylitics.zwl.webdriver.constants.Timeouts;
+import com.zylitics.zwl.webdriver.constants.*;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -72,6 +67,7 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
     addReadOnlyVariable("keys", new MapZwlValue(Keyz.asMap()));
     addReadOnlyVariable("by", new MapZwlValue(By.asMap()));
     addReadOnlyVariable("timeouts", new MapZwlValue(Timeouts.asMap()));
+    addReadOnlyVariable("timeUnit", new MapZwlValue(Timeunit.asMap()));
   }
   
   public void accept(ZwlInterpreterVisitor visitor) {
@@ -563,8 +559,15 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
     // we need ordering as insertion order, that's why a linked list based map.
     if (ctx.mapEntries() != null) {
       for (MapEntryContext entry : ctx.mapEntries().mapEntry()) {
-        String key = entry.Identifier() != null ? entry.Identifier().getText()
-            : processStringLiteral(entry.StringLiteral().getText());
+        MapKeyContext mapKey = entry.mapKey();
+        String key;
+        if (mapKey.Identifier() != null) {
+          key = mapKey.Identifier().getText();
+        } else if (mapKey.StringLiteral() != null) {
+          key = processStringLiteral(mapKey.StringLiteral().getText());
+        } else {
+          key = visit(mapKey.expression()).toString();
+        }
         map.put(key, visit(entry.expression()));
       }
     }

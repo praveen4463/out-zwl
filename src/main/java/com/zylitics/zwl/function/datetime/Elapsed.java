@@ -2,7 +2,9 @@ package com.zylitics.zwl.function.datetime;
 
 import com.zylitics.zwl.datatype.DoubleZwlValue;
 import com.zylitics.zwl.datatype.ZwlValue;
+import com.zylitics.zwl.exception.EvalException;
 import com.zylitics.zwl.function.AbstractFunction;
+import com.zylitics.zwl.model.TimeUnitType;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -55,10 +57,17 @@ public class Elapsed extends AbstractFunction {
     if (unit == null) {
       return TimeUnit.NANOSECONDS.toMillis(elapsed);
     }
-    switch (unit.toLowerCase()) {
-      case "second":
+    TimeUnitType unitType;
+    try {
+      unitType = TimeUnitType.valueOf(unit);
+    } catch (IllegalArgumentException i) {
+      throw new EvalException(fromPos.get(), toPos.get(),
+          String.format("Can't recognize the given time unit: %s%s", unit, lineNColumn.get()));
+    }
+    switch (unitType) {
+      case SECOND:
         return TimeUnit.NANOSECONDS.toSeconds(elapsed);
-      case "microsecond":
+      case MICROSECOND:
         return TimeUnit.NANOSECONDS.toMicros(elapsed);
       default:
         return TimeUnit.NANOSECONDS.toMillis(elapsed);

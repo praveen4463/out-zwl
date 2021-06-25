@@ -45,8 +45,6 @@ DIV : '/';
 MOD : '%';
 COLON : ':';
 
-// If number value is given inside quotes, it will not be converted into number but interpreted
-// literally as a string.
 NumberLiteral
   : Integer ( DOT DIGIT+ )?
   | DOT DIGIT+
@@ -63,8 +61,6 @@ DIGIT
   : [0-9]
   ;
 
-// If boolean value is given inside quotes, it will not be converted into boolean but interpreted
-// literally as a string.
 BooleanLiteral
   : 'true'
   | 'false'

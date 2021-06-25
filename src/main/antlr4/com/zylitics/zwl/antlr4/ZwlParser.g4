@@ -16,6 +16,10 @@ indexes
   : ( LBRAC expression RBRAC )+
   ;
 
+mapKey
+  : (Identifier | StringLiteral | LBRAC expression RBRAC)
+  ;
+
 statement
   : assignment
   | functionInvocation
@@ -112,7 +116,7 @@ mapLiteral
 
 // If map keys ain't a valid identifier, they should be kept in quotes.
 mapEntry
-  : (Identifier | StringLiteral) COLON expression
+  : mapKey COLON expression
   ;
 
 mapEntries

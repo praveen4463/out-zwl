@@ -31,6 +31,12 @@ import java.util.function.Supplier;
  */
 public class Print extends AbstractFunction {
   
+  // when a list is given. we want it's string representation to be printed rather than expanded.
+  @Override
+  protected boolean doNotExpandListToArguments() {
+    return true;
+  }
+  
   private final PrintStream writeTo;
   
   public Print() {

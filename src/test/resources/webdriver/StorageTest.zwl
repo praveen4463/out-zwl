@@ -8,6 +8,9 @@
 
 # first session storage
 openUrl("https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage")
+webDocs = findElement('MDN Web Docs', by.ariaLabel)
+click(webDocs)
+untilUrlIs('https://developer.mozilla.org/en-US/')
 # clear any zwl key from storage in case the test left uncleared values due to an error.
 for s in ssGetKeySet() {
   if startsWith(s, "zwl") {

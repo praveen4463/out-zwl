@@ -21,6 +21,7 @@ public class By {
         .put("text", new StringZwlValue(ByType.TEXT.name()))
         .put("testId", new StringZwlValue(ByType.TEST_ID.name()))
         .put("role", new StringZwlValue(ByType.ROLE.name()))
+        .put("ariaLabel", new StringZwlValue(ByType.ARIA_LABEL.name()))
         .put("title", new StringZwlValue(ByType.TITLE.name()))
         .build();
   }

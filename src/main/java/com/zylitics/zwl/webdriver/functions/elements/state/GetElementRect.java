@@ -13,6 +13,8 @@ import java.io.PrintStream;
 import java.util.List;
 import java.util.function.Supplier;
 
+// Note: this method also gets the coordinates of element relative to viewport just like
+// GetElementViewportCoordinates with the only difference that this one doesn't scrolls into viewport.
 public class GetElementRect extends AbstractWebdriverFunction {
   
   public GetElementRect(APICoreProperties.Webdriver wdProps,

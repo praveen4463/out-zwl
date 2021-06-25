@@ -1,5 +1,6 @@
 package com.zylitics.zwl.datatype;
 
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -38,6 +39,22 @@ public class MapZwlValue implements ZwlValue {
   
   @Override
   public String toString() {
-    return String.valueOf(value);
+    Iterator<Map.Entry<String, ZwlValue>> i = value.entrySet().iterator();
+    if (! i.hasNext())
+      return "{}";
+    
+    StringBuilder sb = new StringBuilder();
+    sb.append("{\n");
+    for (;;) {
+      Map.Entry<String, ZwlValue> e = i.next();
+      String key = e.getKey();
+      ZwlValue value = e.getValue();
+      sb.append(key);
+      sb.append(": ");
+      sb.append(value);
+      if (! i.hasNext())
+        return sb.append("\n}").toString();
+      sb.append(",\n");
+    }
   }
 }

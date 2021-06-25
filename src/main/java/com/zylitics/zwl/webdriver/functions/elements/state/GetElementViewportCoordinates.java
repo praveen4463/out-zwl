@@ -63,6 +63,9 @@ public class GetElementViewportCoordinates extends AbstractWebdriverFunction {
           if (scrollIntoViewport) {
             return element.getCoordinates().inViewPort();
           }
+          // doing this may be useless because if user don't want to scroll to vieport they can
+          // just uses GetElementRect which also gives coordinates relative to viewport and webdriver
+          // internally use the same getBoundingClientRect()
           String script = "var e = arguments[0]; var rect = e.getBoundingClientRect();" +
               " return {'x': rect.left, 'y': rect.top};";
           @SuppressWarnings("unchecked")

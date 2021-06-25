@@ -13,5 +13,6 @@ public enum ByType {
   TEXT,
   TEST_ID,
   ROLE,
+  ARIA_LABEL,
   TITLE,
 }

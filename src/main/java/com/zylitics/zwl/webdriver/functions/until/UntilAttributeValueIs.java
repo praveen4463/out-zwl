@@ -25,6 +25,6 @@ public class UntilAttributeValueIs extends AbstractAttribute {
   @Override
   boolean desiredState(RemoteWebElement element, String attribute, String value) {
     Boolean res = ExpectedConditions.attributeToBe(element, attribute, value).apply(driver);
-    return res == null ? false : res;
+    return res != null && res;
   }
 }

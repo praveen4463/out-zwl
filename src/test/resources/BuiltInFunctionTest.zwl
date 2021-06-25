@@ -126,9 +126,9 @@ for i = 1 to 100 {
     print("benchmarking loop ends")
   }
 }
-tookMicros = elapsed(startLoop, "micro")
+tookMicros = elapsed(startLoop, timeUnit.microsecond)
 tookMillis = elapsed(startLoop)
-tookSecs = elapsed(startLoop, "sec")
+tookSecs = elapsed(startLoop, timeUnit.second)
 assertTrue(tookMicros > 0)
 assertTrue(tookMillis >= 0)
 assertTrue(tookSecs >= 0)
@@ -160,6 +160,9 @@ assertTrue(max(89, 333, 222, 98, -98, 444) == 444)
 assertTrue(min(89, 333, 222, 98, -98, 444) == -98)
 
 # Util *********************************************************************************************
+
+# nonEmpty
+assertTrue(nonEmpty([1, 2]))
 
 # uuid
 u = uuid()
