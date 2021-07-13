@@ -79,3 +79,11 @@ Minor enhancements and bug fixes
 2. Fixed `map.toString` notation same as our syntax.
 3. Fixed printing of a `list`.
 4. Fixed `nonEmpty` so that it can tell a `list` is non-empty.
+
+## v0.4.4
+
+bug fixes
+
+### Bug fixes:
+
+1. Fixed a bug in `untilClicked` so that it catches all type of invalid element state error.

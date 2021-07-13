@@ -8,6 +8,8 @@ import com.zylitics.zwl.datatype.BooleanZwlValue;
 import com.zylitics.zwl.datatype.ZwlValue;
 import com.zylitics.zwl.webdriver.constants.FuncDefReturnValue;
 import org.openqa.selenium.ElementClickInterceptedException;
+import org.openqa.selenium.ElementNotInteractableException;
+import org.openqa.selenium.InvalidElementStateException;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.RemoteWebElement;
@@ -56,7 +58,7 @@ public class UntilClicked extends AbstractUntilExpectation {
           try {
             e.click();
             return true;
-          } catch (ElementClickInterceptedException ci) {
+          } catch (InvalidElementStateException ie) {
             return false;
           }
         })));
