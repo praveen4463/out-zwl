@@ -1,13 +1,22 @@
 package com.zylitics.zwl.webdriver.functions.elements.interaction.keys;
 
+import com.google.common.base.Strings;
 import com.zylitics.zwl.datatype.Types;
 import com.zylitics.zwl.webdriver.APICoreProperties;
 import com.zylitics.zwl.webdriver.BuildCapability;
+import com.zylitics.zwl.webdriver.TimeoutType;
 import com.zylitics.zwl.webdriver.functions.AbstractWebdriverFunction;
 import com.zylitics.zwl.datatype.ZwlValue;
+import org.openqa.selenium.InvalidElementStateException;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.remote.RemoteWebElement;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
@@ -50,10 +59,31 @@ public class TypeActive extends AbstractWebdriverFunction {
       throw unexpectedEndOfFunctionOverload(argsCount);
     }
     String[] keys = args.stream().map(Objects::toString).toArray(String[]::new);
+    WebDriverWait wait = getWait(TimeoutType.ELEMENT_ACCESS,
+        "waiting for an active typeable element");
     return handleWDExceptions(() -> {
-      targetLocator.activeElement().sendKeys(keys);
+      WebElement e = wait.until(d -> getTypeableElementOrNull(targetLocator.activeElement()));
+      waitUntilTyped(e, keys);
       return _void;
     });
+  }
+  
+  private WebElement getTypeableElementOrNull(WebElement element) {
+    String tag = element.getTagName();
+    String contentEditable = element.getAttribute("isContentEditable");
+    if (tag.equals("textarea")
+        || (!Strings.isNullOrEmpty(contentEditable) && contentEditable.equals("true"))) {
+      return element;
+    }
+    if (tag.equals("input")) {
+      String type = element.getAttribute("type");
+      List<String> editableInputs = new ArrayList<>(Arrays.asList("email", "number", "password",
+          "search", "tel", "text", "url"));
+      if (editableInputs.contains(type)) {
+        return element;
+      }
+    }
+    return null;
   }
   
   @Override

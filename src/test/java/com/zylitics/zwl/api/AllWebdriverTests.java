@@ -27,7 +27,8 @@ public enum AllWebdriverTests {
   GLOBAL_VARS_TEST ("GlobalVarsTest.zwl"),
   DRY_CONFIG_TEST ("DryConfigTest.zwl"),
   BUILD_CONFIG_TEST ("BuildConfigTest.zwl"),
-  BUILD_CAPABILITIES_TEST ("BuildCapabilitiesTest.zwl");
+  BUILD_CAPABILITIES_TEST ("BuildCapabilitiesTest.zwl"),
+  MISC_TEST("MiscTest.zwl");
   
   private final String file;
   

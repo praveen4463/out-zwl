@@ -53,7 +53,7 @@ public class Type extends AbstractWebdriverFunction {
     String[] keys = args.subList(1, argsCount)
         .stream().map(Objects::toString).toArray(String[]::new);
     return handleWDExceptions(() -> {
-      getElement(elemIdOrSelector).sendKeys(keys);
+      waitUntilTyped(getElement(elemIdOrSelector), keys);
       return _void;
     });
   }

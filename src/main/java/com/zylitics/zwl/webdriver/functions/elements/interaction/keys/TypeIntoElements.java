@@ -50,7 +50,8 @@ public class TypeIntoElements extends AbstractWebdriverFunction {
     }
     String text = args.get(0).toString();
     return handleWDExceptions(() -> {
-      getElementsUnderstandingArgs(args.subList(1, argsCount)).forEach(e -> e.sendKeys(text));
+      getElementsUnderstandingArgs(args.subList(1, argsCount)).forEach(e ->
+          waitUntilTyped(e, text));
       return _void;
     });
   }

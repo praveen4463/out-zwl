@@ -455,4 +455,17 @@ public abstract class AbstractWebdriverFunction extends AbstractFunction {
     Tuple<SearchContext, By> searchArgs = detectElementSearchArguments(args);
     return findElement(searchArgs.x(), searchArgs.y(), wait);
   }
+  
+  protected void waitUntilTyped(WebElement e, CharSequence... keys) {
+    WebDriverWait wait = getWait(TimeoutType.ELEMENT_ACCESS,
+        "waiting for element to become typeable");
+    wait.until(d -> {
+      try {
+        e.sendKeys(keys);
+        return true;
+      } catch (InvalidElementStateException ie) {
+        return false;
+      }
+    });
+  }
 }

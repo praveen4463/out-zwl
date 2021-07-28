@@ -322,6 +322,13 @@ public class WebdriverTests {
     run(browser, AllWebdriverTests.BUILD_CAPABILITIES_TEST.getFile());
   }
   
+  @Tag("misc")
+  @ParameterizedTest
+  @EnumSource(value = Browsers.class)
+  void miscTest(Browsers browser) throws Exception {
+    run(browser, AllWebdriverTests.MISC_TEST.getFile());
+  }
+  
   private void run(Browsers browser, String file) throws Exception {
     Assumptions.assumeFalse(shouldSkip(browser), "Skipped");
     setup(browser);

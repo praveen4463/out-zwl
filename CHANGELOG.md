@@ -87,3 +87,10 @@ bug fixes
 ### Bug fixes:
 
 1. Fixed a bug in `untilClicked` so that it catches all type of invalid element state error.
+
+## v0.4.5
+
+Enhancements
+
+1. `typeActive` will now wait until there is a focused text field found
+2. `type` and other similar functions will wait until the element become typeable
