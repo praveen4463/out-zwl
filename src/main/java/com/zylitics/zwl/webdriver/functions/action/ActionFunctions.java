@@ -6,10 +6,12 @@ import com.zylitics.zwl.webdriver.functions.AbstractWebdriverFunction;
 import com.zylitics.zwl.datatype.ZwlValue;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.remote.RemoteWebElement;
 
 import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 public class ActionFunctions {
   
@@ -70,7 +72,7 @@ public class ActionFunctions {
   
     @Override
     public void process(AbstractWebdriverFunction wd, Actions actions, List<ZwlValue> args) {
-      actions.click(wd.getElement(wd.tryCastString(0, args.get(0))));
+      wd.waitUntilInteracted(args.get(0), actions::click);
     }
   }
   
@@ -265,16 +267,18 @@ public class ActionFunctions {
     public void process(AbstractWebdriverFunction wd, Actions actions, List<ZwlValue> args) {
       switch (args.size()) {
         case 1:
-          actions.moveToElement(wd.getElement(wd.tryCastString(0, args.get(0))));
+          wd.doSafeInteraction(args.get(0), (Consumer<RemoteWebElement>) actions::moveToElement);
           break;
         case 2:
           actions.moveByOffset(wd.parseDouble(0, args.get(0)).intValue(),
               wd.parseDouble(1, args.get(1)).intValue());
           break;
         case 3:
-          actions.moveToElement(wd.getElement(wd.tryCastString(0, args.get(0))),
-              wd.parseDouble(1, args.get(1)).intValue(),
-              wd.parseDouble(2, args.get(2)).intValue());
+          wd.doSafeInteraction(args.get(0), el -> {
+            actions.moveToElement(el,
+                wd.parseDouble(1, args.get(1)).intValue(),
+                wd.parseDouble(2, args.get(2)).intValue());
+          });
           break;
         default:
           throw unexpectedEndOfFunctionOverload(args.size());

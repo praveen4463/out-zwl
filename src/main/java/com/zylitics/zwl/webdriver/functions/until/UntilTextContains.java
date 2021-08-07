@@ -1,5 +1,6 @@
 package com.zylitics.zwl.webdriver.functions.until;
 
+import com.zylitics.zwl.datatype.ZwlValue;
 import com.zylitics.zwl.webdriver.APICoreProperties;
 import com.zylitics.zwl.webdriver.BuildCapability;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -22,8 +23,8 @@ public class UntilTextContains extends AbstractTextValue {
   }
   
   @Override
-  boolean desiredState(RemoteWebElement element, String textOrValue) {
-    String value = element.getText();
+  boolean desiredState(ZwlValue elementId, String textOrValue) {
+    String value = doSafeInteraction(elementId, RemoteWebElement::getText);
     return value != null && value.contains(textOrValue);
   }
 }

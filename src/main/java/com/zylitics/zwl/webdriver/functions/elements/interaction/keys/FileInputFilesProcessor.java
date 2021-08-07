@@ -82,7 +82,7 @@ class FileInputFilesProcessor {
    */
   Set<String> process() throws ZwlLangException {
     if (!Files.isDirectory(buildDir)) {
-      throw new RuntimeException(buildDir.toAbsolutePath().toString() + " isn't a directory");
+      throw new RuntimeException(buildDir.toAbsolutePath() + " isn't a directory");
     }
     // put all files as flat hierarchy in same directory, this is also a requirement of IE driver
     // that when multiple files being given to file input, all files should be in same dir.

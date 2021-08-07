@@ -7,7 +7,6 @@ import com.zylitics.zwl.webdriver.TimeoutType;
 import com.zylitics.zwl.datatype.BooleanZwlValue;
 import com.zylitics.zwl.datatype.ZwlValue;
 import com.zylitics.zwl.webdriver.constants.FuncDefReturnValue;
-import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.RemoteWebElement;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -38,7 +37,6 @@ public class UntilSelectionIs extends AbstractUntilExpectation {
     if (args.size() != 2) {
       throw unexpectedEndOfFunctionOverload(args.size());
     }
-    String s = tryCastString(0, args.get(0));
     Boolean b = parseBoolean(1, args.get(1));
   
     if (buildCapability.isDryRunning()) {
@@ -46,15 +44,8 @@ public class UntilSelectionIs extends AbstractUntilExpectation {
     }
     
     WebDriverWait wait = getWait(TimeoutType.ELEMENT_ACCESS);
-    if (!isValidElemId(s)) {
-      // when we're finding element, let's ignore stale exception and wait for element to appear.
-      wait.ignoring(StaleElementReferenceException.class);
-    }
-    return handleWDExceptions(() ->
-        new BooleanZwlValue(wait.until(d -> {
-          RemoteWebElement e = getElement(s, false);
-          return e.isSelected() == b;
-        })));
+    return handleWDExceptions(() -> new BooleanZwlValue(wait.until(d ->
+        doSafeInteraction(args.get(0), RemoteWebElement::isSelected) == b)));
   }
   
   @Override

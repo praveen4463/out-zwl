@@ -24,8 +24,8 @@ public class GetElementText extends AbstractElementProperty {
   }
   
   @Override
-  protected String getProperty(RemoteWebElement element) {
-    return element.getText();
+  protected String getProperty(ZwlValue elementId) {
+    return doSafeInteraction(elementId, RemoteWebElement::getText);
   }
   
   @Override

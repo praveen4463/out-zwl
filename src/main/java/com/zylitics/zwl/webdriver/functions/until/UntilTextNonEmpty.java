@@ -1,5 +1,6 @@
 package com.zylitics.zwl.webdriver.functions.until;
 
+import com.google.common.base.Strings;
 import com.zylitics.zwl.datatype.ZwlValue;
 import com.zylitics.zwl.webdriver.APICoreProperties;
 import com.zylitics.zwl.webdriver.BuildCapability;
@@ -24,8 +25,8 @@ public class UntilTextNonEmpty extends AbstractTextValueNonEmpty {
   }
   
   @Override
-  String textOrValue(RemoteWebElement element) {
-    return element.getText();
+  String textOrValue(ZwlValue elementId) {
+    return doSafeInteraction(elementId, RemoteWebElement::getText);
   }
   
   @Override

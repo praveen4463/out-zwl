@@ -46,11 +46,10 @@ public class DeselectAll extends AbstractWebdriverFunction {
     }
     
     if (args.size() == 0) {
-      throw unexpectedEndOfFunctionOverload(args.size());
+      throw unexpectedEndOfFunctionOverload(0);
     }
-    String elemIdOrSelector = tryCastString(0, args.get(0));
     return handleWDExceptions(() -> {
-      Select select = new Select(getElement(elemIdOrSelector));
+      Select select = doSafeInteraction(args.get(0), Select::new);
       select.deselectAll();
       return _void;
     });

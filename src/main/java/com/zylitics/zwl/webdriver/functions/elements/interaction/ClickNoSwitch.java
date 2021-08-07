@@ -56,14 +56,14 @@ public class ClickNoSwitch extends AbstractWebdriverFunction {
     if (args.size() != 1) {
       throw unexpectedEndOfFunctionOverload(args.size());
     }
-    return handleWDExceptions(() -> execute(getElement(tryCastString(0, args.get(0)))));
+    return handleWDExceptions(() -> execute(args.get(0)));
   }
   
-  private ZwlValue execute(RemoteWebElement element) {
+  private ZwlValue execute(ZwlValue elementId) {
     Set<String> previousHandles = driver.getWindowHandles();
     String previousHandle = driver.getWindowHandle();
   
-    element.click();
+    waitUntilInteracted(elementId, RemoteWebElement::click);
   
     int desiredHandles = previousHandles.size() + 1;
     WebDriverWait wait =

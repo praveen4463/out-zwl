@@ -49,11 +49,10 @@ public class Type extends AbstractWebdriverFunction {
     if (argsCount < 2) {
       throw unexpectedEndOfFunctionOverload(argsCount);
     }
-    String elemIdOrSelector = tryCastString(0, args.get(0));
     String[] keys = args.subList(1, argsCount)
         .stream().map(Objects::toString).toArray(String[]::new);
     return handleWDExceptions(() -> {
-      waitUntilTyped(getElement(elemIdOrSelector), keys);
+      waitUntilInteracted(args.get(0), el -> el.sendKeys(keys));
       return _void;
     });
   }

@@ -59,11 +59,20 @@ public class TypeActive extends AbstractWebdriverFunction {
       throw unexpectedEndOfFunctionOverload(argsCount);
     }
     String[] keys = args.stream().map(Objects::toString).toArray(String[]::new);
-    WebDriverWait wait = getWait(TimeoutType.ELEMENT_ACCESS,
+    WebDriverWait waitAccess = getWait(TimeoutType.ELEMENT_ACCESS,
         "waiting for an active typeable element");
     return handleWDExceptions(() -> {
-      WebElement e = wait.until(d -> getTypeableElementOrNull(targetLocator.activeElement()));
-      waitUntilTyped(e, keys);
+      WebElement e = waitAccess.until(d -> getTypeableElementOrNull(targetLocator.activeElement()));
+      WebDriverWait waitType = getWait(TimeoutType.ELEMENT_ACCESS,
+          "waiting for element to become typeable");
+      waitType.until(d -> {
+        try {
+          e.sendKeys(keys);
+          return true;
+        } catch (InvalidElementStateException ie) {
+          return false;
+        }
+      });
       return _void;
     });
   }

@@ -5,11 +5,13 @@ import com.zylitics.zwl.webdriver.APICoreProperties;
 import com.zylitics.zwl.webdriver.BuildCapability;
 import com.zylitics.zwl.webdriver.functions.AbstractWebdriverFunction;
 import com.zylitics.zwl.datatype.ZwlValue;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 import java.io.PrintStream;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class SendKeysToPage extends AbstractWebdriverFunction {
@@ -48,11 +50,11 @@ public class SendKeysToPage extends AbstractWebdriverFunction {
     if (args.size() < 2) {
       throw unexpectedEndOfFunctionOverload(args.size());
     }
-    String elemIdOrSelector = tryCastString(0, args.get(0));
     String[] keys = args.subList(1, args.size()).stream().map(Objects::toString)
         .toArray(String[]::new);
     return handleWDExceptions(() -> {
-      new ActionSendKeysCustom(driver).actionSendKeysCustom(getElement(elemIdOrSelector), keys);
+      Consumer<Actions> clickOnEl = a -> waitUntilInteracted(args.get(0), a::click);
+      new ActionSendKeysCustom(driver).actionSendKeysCustom(clickOnEl, keys);
       return _void;
     });
   }

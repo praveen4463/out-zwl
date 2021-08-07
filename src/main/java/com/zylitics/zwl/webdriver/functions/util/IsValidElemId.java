@@ -45,10 +45,10 @@ public class IsValidElemId extends AbstractWebdriverFunction {
     // This method shouldn't be stubbed, thus not adding the code
     
     if (args.size() == 0) {
-      throw unexpectedEndOfFunctionOverload(args.size());
+      throw unexpectedEndOfFunctionOverload(0);
     }
   
-    return new BooleanZwlValue(isValidElemId(tryCastString(0, args.get(0))));
+    return new BooleanZwlValue(isValidElementId(args.get(0)));
   }
   
   @Override

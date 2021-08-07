@@ -94,3 +94,21 @@ Enhancements
 
 1. `typeActive` will now wait until there is a focused text field found
 2. `type` and other similar functions will wait until the element become typeable
+
+## v0.6.0
+
+Major Enhancements and bug fixes
+
+Enhancements
+1. Added new element finding methods. These are labelText, altText, placeholderText.
+2. Fixed element finding methods to be able to use regex. These are title, arialLabel.
+3. All methods that access and element will now handle stale ex on their own and if it occurs, we'll
+   try to find element internally.
+4. All methods that interact with elements will now wait until interaction has happened so that if
+   some element is no ready, we will wait until it is.
+5. Added randomRange, dateAdd, assertEqual, assertNotEqual functions.
+6. removed some functions that were useless and making the code brittle. These are activeElement,
+   clearActive, findElementsWithSelectors, findElementWithSelectors, typeUsingMap, untilAllRemoved.
+   
+Bug fixes
+1. We were not handling StaleEx at all and there was no way to handle them too. 

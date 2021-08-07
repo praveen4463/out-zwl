@@ -8,6 +8,7 @@ import com.zylitics.zwl.webdriver.APICoreProperties;
 import com.zylitics.zwl.webdriver.BuildCapability;
 import org.openqa.selenium.Rectangle;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.remote.RemoteWebElement;
 
 import java.io.PrintStream;
 import java.util.List;
@@ -51,8 +52,8 @@ public class GetElementRect extends AbstractWebdriverFunction {
     if (args.size() == 0) {
       throw unexpectedEndOfFunctionOverload(0);
     }
-    String elemIdOrSelector = tryCastString(0, args.get(0));
-    Rectangle r = handleWDExceptions(() -> getElement(elemIdOrSelector).getRect());
+    Rectangle r = handleWDExceptions(() ->
+        doSafeInteraction(args.get(0), RemoteWebElement::getRect));
     if (r == null) {
       return new NothingZwlValue();
     }

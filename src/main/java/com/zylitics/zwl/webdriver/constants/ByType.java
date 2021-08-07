@@ -1,18 +1,20 @@
 package com.zylitics.zwl.webdriver.constants;
 
 public enum ByType {
-  
-  ID,
-  LINK_TEXT,
-  PARTIAL_LINK_TEXT,
-  NAME,
-  TAG_NAME,
-  XPATH,
+  ALT_TEXT,
+  ARIA_LABEL,
   CLASS_NAME,
   CSS_SELECTOR,
-  TEXT,
-  TEST_ID,
+  ID,
+  LABEL_TEXT,
+  LINK_TEXT,
+  NAME,
+  PARTIAL_LINK_TEXT,
+  PLACEHOLDER_TEXT,
   ROLE,
-  ARIA_LABEL,
+  TAG_NAME,
+  TEST_ID,
+  TEXT,
   TITLE,
+  XPATH
 }

@@ -5,7 +5,6 @@ import com.zylitics.zwl.webdriver.APICoreProperties;
 import com.zylitics.zwl.webdriver.BuildCapability;
 import com.zylitics.zwl.webdriver.constants.FuncDefReturnValue;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import org.openqa.selenium.remote.RemoteWebElement;
 
 import java.io.PrintStream;
 
@@ -24,8 +23,10 @@ public class GetElementValue extends AbstractElementProperty {
   }
   
   @Override
-  protected String getProperty(RemoteWebElement element) {
-    return element.getAttribute("value");
+  protected String getProperty(ZwlValue elementId) {
+    return doSafeInteraction(elementId, el -> {
+      return el.getAttribute("value");
+    });
   }
   
   @Override

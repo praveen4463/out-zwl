@@ -1,17 +1,7 @@
 package com.zylitics.zwl.webdriver.locators;
 
-import com.google.common.io.Resources;
-import org.openqa.selenium.*;
-import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.remote.RemoteWebDriver;
-import org.openqa.selenium.remote.RemoteWebElement;
-
-import java.io.IOException;
 import java.io.Serializable;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  Iterates nodes in the DOM tree and finds node(s) that have textContent matching with the provided
@@ -32,7 +22,7 @@ import java.util.stream.Collectors;
  whitespace, so you should build you regex or string same as what you see in the DOM.
  */
 // This custom implementation of By works with latest 4.0 updates.
-public class ByText extends By implements Serializable {
+public class ByText extends AbstractByUsingJs implements Serializable {
   
   private static final long serialVersionUID = -2854163217936790921L;
   private final String text;
@@ -46,53 +36,26 @@ public class ByText extends By implements Serializable {
   }
   
   @Override
-  public WebElement findElement(SearchContext context) {
-    List<WebElement> elements = this.findElements(context);
-    if (elements.size() == 0) {
-      throw new NoSuchElementException(String.format(
-          "Cannot locate an element using text=%s. Make sure the given text is not broken up by" +
-              " multiple elements or if you provided a regex, make sure it matches intended text."
-          , text));
-    }
-    return elements.get(0);
+  protected String noSuchElementEx() {
+    return String.format(
+        "Cannot locate an element using text=%s. Make sure the given text is not broken up by" +
+            " multiple elements or if you provided a regex, make sure it matches intended text."
+        , text);
   }
   
   @Override
-  public List<WebElement> findElements(SearchContext context) {
-    RemoteWebElement element = null;
-    RemoteWebDriver driver = null;
-    if (context instanceof RemoteWebElement) {
-      element = (RemoteWebElement) context;
-      driver = (RemoteWebDriver) element.getWrappedDriver();
-    }
-    if (driver == null && !(context instanceof RemoteWebDriver)) {
-      throw new RuntimeException("Expected " + context + " to be either a WebDriver or WebElement");
-    }
-    if (driver == null) {
-      driver = (RemoteWebDriver) context;
-    }
-    Object o = driver.executeScript(
-        getAtom() + "return findAllByText(arguments[0] || document.querySelector('*'), arguments[1]);",
-        element, text);
-    if (o instanceof List<?>) {
-      List<?> lo = (List<?>) o;
-      if (lo.stream().allMatch(w -> w instanceof WebElement)) {
-        return lo.stream().map(w -> (WebElement)w).collect(Collectors.toList());
-      }
-    }
-    return Collections.emptyList();
+  protected String stringToSearch() {
+    return text;
   }
   
-  private String getAtom() {
-    try {
-      String scriptName = "/findElementsByText.min.js";
-      URL url = getClass().getResource(scriptName);
-      Objects.requireNonNull(url);
-      //noinspection UnstableApiUsage
-      return Resources.toString(url, StandardCharsets.UTF_8);
-    } catch (IOException | NullPointerException e) {
-      throw new WebDriverException(e);
-    }
+  @Override
+  protected String funcName() {
+    return "findAllByText";
+  }
+  
+  @Override
+  protected String fileName() {
+    return "findElementsByText.min.js";
   }
   
   @Override

@@ -46,7 +46,7 @@ public class SendKeysToPageF extends AbstractWebdriverFunction {
     }
     
     if (args.size() == 0) {
-      throw unexpectedEndOfFunctionOverload(args.size());
+      throw unexpectedEndOfFunctionOverload(0);
     }
     String[] keys = args.stream().map(Objects::toString).toArray(String[]::new);
     return handleWDExceptions(() -> {

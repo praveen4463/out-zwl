@@ -1,16 +1,11 @@
 package com.zylitics.zwl.webdriver.locators;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.SearchContext;
-import org.openqa.selenium.WebElement;
-
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-public class ByTitle extends By implements Serializable {
+public class ByTitle extends AbstractByUsingJs implements Serializable {
   
   private static final long serialVersionUID = 1333358463696707572L;
   private final String title;
@@ -24,13 +19,23 @@ public class ByTitle extends By implements Serializable {
   }
   
   @Override
-  public WebElement findElement(SearchContext context) {
-    return By.cssSelector("*[title='" + title + "']").findElement(context);
+  protected String noSuchElementEx() {
+    return String.format("Cannot locate an element with title=%s.", title);
   }
   
   @Override
-  public List<WebElement> findElements(SearchContext context) {
-    return By.cssSelector("*[title='" + title + "']").findElements(context);
+  protected String stringToSearch() {
+    return title;
+  }
+  
+  @Override
+  protected String funcName() {
+    return "findAllByTitle";
+  }
+  
+  @Override
+  protected String fileName() {
+    return "findElementsByTitle.min.js";
   }
   
   @Override

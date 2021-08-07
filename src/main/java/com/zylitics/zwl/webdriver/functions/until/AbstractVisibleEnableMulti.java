@@ -1,21 +1,16 @@
 package com.zylitics.zwl.webdriver.functions.until;
 
 import com.zylitics.zwl.datatype.Types;
-import com.zylitics.zwl.util.CollectionUtil;
 import com.zylitics.zwl.webdriver.TimeoutType;
 import com.zylitics.zwl.datatype.ListZwlValue;
-import com.zylitics.zwl.datatype.StringZwlValue;
 import com.zylitics.zwl.datatype.ZwlValue;
 import com.zylitics.zwl.webdriver.APICoreProperties;
 import com.zylitics.zwl.webdriver.BuildCapability;
 import com.zylitics.zwl.webdriver.constants.FuncDefReturnValue;
-import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import org.openqa.selenium.remote.RemoteWebElement;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.io.PrintStream;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -40,53 +35,19 @@ abstract class AbstractVisibleEnableMulti extends AbstractUntilExpectation {
       return evaluateDefValue(defaultValue);
     }
     
-    int argsCount = args.size();
-    if (argsCount == 0) {
-      throw unexpectedEndOfFunctionOverload(argsCount);
+    if (args.size() == 0) {
+      throw unexpectedEndOfFunctionOverload(0);
     }
-    if (argsCount == 1) {
-      String s = tryCastString(0, args.get(0));
-      if (!isValidElemId(s)) {
-        // we've got multi element selector.
-        return withMultiSelector(s);
-      }
-    }
-    // when multiple elemIds/selectors are given, separate wait is used for everyone so that the
-    // element access timeout doesn't exhaust when working with many elemIds/selectors.
-    List<ZwlValue> elemIds = new ArrayList<>(CollectionUtil.getInitialCapacity(argsCount));
-    for (int i = 0; i < argsCount; i++) {
-      String s = tryCastString(i, args.get(i));
+    // when multiple elemIds are given, separate wait is used for everyone so that the
+    // element access timeout doesn't exhaust when working with many elemIds.
+    for (ZwlValue arg : args) {
       WebDriverWait wait = getWait(TimeoutType.ELEMENT_ACCESS);
-      if (!isValidElemId(s)) {
-        wait.ignoring(StaleElementReferenceException.class);
-      }
-      elemIds.add(handleWDExceptions(() ->
-          new StringZwlValue(wait.until(d -> {
-            RemoteWebElement e = getElement(s, false);
-            return desiredState(e) ? e.getId() : null;
-          }))));
+      handleWDExceptions(() -> wait.until(d -> desiredState(arg)));
     }
-    return new ListZwlValue(elemIds);
+    return new ListZwlValue(args);
   }
   
-  // When a multi element selector is given, the wait time is equal to just single element access
-  // timeout.
-  private ZwlValue withMultiSelector(String s) {
-    WebDriverWait wait = getWait(TimeoutType.ELEMENT_ACCESS);
-    wait.ignoring(StaleElementReferenceException.class);
-    // when the child elements during desired state match become stale, ignore it so that the
-    // parent element can be located again when it recovers form being stale.
-    return handleWDExceptions(() ->
-        wait.until(d -> {
-          List<RemoteWebElement> le = findElements(driver, s, false);
-          if (le.size() == 0) {
-            return null;
-          }
-          return le.stream().allMatch(this::desiredState) ? convertIntoZwlElemIds(le) : null;
-        }));
-  }
-  
-  abstract boolean desiredState(RemoteWebElement element);
+  abstract boolean desiredState(ZwlValue elementId);
   
   @Override
   protected ZwlValue getFuncDefReturnValue() {

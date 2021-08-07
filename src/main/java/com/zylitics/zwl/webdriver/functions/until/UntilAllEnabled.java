@@ -1,5 +1,6 @@
 package com.zylitics.zwl.webdriver.functions.until;
 
+import com.zylitics.zwl.datatype.ZwlValue;
 import com.zylitics.zwl.webdriver.APICoreProperties;
 import com.zylitics.zwl.webdriver.BuildCapability;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -22,7 +23,7 @@ public class UntilAllEnabled extends AbstractVisibleEnableMulti {
   }
   
   @Override
-  boolean desiredState(RemoteWebElement element) {
-    return element.isEnabled();
+  boolean desiredState(ZwlValue elementId) {
+    return doSafeInteraction(elementId, RemoteWebElement::isEnabled);
   }
 }

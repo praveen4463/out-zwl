@@ -7,8 +7,10 @@ import com.zylitics.zwl.webdriver.constants.FuncDefReturnValue;
 import com.zylitics.zwl.datatype.Types;
 import com.zylitics.zwl.datatype.ZwlValue;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.remote.RemoteWebElement;
 
 import java.io.PrintStream;
+import java.util.List;
 
 public class FindElements extends AbstractFindElement {
   
@@ -26,7 +28,8 @@ public class FindElements extends AbstractFindElement {
   
   @Override
   protected ZwlValue find(String using, ByType byType, boolean wait) {
-    return convertIntoZwlElemIds(findElements(driver, getBy(byType, using), wait));
+    List<RemoteWebElement> els = findElements(driver, getBy(byType, using), wait);
+    return convertIntoZwlElemIds(els, using, byType);
   }
   
   @Override

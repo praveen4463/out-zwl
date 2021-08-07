@@ -45,13 +45,12 @@ public class IsStale extends AbstractWebdriverFunction {
     super.invoke(args, defaultValue, lineNColumn);
     
     if (args.size() == 0) {
-      throw unexpectedEndOfFunctionOverload(args.size());
+      throw unexpectedEndOfFunctionOverload(0);
     }
-    String elemId = tryCastString(0, args.get(0));
     return handleWDExceptions(() -> {
       boolean stale = false;
       try {
-        RemoteWebElement e = getWebElementUsingElemId(elemId);
+        RemoteWebElement e = getWebElementUsingElemId(args.get(0));
         if (buildCapability.isDryRunning()) {
           return evaluateDefValue(defaultValue);
         }

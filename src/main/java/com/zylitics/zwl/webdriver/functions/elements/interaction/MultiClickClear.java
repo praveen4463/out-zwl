@@ -6,7 +6,6 @@ import com.zylitics.zwl.webdriver.BuildCapability;
 import com.zylitics.zwl.webdriver.functions.AbstractWebdriverFunction;
 import com.zylitics.zwl.datatype.ZwlValue;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import org.openqa.selenium.remote.RemoteWebElement;
 
 import java.io.PrintStream;
 import java.util.List;
@@ -41,15 +40,15 @@ abstract class MultiClickClear extends AbstractWebdriverFunction {
     }
     
     if (args.size() == 0) {
-      throw unexpectedEndOfFunctionOverload(args.size());
+      throw unexpectedEndOfFunctionOverload(0);
     }
     return handleWDExceptions(() -> {
-      perform(getElementsUnderstandingArgs(args));
+      perform(args);
       return _void;
     });
   }
   
-  protected abstract void perform(List<RemoteWebElement> elements);
+  protected abstract void perform(List<ZwlValue> elementIds);
   
   @Override
   protected ZwlValue getFuncDefReturnValue() {

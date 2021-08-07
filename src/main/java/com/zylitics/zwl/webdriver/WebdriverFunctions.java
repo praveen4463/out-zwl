@@ -152,7 +152,6 @@ public class WebdriverFunctions {
         // interaction
         new Clear(wdProps, buildCapability, driver, printStream),
         new ClearAll(wdProps, buildCapability, driver, printStream),
-        new ClearActive(wdProps, buildCapability, driver, printStream),
         new Click(wdProps, buildCapability, driver, printStream),
         new ClickAll(wdProps, buildCapability, driver, printStream),
         new ClickNoSwitch(wdProps, buildCapability, driver, printStream),
@@ -169,15 +168,11 @@ public class WebdriverFunctions {
         new Type(wdProps, buildCapability, driver, printStream),
         new TypeActive(wdProps, buildCapability, driver, printStream),
         new TypeIntoElements(wdProps, buildCapability, driver, printStream),
-        new TypeUsingMap(wdProps, buildCapability, driver, printStream),
         // retrieval
-        new ActiveElement(wdProps, buildCapability, driver, printStream),
         new FindElement(wdProps, buildCapability, driver, printStream),
         new FindElementFromElement(wdProps, buildCapability, driver, printStream),
         new FindElements(wdProps, buildCapability, driver, printStream),
         new FindElementsFromElement(wdProps, buildCapability, driver, printStream),
-        new FindElementsWithSelectors(wdProps, buildCapability, driver, printStream),
-        new FindElementWithSelectors(wdProps, buildCapability, driver, printStream),
         // state
         new AllElementsDisplayed(wdProps, buildCapability, driver, printStream),
         new AllElementsEnabled(wdProps, buildCapability, driver, printStream),
@@ -247,7 +242,6 @@ public class WebdriverFunctions {
         new UntilAllDisabled(wdProps, buildCapability, driver, printStream),
         new UntilAllEnabled(wdProps, buildCapability, driver, printStream),
         new UntilAllInvisible(wdProps, buildCapability, driver, printStream),
-        new UntilAllRemoved(wdProps, buildCapability, driver, printStream),
         new UntilAllSelectionsAre(wdProps, buildCapability, driver, printStream),
         new UntilAllVisible(wdProps, buildCapability, driver, printStream),
         new UntilAnySelectionIs(wdProps, buildCapability, driver, printStream),

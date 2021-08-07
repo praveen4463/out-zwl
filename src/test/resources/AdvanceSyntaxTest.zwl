@@ -81,7 +81,7 @@ l = [1, 2]
 assertDoesNotThrow(print(l))
 m = {name: 'praveen', age: 29}
 assertDoesNotThrow(print(m))
-// list and map toString are expected
+# list and map toString are expected
 assertTrue('' + l == '[1, 2]')
 assertTrue('' + m == `{
 name: praveen,

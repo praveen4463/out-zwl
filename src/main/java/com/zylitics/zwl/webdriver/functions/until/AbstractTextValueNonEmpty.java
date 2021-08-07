@@ -33,29 +33,22 @@ abstract class AbstractTextValueNonEmpty extends AbstractUntilExpectation {
     if (args.size() != 1) {
       throw unexpectedEndOfFunctionOverload(args.size());
     }
-    String elemOrSelector = tryCastString(0, args.get(0));
-  
+    
     if (buildCapability.isDryRunning()) {
       return evaluateDefValue(defaultValue);
     }
     
     WebDriverWait wait = getWait(TimeoutType.ELEMENT_ACCESS);
-    if (!isValidElemId(elemOrSelector)) {
-      // ignore stale exception default so that even if element goes stale intermittent we can
-      // locate it and match text/value.
-      wait.ignoring(StaleElementReferenceException.class);
-    }
     return handleWDExceptions(() ->
         new StringZwlValue(wait.until(d -> {
-          RemoteWebElement e = getElement(elemOrSelector, false);
-          String textOrValue = textOrValue(e);
+          String textOrValue = textOrValue(args.get(0));
           // trim removes new line, tabs etc including whitespaces.
           return !Strings.isNullOrEmpty(textOrValue) && textOrValue.trim().length() > 0
               ? textOrValue : null;
         })));
   }
   
-  abstract String textOrValue(RemoteWebElement element);
+  abstract String textOrValue(ZwlValue elementId);
   
   @Override
   protected String getFuncReturnType() {

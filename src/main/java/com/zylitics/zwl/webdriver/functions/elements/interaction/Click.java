@@ -1,5 +1,6 @@
 package com.zylitics.zwl.webdriver.functions.elements.interaction;
 
+import com.zylitics.zwl.datatype.ZwlValue;
 import com.zylitics.zwl.webdriver.APICoreProperties;
 import com.zylitics.zwl.webdriver.BuildCapability;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -22,7 +23,7 @@ public class Click extends ClickClear {
   }
   
   @Override
-  protected void perform(RemoteWebElement element) {
-    element.click();
+  protected void perform(ZwlValue elementId) {
+    waitUntilInteracted(elementId, RemoteWebElement::click);
   }
 }

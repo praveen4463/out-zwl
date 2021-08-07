@@ -6,6 +6,7 @@ import com.zylitics.zwl.webdriver.BuildCapability;
 import com.zylitics.zwl.webdriver.functions.AbstractWebdriverFunction;
 import com.zylitics.zwl.datatype.ZwlValue;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.remote.RemoteWebElement;
 
 import java.io.PrintStream;
 import java.util.List;
@@ -48,7 +49,7 @@ public class Submit extends AbstractWebdriverFunction {
       throw unexpectedEndOfFunctionOverload(args.size());
     }
     return handleWDExceptions(() -> {
-      getElement(tryCastString(0, args.get(0))).submit();
+      waitUntilInteracted(args.get(0), RemoteWebElement::submit);
       return _void;
     });
   }

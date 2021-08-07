@@ -1,5 +1,6 @@
 package com.zylitics.zwl.webdriver.functions.elements.state;
 
+import com.zylitics.zwl.datatype.ZwlValue;
 import com.zylitics.zwl.webdriver.APICoreProperties;
 import com.zylitics.zwl.webdriver.BuildCapability;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -22,7 +23,7 @@ public class IsElementSelected extends AbstractElementState {
   }
   
   @Override
-  protected boolean checkState(RemoteWebElement element) {
-    return element.isSelected();
+  protected boolean checkState(ZwlValue elementId) {
+    return doSafeInteraction(elementId, RemoteWebElement::isSelected);
   }
 }

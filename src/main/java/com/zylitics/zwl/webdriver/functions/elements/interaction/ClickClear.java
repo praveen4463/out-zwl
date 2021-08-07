@@ -44,12 +44,12 @@ abstract class ClickClear extends AbstractWebdriverFunction {
       throw unexpectedEndOfFunctionOverload(args.size());
     }
     return handleWDExceptions(() -> {
-      perform(getElement(tryCastString(0, args.get(0))));
+      perform(args.get(0));
       return _void;
     });
   }
   
-  protected abstract void perform(RemoteWebElement element);
+  protected abstract void perform(ZwlValue elementId);
   
   @Override
   protected ZwlValue getFuncDefReturnValue() {

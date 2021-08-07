@@ -5,6 +5,7 @@ import com.zylitics.zwl.webdriver.APICoreProperties;
 import com.zylitics.zwl.webdriver.BuildCapability;
 import com.zylitics.zwl.webdriver.TimeoutType;
 import com.zylitics.zwl.datatype.ZwlValue;
+import com.zylitics.zwl.webdriver.constants.ByType;
 import com.zylitics.zwl.webdriver.constants.FuncDefReturnValue;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.RemoteWebElement;
@@ -29,7 +30,7 @@ abstract class AbstractTotalElements extends AbstractUntilExpectation {
     super.invoke(args, defaultValue, lineNColumn);
     int argsCount = args.size();
     
-    if (argsCount < 2) {
+    if (argsCount < 3) {
       throw unexpectedEndOfFunctionOverload(argsCount);
     }
     int total = parseDouble(0, args.get(0)).intValue();
@@ -45,8 +46,25 @@ abstract class AbstractTotalElements extends AbstractUntilExpectation {
           if (e.size() == 0) {
             return null;
           }
-          return desiredState(e.size(), total) ? convertIntoZwlElemIds(e) : null;
+          return desiredState(e.size(), total) ? convertIntoZwlElemIds(e, args) : null;
         }));
+  }
+  
+  protected ZwlValue convertIntoZwlElemIds(List<RemoteWebElement> els,
+                                           List<ZwlValue> args) {
+    int argsCount = args.size();
+    if (argsCount == 3) {
+      return super.convertIntoZwlElemIds(els,
+          tryCastString(1, args.get(1)),
+          parseEnum(2, args.get(2), ByType.class));
+    } else if (argsCount == 4) {
+      return super.convertIntoZwlElemIds(els,
+          args.get(1),
+          tryCastString(2, args.get(2)),
+          parseEnum(3, args.get(3), ByType.class));
+    } else {
+      throw new IllegalArgumentException("Unexpected number of arguments received");
+    }
   }
   
   abstract boolean desiredState(int totalElementsFound, int givenTotal);

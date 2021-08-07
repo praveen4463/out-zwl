@@ -4,11 +4,11 @@ import com.zylitics.zwl.webdriver.functions.action.Modifiers;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.interactions.KeyInput;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import org.openqa.selenium.remote.RemoteWebElement;
 
 import javax.annotation.Nullable;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Consumer;
 
 class ActionSendKeysCustom {
   
@@ -21,11 +21,11 @@ class ActionSendKeysCustom {
   // the Actions.sendKeys method presses each key and immediately releases which leads to no affect
   // for modifier keys, this custom method fix that. It will detect modifier keys, presses them
   // and retains the press until all other non modifier keys are pressed/released.
-  void actionSendKeysCustom(@Nullable RemoteWebElement element, CharSequence... keys) {
+  void actionSendKeysCustom(@Nullable Consumer<Actions> clickOnElement, CharSequence... keys) {
     Actions actions = new Actions(driver);
     KeyInput defaultKeyboard = new KeyInput("default keyboard");
-    if (element != null) {
-      actions.click(element); // focus
+    if (clickOnElement != null) {
+      clickOnElement.accept(actions); // focus
     }
     Set<Integer> modifierToKeyUp = new HashSet<>();
     for (CharSequence key : keys) {

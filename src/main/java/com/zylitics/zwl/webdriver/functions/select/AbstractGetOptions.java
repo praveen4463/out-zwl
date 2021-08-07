@@ -45,10 +45,9 @@ abstract class AbstractGetOptions extends AbstractWebdriverFunction {
     }
     
     if (args.size() == 0) {
-      throw unexpectedEndOfFunctionOverload(args.size());
+      throw unexpectedEndOfFunctionOverload(0);
     }
-    String elemIdOrSelector = tryCastString(0, args.get(0));
-    List<WebElement> options = getOptions(new Select(getElement(elemIdOrSelector)));
+    List<WebElement> options = getOptions(doSafeInteraction(args.get(0), Select::new));
     return convertIntoZwlElemIds(options.stream().map(e -> (RemoteWebElement) e)
         .collect(Collectors.toList()));
   }

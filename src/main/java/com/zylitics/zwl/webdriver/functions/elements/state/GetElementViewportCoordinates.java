@@ -47,8 +47,6 @@ public class GetElementViewportCoordinates extends AbstractWebdriverFunction {
     if (args.size() == 0) {
       throw unexpectedEndOfFunctionOverload(0);
     }
-    String elemIdOrSelector = tryCastString(0, args.get(0));
-    
     if (buildCapability.isDryRunning()) {
       return evaluateDefValue(defaultValue);
     }
@@ -59,7 +57,9 @@ public class GetElementViewportCoordinates extends AbstractWebdriverFunction {
           if (args.size() == 2) {
             scrollIntoViewport = parseBoolean(1, args.get(1));
           }
-          RemoteWebElement element = getElement(elemIdOrSelector);
+          // we're using element twice here and one of them is used in script. Better approach is to
+          // get a valid one.
+          RemoteWebElement element = getValidElement(args.get(0));
           if (scrollIntoViewport) {
             return element.getCoordinates().inViewPort();
           }

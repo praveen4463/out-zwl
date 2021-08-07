@@ -64,18 +64,19 @@ public class CaptureElementScreenshot extends AbstractWebdriverFunction {
     if (argsCount == 0) {
       throw unexpectedEndOfFunctionOverload(argsCount);
     }
-    String elemIdOrSelector = tryCastString(0, args.get(0));
     String givenFileName = argsCount == 2 ? args.get(1).toString() : "";
     if (!Strings.isNullOrEmpty(givenFileName) && givenFileName.endsWith(".png")) {
       givenFileName = givenFileName.substring(0, givenFileName.lastIndexOf(".png"));
     }
-    String fileName = givenFileName + UUID.randomUUID().toString() + ".png";
+    String fileName = givenFileName + UUID.randomUUID() + ".png";
     byte[] screenshot =
-        handleWDExceptions(() -> getElement(elemIdOrSelector).getScreenshotAs(OutputType.BYTES));
+        handleWDExceptions(() -> doSafeInteraction(args.get(0), el -> {
+          return el.getScreenshotAs(OutputType.BYTES);
+        }));
     // Rather than directly uploading to cloud, write locally and push all after the end of build
     // so that test execution don't delay, as we don't need to show these shots to user during build
     if (!Files.isDirectory(buildDir)) {
-      throw new RuntimeException(buildDir.toAbsolutePath().toString() + " isn't a directory");
+      throw new RuntimeException(buildDir.toAbsolutePath() + " isn't a directory");
     }
     Path elemShotDir = buildDir.resolve(wdProps.getElementShotDir());
     try {

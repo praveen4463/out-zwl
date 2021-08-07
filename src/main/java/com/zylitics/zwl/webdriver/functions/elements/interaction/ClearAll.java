@@ -1,5 +1,6 @@
 package com.zylitics.zwl.webdriver.functions.elements.interaction;
 
+import com.zylitics.zwl.datatype.ZwlValue;
 import com.zylitics.zwl.webdriver.APICoreProperties;
 import com.zylitics.zwl.webdriver.BuildCapability;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -23,7 +24,7 @@ public class ClearAll extends MultiClickClear {
   }
   
   @Override
-  protected void perform(List<RemoteWebElement> elements) {
-    elements.forEach(RemoteWebElement::clear);
+  protected void perform(List<ZwlValue> elementIds) {
+    elementIds.forEach(eId -> waitUntilInteracted(eId, RemoteWebElement::clear));
   }
 }

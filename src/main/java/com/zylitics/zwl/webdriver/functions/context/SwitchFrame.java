@@ -7,9 +7,11 @@ import com.zylitics.zwl.webdriver.functions.AbstractWebdriverFunction;
 import com.zylitics.zwl.datatype.ZwlValue;
 import com.zylitics.zwl.exception.InvalidTypeException;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.remote.RemoteWebElement;
 
 import java.io.PrintStream;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
@@ -69,9 +71,7 @@ public class SwitchFrame extends AbstractWebdriverFunction {
     } catch (InvalidTypeException ignore) {
       // ignore
     }
-  
-    String elemIdOrSelector = tryCastString(argIndex, arg);
-    targetLocator.frame(getElement(elemIdOrSelector));
+    doSafeInteraction(arg, (Consumer<RemoteWebElement>) targetLocator::frame);
   }
   
   @Override

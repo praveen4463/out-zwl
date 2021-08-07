@@ -1,19 +1,15 @@
 package com.zylitics.zwl.interpret;
 
 import com.google.common.collect.ImmutableSet;
-import com.zylitics.zwl.function.assertions.Assert;
-import com.zylitics.zwl.function.assertions.AssertFalse;
-import com.zylitics.zwl.function.assertions.AssertTrue;
+import com.zylitics.zwl.function.assertions.*;
 import com.zylitics.zwl.function.collection.*;
-import com.zylitics.zwl.function.datetime.Elapsed;
-import com.zylitics.zwl.function.datetime.FormatDate;
-import com.zylitics.zwl.function.datetime.Instant;
-import com.zylitics.zwl.function.datetime.Timestamp;
+import com.zylitics.zwl.function.datetime.*;
 import com.zylitics.zwl.function.debugging.PrintF;
 import com.zylitics.zwl.function.numeric.*;
 import com.zylitics.zwl.function.string.*;
 import com.zylitics.zwl.function.debugging.Print;
 import com.zylitics.zwl.function.util.NonEmpty;
+import com.zylitics.zwl.function.util.RandomFromRange;
 import com.zylitics.zwl.function.util.Uuid;
 
 import java.util.Set;
@@ -29,6 +25,8 @@ public final class BuiltInFunction {
         new Assert(),
         new AssertTrue(),
         new AssertFalse(),
+        new AssertEqual(),
+        new AssertNotEqual(),
         
         // Collection
         new AddTo(),
@@ -53,6 +51,7 @@ public final class BuiltInFunction {
         new Timestamp(),
         new Instant(),
         new Elapsed(),
+        new DateAdd(),
     
         // Debugging
         new Print(),
@@ -92,7 +91,8 @@ public final class BuiltInFunction {
         
         // Util
         new NonEmpty(),
-        new Uuid()
+        new Uuid(),
+        new RandomFromRange()
     );
     return builder.build();
   }

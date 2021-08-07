@@ -6,7 +6,6 @@ import com.zylitics.zwl.webdriver.BuildCapability;
 import com.zylitics.zwl.webdriver.functions.AbstractWebdriverFunction;
 import com.zylitics.zwl.datatype.ZwlValue;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import org.openqa.selenium.remote.RemoteWebElement;
 
 import java.io.PrintStream;
 import java.util.List;
@@ -41,14 +40,13 @@ abstract class AbstractElementProperty extends AbstractWebdriverFunction {
     }
   
     if (args.size() == 0) {
-      throw unexpectedEndOfFunctionOverload(args.size());
+      throw unexpectedEndOfFunctionOverload(0);
     }
-    String elemIdOrSelector = tryCastString(0, args.get(0));
-    String text = handleWDExceptions(() -> getProperty(getElement(elemIdOrSelector)));
+    String text = handleWDExceptions(() -> getProperty(args.get(0)));
     return tryGetStringZwlValue(text);
   }
   
-  protected abstract String getProperty(RemoteWebElement element);
+  protected abstract String getProperty(ZwlValue elementId);
   
   @Override
   protected String getFuncReturnType() {

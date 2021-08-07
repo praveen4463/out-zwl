@@ -10,6 +10,7 @@ import com.zylitics.zwl.datatype.ZwlValue;
 import com.zylitics.zwl.exception.InvalidTypeException;
 import com.zylitics.zwl.util.ParseUtil;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.remote.RemoteWebElement;
 
 import java.io.PrintStream;
 import java.util.*;
@@ -104,12 +105,14 @@ public abstract class AbstractExecuteScript extends AbstractWebdriverFunction {
     try {
       return ParseUtil.parseBoolean(val, () -> iEx);
     } catch (InvalidTypeException ignore) {}
+    
+    if (isValidElementId(val)) {
+      // if it's an element, get valid one by checking for stale references.
+      return getValidElement(val);
+    }
   
     Optional<String> s = val.getStringValue();
     if (s.isPresent()) {
-      if(isValidElemId(s.get())) {
-        return getWebElementUsingElemId(s.get());
-      }
       return s.get();
     }
   

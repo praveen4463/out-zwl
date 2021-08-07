@@ -10,6 +10,7 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.RemoteWebElement;
 
 import java.io.PrintStream;
+import java.util.List;
 
 public class FindElementsFromElement extends AbstractFindFromElement {
   
@@ -26,8 +27,9 @@ public class FindElementsFromElement extends AbstractFindFromElement {
   }
   
   @Override
-  protected ZwlValue find(RemoteWebElement element, String using, ByType byType, boolean wait) {
-    return convertIntoZwlElemIds(findElements(element, getBy(byType, using), wait));
+  protected ZwlValue find(ZwlValue fromElement, String using, ByType byType, boolean wait) {
+    List<RemoteWebElement> els = findElements(fromElement, getBy(byType, using), wait);
+    return convertIntoZwlElemIds(els, fromElement, using, byType);
   }
   
   @Override

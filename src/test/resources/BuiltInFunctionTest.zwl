@@ -22,16 +22,6 @@ assertTrue(containsKey(a, "name"))
 assertFalse(containsKey(a, "school"))
 assertThrows(exceptions.invalidTypeEx, containsKey([1, 2], 1))
 
-# existsFirst
-b = testTools.Nothing # b gets a Nothing
-c = testTools.Nothing # c gets a Nothing
-d = a.name
-e = a.age
-assertTrue(existsFirst(b, c, d, e) == "johny")
-assertTrue(existsFirst(e, b, c, d) == 10)
-assertFalse(exists(existsFirst(b, c))) # nothing should return
-assertTrue(existsFirst([b, c, d, e]) == "johny")
-
 # flatten
 b =
 [
@@ -73,7 +63,7 @@ c = {
   school: "high-school",
   city: "noida"
 }
-assertTrue(merge(a, b) == c)
+assertEqual(c, merge(a, b))
 assertThrows(exceptions.insufficientArgsEx, merge(a))
 
 # nonEmptyFirst
@@ -81,7 +71,6 @@ assertTrue(nonEmptyFirst({}, [], 32) == 32)
 assertTrue(nonEmptyFirst({age: 1}, [], 32) == {age: 1})
 assertTrue(nonEmptyFirst({}, [1, 2], 32) == [1, 2])
 assertFalse(exists(nonEmptyFirst({}, "", [])))
-assertTrue(nonEmptyFirst({}, [], "hi") == "hi")
 assertTrue(nonEmptyFirst({}, [], true))
 assertFalse(nonEmptyFirst(false, {}, [], true))
 assertTrue(nonEmptyFirst([{}, [], 32]) == 32)
@@ -92,7 +81,9 @@ assertTrue(removeEmpty([{}, [], "   ", testTools.Nothing, 32]) == [32])
 assertTrue(removeEmpty([false, {}, [], "   ", testTools.Nothing, 32, true]) == [false, 32, true])
 
 # size
-assertTrue(size(c) == 5)
+assertEqual(5, size(c))
+assertNotEqual(6, size(c))
+assertThrows(exceptions.assertionFailedEx, assertEqual(6, size(c)))
 assertTrue(size([1, 2]) == 2)
 
 # values
@@ -136,6 +127,11 @@ printF("benchmarking loop took micros: %s", tookMicros)
 printF("benchmarking loop took millis: %s", tookMillis)
 printF("benchmarking loop took sec: %s", tookSecs)
 
+#dateAdd
+t = '2021-05-06T16:28:49.454Z'
+assertEqual('2021-06-06T16:28:49.454Z', dateAdd(t, duration.months, 1))
+assertEqual('2021-06-01T16:28:49.454Z', dateAdd(t, duration.days, 26))
+
 # Numeric ******************************************************************************************
 
 # abs
@@ -167,6 +163,10 @@ assertTrue(nonEmpty([1, 2]))
 # uuid
 u = uuid()
 assertTrue(matches(u, "[a-zA-Z0-9]{8}-?[a-zA-Z0-9]{4}-?[a-zA-Z0-9]{4}-?[a-zA-Z0-9]{4}-?[a-zA-Z0-9]{12}"))
+
+# randomFromRange
+rand = randomFromRange(100, 200)
+assertTrue(rand >= 100 && rand <=200)
 
 # Assertions ***************************************************************************************
 assertThrows(exceptions.assertionFailedEx, assertTrue(false))

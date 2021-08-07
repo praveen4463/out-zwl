@@ -3,13 +3,41 @@
 openUrl('http://localhost:3000/login')
 typeActive('admin@zylitics.io', keys.tab, 'Neptune23', keys.enter)
 assertTrue(untilTitleContains('Select a project'))
-*/
+
 openUrl('https://www.amazon.in/')
 # move mouse over 'Hello..' to let Sign-in button popup
 performAction(move(findElement('Hello, Sign in', by.text)))
 click(findElement('Sign in', by.text))
-typeActive('praveen@example.com', keys.enter)
+typeActive('praveen4463@gmail.com', keys.enter)
 typeActive('xx', keys.enter)
 click(findElement('Customer Service', by.text))
 # assert that we're into customer service page by validating heading
 assertTrue(exists(findElement('/^Hi, praveen. What can we help/', by.text)))
+
+
+openUrl('https://github.com/login')
+type(findElement('/^Username/', by.labelText), 'praveen4463')
+type(findElement('Password', by.labelText), 'Nturdjz#@')
+click(findElement('Sign in', by.text))
+sleep(2*1000)
+click(findElement('Homepage', by.ariaLabel))
+sleep(2*1000)
+
+click(findElement('Facebook icon', by.altText))
+sleep(5*1000)
+
+openUrl('https://github.com')
+type(findElement('/^Email/', by.placeholderText), 'praveen@zylitics.io')
+sleep(5*1000)
+
+openUrl('https://google.com')
+type(findElement('Search', by.title), 'Zylitics')
+sleep(5*1000)
+click(findElement('/lucky$/i', by.text))
+sleep(5*1000)
+*/
+openUrl('https://login.live.com/login.srf')
+next = findElement('Next', by.text)
+typeActive('foooo', keys.enter)
+click(next)
+sleep(5*1000)

@@ -1,21 +1,17 @@
 package com.zylitics.zwl.webdriver.functions.until;
 
 import com.zylitics.zwl.datatype.Types;
-import com.zylitics.zwl.util.CollectionUtil;
 import com.zylitics.zwl.webdriver.APICoreProperties;
 import com.zylitics.zwl.webdriver.BuildCapability;
 import com.zylitics.zwl.webdriver.TimeoutType;
 import com.zylitics.zwl.datatype.ListZwlValue;
-import com.zylitics.zwl.datatype.StringZwlValue;
 import com.zylitics.zwl.datatype.ZwlValue;
 import com.zylitics.zwl.webdriver.constants.FuncDefReturnValue;
-import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.RemoteWebElement;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.io.PrintStream;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -48,42 +44,14 @@ public class UntilAllSelectionsAre extends AbstractUntilExpectation {
       return evaluateDefValue(defaultValue);
     }
     
-    if (argsCount == 2) {
-      String s = tryCastString(1, args.get(1));
-      if (!isValidElemId(s)) {
-        // we've got multi element selector.
-        return withMultiSelector(s, selectionToBe);
-      }
-    }
+    List<ZwlValue> elementIds = args.subList(1, argsCount);
   
-    List<ZwlValue> elemIds = new ArrayList<>(CollectionUtil.getInitialCapacity(argsCount));
-    for (int i = 1; i < argsCount; i++) {
-      String s = tryCastString(i, args.get(i));
+    for (ZwlValue eId : elementIds) {
       WebDriverWait wait = getWait(TimeoutType.ELEMENT_ACCESS);
-      if (!isValidElemId(s)) {
-        wait.ignoring(StaleElementReferenceException.class);
-      }
-      elemIds.add(handleWDExceptions(() ->
-          new StringZwlValue(wait.until(d -> {
-            RemoteWebElement e = getElement(s, false);
-            return e.isSelected() == selectionToBe ? e.getId() : null;
-          }))));
+      handleWDExceptions(() -> wait.until(d ->
+          doSafeInteraction(eId, RemoteWebElement::isSelected) == selectionToBe));
     }
-    return new ListZwlValue(elemIds);
-  }
-  
-  private ZwlValue withMultiSelector(String s, Boolean selectionToBe) {
-    WebDriverWait wait = getWait(TimeoutType.ELEMENT_ACCESS);
-    wait.ignoring(StaleElementReferenceException.class);
-    return handleWDExceptions(() ->
-        wait.until(d -> {
-          List<RemoteWebElement> le = findElements(driver, s, false);
-          if (le.size() == 0) {
-            return null;
-          }
-          return le.stream().allMatch(e -> e.isSelected() == selectionToBe)
-              ? convertIntoZwlElemIds(le) : null;
-        }));
+    return new ListZwlValue(elementIds);
   }
   
   @Override

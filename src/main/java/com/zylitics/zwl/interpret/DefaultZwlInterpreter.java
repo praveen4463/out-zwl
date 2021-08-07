@@ -68,6 +68,7 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
     addReadOnlyVariable("by", new MapZwlValue(By.asMap()));
     addReadOnlyVariable("timeouts", new MapZwlValue(Timeouts.asMap()));
     addReadOnlyVariable("timeUnit", new MapZwlValue(Timeunit.asMap()));
+    addReadOnlyVariable("duration", new MapZwlValue(Duration.asMap()));
   }
   
   public void accept(ZwlInterpreterVisitor visitor) {

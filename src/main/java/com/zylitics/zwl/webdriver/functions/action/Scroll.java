@@ -7,6 +7,7 @@ import com.zylitics.zwl.webdriver.APICoreProperties;
 import com.zylitics.zwl.webdriver.BuildCapability;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.remote.RemoteWebElement;
 
 import java.io.PrintStream;
 import java.util.List;
@@ -62,7 +63,7 @@ public class Scroll extends AbstractWebdriverFunction {
       switch (args.size()) {
         case 1:
           driver.executeScript("arguments[0].scrollIntoView(true);",
-              getElement(tryCastString(0, args.get(0))));
+              getValidElement(args.get(0)));
           break;
         case 2:
           driver.executeScript(String.format("window.scrollBy(%d, %d)",
@@ -70,7 +71,7 @@ public class Scroll extends AbstractWebdriverFunction {
           break;
         case 3:
           // get element's position and add the offset into it before calling window.scroll
-          Point location = getElement(tryCastString(0, args.get(0))).getLocation();
+          Point location = doSafeInteraction(args.get(0), RemoteWebElement::getLocation);
           driver.executeScript(String.format("window.scroll(%d, %d)",
               parseDouble(1, args.get(1)).intValue() + location.x,
               parseDouble(2, args.get(2)).intValue() + location.y));

@@ -51,7 +51,7 @@ public class DblClick extends AbstractWebdriverFunction {
   
     Actions actions = new Actions(driver);
     return handleWDExceptions(() -> {
-      actions.doubleClick(getElement(tryCastString(0, args.get(0))));
+      waitUntilInteracted(args.get(0), actions::doubleClick);
       return _void;
     });
   }

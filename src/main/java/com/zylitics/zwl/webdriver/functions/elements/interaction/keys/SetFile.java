@@ -69,7 +69,6 @@ public class SetFile extends AbstractWebdriverFunction {
     if (args.size() != 2) {
       throw unexpectedEndOfFunctionOverload(args.size());
     }
-    RemoteWebElement element = getElement(tryCastString(0, args.get(0)));
     String fileOnCloud = args.get(1).toString();
     // don't cast to string, may be possible the file is named like 322323 with no extension and
     // user sent it that way.
@@ -78,7 +77,7 @@ public class SetFile extends AbstractWebdriverFunction {
             Collections.singleton(fileOnCloud), buildDir, lineNColumn, fromPos, toPos)
             .process().iterator().next();
     return handleWDExceptions(() -> {
-      element.sendKeys(localFilePathAfterDownload);
+      waitUntilInteracted(args.get(0), el -> el.sendKeys(localFilePathAfterDownload));
       return _void;
     });
   }

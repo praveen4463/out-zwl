@@ -8,7 +8,6 @@ import com.zylitics.zwl.webdriver.functions.AbstractWebdriverFunction;
 import com.zylitics.zwl.datatype.BooleanZwlValue;
 import com.zylitics.zwl.datatype.ZwlValue;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import org.openqa.selenium.remote.RemoteWebElement;
 
 import java.io.PrintStream;
 import java.util.List;
@@ -43,13 +42,12 @@ abstract class AbstractMultiElementState extends AbstractWebdriverFunction {
     }
     
     if (args.size() == 0) {
-      throw unexpectedEndOfFunctionOverload(args.size());
+      throw unexpectedEndOfFunctionOverload(0);
     }
-    return handleWDExceptions(() ->
-        new BooleanZwlValue(stateCheck(getElementsUnderstandingArgs(args))));
+    return handleWDExceptions(() -> new BooleanZwlValue(stateCheck(args)));
   }
   
-  protected abstract boolean stateCheck(List<RemoteWebElement> elements);
+  protected abstract boolean stateCheck(List<ZwlValue> elementIds);
   
   @Override
   protected ZwlValue getFuncDefReturnValue() {

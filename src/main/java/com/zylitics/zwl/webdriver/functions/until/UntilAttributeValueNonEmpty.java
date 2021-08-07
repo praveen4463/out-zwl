@@ -39,7 +39,6 @@ public class UntilAttributeValueNonEmpty extends AbstractUntilExpectation {
     if (args.size() != 2) {
       throw unexpectedEndOfFunctionOverload(args.size());
     }
-    String elemOrSelector = tryCastString(0, args.get(0));
     String attribute = tryCastString(1, args.get(1));
   
     if (buildCapability.isDryRunning()) {
@@ -47,17 +46,15 @@ public class UntilAttributeValueNonEmpty extends AbstractUntilExpectation {
     }
     
     WebDriverWait wait = getWait(TimeoutType.ELEMENT_ACCESS);
-    if (!isValidElemId(elemOrSelector)) {
-      // ignore stale exception default so that even if element goes stale intermittent we can
-      // locate it and match text/value.
-      wait.ignoring(StaleElementReferenceException.class);
-    }
     return handleWDExceptions(() ->
         new BooleanZwlValue(wait.until(d -> {
-          RemoteWebElement e = getElement(elemOrSelector, false);
-          String attributeValue = e.getAttribute(attribute);
+          String attributeValue = doSafeInteraction(args.get(0), el -> {
+            return el.getAttribute(attribute);
+          });
           if (Strings.isNullOrEmpty(attributeValue)) {
-            attributeValue = e.getCssValue(attribute);
+            attributeValue = doSafeInteraction(args.get(0), el -> {
+              return el.getCssValue(attribute);
+            });
           }
           return !Strings.isNullOrEmpty(attributeValue) && attributeValue.trim().length() > 0;
         })));

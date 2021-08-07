@@ -12,7 +12,6 @@ import com.zylitics.zwl.webdriver.constants.FuncDefReturnValue;
 import org.openqa.selenium.NoSuchFrameException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import org.openqa.selenium.remote.RemoteWebElement;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.io.PrintStream;

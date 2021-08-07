@@ -45,9 +45,9 @@ abstract class AbstractSelectDeselectBy extends AbstractWebdriverFunction {
     if (args.size() != 2) {
       throw unexpectedEndOfFunctionOverload(args.size());
     }
-    String elemIdOrSelector = tryCastString(0, args.get(0));
+    
     return handleWDExceptions(() -> {
-      Select select = new Select(getElement(elemIdOrSelector));
+      Select select = doSafeInteraction(args.get(0), Select::new);
       selectDeselect(select, args.get(1));
       return _void;
     });

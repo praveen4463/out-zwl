@@ -1,7 +1,5 @@
 package com.zylitics.zwl.webdriver.functions;
 
-import com.google.api.client.util.Preconditions;
-import com.google.cloud.Tuple;
 import com.zylitics.zwl.datatype.*;
 import com.zylitics.zwl.exception.InvalidTypeException;
 import com.zylitics.zwl.exception.ZwlLangException;
@@ -19,10 +17,13 @@ import org.openqa.selenium.remote.RemoteWebElement;
 import org.openqa.selenium.remote.UselessFileDetector;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import javax.annotation.Nullable;
 import java.io.PrintStream;
 import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.Callable;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -140,81 +141,105 @@ public abstract class AbstractWebdriverFunction extends AbstractFunction {
     }
   }
   
-  protected boolean isValidElemId(String elemId) {
-    return elemId
-        .matches("[a-zA-Z0-9]{8}-?[a-zA-Z0-9]{4}-?[a-zA-Z0-9]{4}-?[a-zA-Z0-9]{4}-?[a-zA-Z0-9]{12}");
-  }
-  
-  public RemoteWebElement getElement(String elemIdOrSelector) {
-    return getElement(elemIdOrSelector, true);
-  }
-  
   public BuildCapability getBuildCapability() {
     return buildCapability;
   }
   
-  protected RemoteWebElement getElement(String elemIdOrSelector,
-                                        boolean wait) {
-    if (isValidElemId(elemIdOrSelector)) {
-      return getWebElementUsingElemId(elemIdOrSelector);
+  protected boolean isValidElemInternalId(String elemInternalId) {
+    return elemInternalId
+        .matches("[a-zA-Z0-9]{8}-?[a-zA-Z0-9]{4}-?[a-zA-Z0-9]{4}-?[a-zA-Z0-9]{4}-?[a-zA-Z0-9]{12}");
+  }
+  
+  protected boolean isValidElementId(ZwlValue elementId) {
+    Optional<String> optionalStringElemId = elementId.getStringValue();
+    if (optionalStringElemId.isPresent()) {
+      return isValidElemInternalId(optionalStringElemId.get());
     }
-    return findElement(driver, elemIdOrSelector, wait);
-  }
-  
-  protected List<RemoteWebElement> getElements(List<String> elemIdsOrSelectors) {
-    return getElements(elemIdsOrSelectors, true);
-  }
-  
-  protected List<RemoteWebElement> getElements(List<String> elemIdsOrSelectors,
-                                               @SuppressWarnings("SameParameterValue") boolean wait) {
-    return elemIdsOrSelectors.stream().map(s ->
-        isValidElemId(s) ? getWebElementUsingElemId(s) : findElement(driver, s, wait))
-        .collect(Collectors.toList());
-  }
-  
-  /**
-   * Should be used by functions that expect more than one element. User can either send multiple
-   * elemIds or selectors or just one selector that is meant to fetch multiple elements. If
-   * succeeded, this method is guaranteed to return some element(s).
-   * @param args The raw arguments received by function.
-   * @return List of {@link RemoteWebElement}s
-   */
-  protected List<RemoteWebElement> getElementsUnderstandingArgs(List<ZwlValue> args) {
-    Preconditions.checkArgument(args.size() > 0, "Expected at least one argument");
-  
-    if (args.size() == 1) {
-      // we got only one argument, it may be an elemId, but if not we expect it multi element
-      // selector.
-      String s = tryCastString(0, args.get(0));
-      if (!isValidElemId(s)) {
-        return findElements(driver, s, true);
-        // can't return empty because the wait doesn't let 0 sized result.
-      }
+    Optional<Map<String, ZwlValue>> optionalMapElemId = elementId.getMapValue();
+    if (!optionalMapElemId.isPresent()) {
+      return false;
     }
-    // Following can't return empty list because each selector/elemId is evaluated separately,
-    // if a selector returns nothing, exception will be thrown
-    return getElements(args.stream().map(Objects::toString).collect(Collectors.toList()));
+    Map<String, ZwlValue> mapElemId = optionalMapElemId.get();
+    ZwlValue id = mapElemId.get("id");
+    if (id == null) {
+      return false;
+    }
+    optionalStringElemId = id.getStringValue();
+    return optionalStringElemId.filter(this::isValidElemInternalId).isPresent();
   }
   
-  protected RemoteWebElement getWebElementUsingElemId(String elemId) {
-    if (!isValidElemId(elemId)) {
-      throw new ZwlLangException(fromPos.get(), toPos.get(), withLineNCol("Given string " + elemId +
-          " is not a valid elemId"));
+  private RemoteWebElement buildWebElementUsingInternalId(String elemInternalId) {
+    if (!isValidElemInternalId(elemInternalId)) {
+      throw new ZwlLangException(fromPos.get(), toPos.get(), withLineNCol("Given string "
+          + elemInternalId + " is not a valid elementInternalId"));
     }
     RemoteWebElement element = new RemoteWebElement();
     element.setParent(driver);
-    element.setId(elemId);
+    element.setId(elemInternalId);
     element.setFileDetector(new UselessFileDetector());
     return element;
   }
   
-  protected RemoteWebElement findElement(SearchContext ctx, String cssSelector, boolean wait) {
-    return findElement(ctx, By.cssSelector(cssSelector), wait);
+  protected RemoteWebElement getWebElementUsingElemId(ZwlValue elemId) {
+    Optional<String> optionalStringElemId = elemId.getStringValue();
+    if (optionalStringElemId.isPresent()) {
+      return buildWebElementUsingInternalId(optionalStringElemId.get());
+    }
+    Optional<Map<String, ZwlValue>> optionalMapElemId = elemId.getMapValue();
+    if (!optionalMapElemId.isPresent()) {
+      throw new ZwlLangException(fromPos.get(), toPos.get(), withLineNCol("Given value: " + elemId +
+          " is not a valid elementId"));
+    }
+    Map<String, ZwlValue> mapElemId = optionalMapElemId.get();
+    return buildWebElementUsingInternalId(
+        mapElemId.get("id").getStringValue().orElseThrow(() ->
+            new IllegalArgumentException("element's 'id' property must be a String"))
+    );
   }
   
-  protected List<RemoteWebElement> findElements(SearchContext ctx, String cssSelector,
-                                                boolean wait) {
-    return findElements(ctx, By.cssSelector(cssSelector), wait);
+  protected RemoteWebElement renewOnStaleEx(ZwlValue elGoneStale,
+                                            StaleElementReferenceException staleEx) {
+    // When elGoneStale is not a map type elementId, we can't find it again because
+    // we don't know how was it found.
+    Map<String, ZwlValue> staledElementId = elGoneStale.getMapValue().orElseThrow(() -> staleEx);
+    String byType = staledElementId.get("byType").getStringValue().orElseThrow(() ->
+        new IllegalArgumentException("element's 'byType' property must be a String"));
+    String using = staledElementId.get("using").getStringValue().orElseThrow(() ->
+        new IllegalArgumentException("element's 'using' property must be a String"));
+    // when we are finding a staled element again, we will wait for it to become available,
+    // regardless of the originally provided 'wait' preference.
+    RemoteWebElement staledElementFoundAgain;
+    By staledElBy = getBy(ByType.valueOf(byType), using);
+    if (staledElementId.get("from") == null) {
+      staledElementFoundAgain = findElement(driver, staledElBy, true);
+    } else {
+      staledElementFoundAgain = findElement(staledElementId.get("from"), staledElBy, true);
+    }
+    // rewrite the stale id with fresh one so that future queries see the fresh id. I hate mutating
+    // things like this but it would be very tricky to find the variable that is holding this value
+    // and reassign it the new one.
+    staledElementId.put("id", new StringZwlValue(staledElementFoundAgain.getId()));
+    return staledElementFoundAgain;
+  }
+  
+  protected RemoteWebElement findElement(ZwlValue fromElement, By by, boolean wait) {
+    try {
+      return findElement(getWebElementUsingElemId(fromElement), by, wait);
+    } catch (StaleElementReferenceException staleEx) {
+      // fromElement contains stale reference.
+      RemoteWebElement staledElementFoundAgain = renewOnStaleEx(fromElement, staleEx);
+      return findElement(staledElementFoundAgain, by, wait);
+    }
+  }
+  
+  protected List<RemoteWebElement> findElements(ZwlValue fromElement, By by, boolean wait) {
+    try {
+      return findElements(getWebElementUsingElemId(fromElement), by, wait);
+    } catch (StaleElementReferenceException staleEx) {
+      // fromElement contains stale reference.
+      RemoteWebElement staledElementFoundAgain = renewOnStaleEx(fromElement, staleEx);
+      return findElements(staledElementFoundAgain, by, wait);
+    }
   }
   
   protected RemoteWebElement findElement(SearchContext ctx, By by, boolean wait) {
@@ -266,6 +291,11 @@ public abstract class AbstractWebdriverFunction extends AbstractFunction {
     return wait;
   }
   
+  // Generally the Id of an element will be a Map type containing everything we need to re query the
+  // element in DOM but sometimes we don't have by, using and other details. For instance, an element
+  // returned by a js script or an <option> element return by Select api functions. In those cases
+  // we won't be able to re query the element. These functions accepting just the element are here
+  // for that type of scenarios.
   protected ZwlValue convertIntoZwlElemId(RemoteWebElement remoteWebElement) {
     if (remoteWebElement == null) {
       return new NothingZwlValue();
@@ -279,6 +309,56 @@ public abstract class AbstractWebdriverFunction extends AbstractFunction {
     }
     return new ListZwlValue(remoteWebElements.stream()
         .map(this::convertIntoZwlElemId).collect(Collectors.toList()));
+  }
+  
+  private ZwlValue createZWLMapId(RemoteWebElement remoteWebElement,
+                                  @Nullable ZwlValue fromElement,
+                                  String using,
+                                  ByType byType) {
+    // Immutable map is not taken because we overwrite the id when the element goes stale.
+    Map<String, ZwlValue> elemId = new HashMap<>(CollectionUtil.getInitialCapacity(4));
+    elemId.put("id", new StringZwlValue(remoteWebElement.getId()));
+    if (fromElement != null) {
+      elemId.put("from", fromElement);
+    }
+    elemId.put("using", new StringZwlValue(using));
+    elemId.put("byType", new StringZwlValue(byType.toString()));
+    return new MapZwlValue(elemId);
+  }
+  
+  protected ZwlValue convertIntoZwlElemId(RemoteWebElement remoteWebElement,
+                                          String using,
+                                          ByType byType) {
+    if (remoteWebElement == null) {
+      return new NothingZwlValue();
+    }
+    return createZWLMapId(remoteWebElement, null, using, byType);
+  }
+  
+  protected ZwlValue convertIntoZwlElemId(RemoteWebElement remoteWebElement,
+                                          ZwlValue fromElement,
+                                          String using,
+                                          ByType byType) {
+    if (remoteWebElement == null) {
+      return new NothingZwlValue();
+    }
+    return createZWLMapId(remoteWebElement, fromElement, using, byType);
+  }
+  
+  protected ZwlValue convertIntoZwlElemIds(List<RemoteWebElement> remoteWebElements,
+                                           String using,
+                                           ByType byType) {
+    return new ListZwlValue(remoteWebElements.stream()
+        .map(el -> convertIntoZwlElemId(el, using, byType)).collect(Collectors.toList()));
+  }
+  
+  protected ZwlValue convertIntoZwlElemIds(List<RemoteWebElement> remoteWebElements,
+                                           ZwlValue fromElement,
+                                           String using,
+                                           ByType byType) {
+    return new ListZwlValue(remoteWebElements.stream()
+        .map(el -> convertIntoZwlElemId(el, fromElement, using, byType))
+        .collect(Collectors.toList()));
   }
   
   /**
@@ -332,23 +412,11 @@ public abstract class AbstractWebdriverFunction extends AbstractFunction {
   protected By getBy(ByType byType, String using) {
     By by;
     switch (byType) {
-      case ID:
-        by = By.id(using);
+      case ALT_TEXT:
+        by = new ByAltText(using);
         break;
-      case LINK_TEXT:
-        by = By.linkText(using);
-        break;
-      case PARTIAL_LINK_TEXT:
-        by = By.partialLinkText(using);
-        break;
-      case NAME:
-        by = By.name(using);
-        break;
-      case TAG_NAME:
-        by = By.tagName(using);
-        break;
-      case XPATH:
-        by = By.xpath(using);
+      case ARIA_LABEL:
+        by = new ByAriaLabel(using);
         break;
       case CLASS_NAME:
         by = By.className(using);
@@ -357,20 +425,41 @@ public abstract class AbstractWebdriverFunction extends AbstractFunction {
       default:
         by = By.cssSelector(using);
         break;
-      case TEXT:
-        by = new ByText(using);
+      case ID:
+        by = By.id(using);
         break;
-      case TEST_ID:
-        by = new ByTestId(using);
+      case LABEL_TEXT:
+        by = new ByLabelText(using);
+        break;
+      case LINK_TEXT:
+        by = By.linkText(using);
+        break;
+      case NAME:
+        by = By.name(using);
+        break;
+      case PARTIAL_LINK_TEXT:
+        by = By.partialLinkText(using);
+        break;
+      case PLACEHOLDER_TEXT:
+        by = new ByPlaceholderText(using);
         break;
       case ROLE:
         by = new ByRole(using);
         break;
-      case ARIA_LABEL:
-        by = new ByAriaLabel(using);
+      case TAG_NAME:
+        by = By.tagName(using);
+        break;
+      case TEST_ID:
+        by = new ByTestId(using);
+        break;
+      case TEXT:
+        by = new ByText(using);
         break;
       case TITLE:
         by = new ByTitle(using);
+        break;
+      case XPATH:
+        by = By.xpath(using);
         break;
     }
     return by;
@@ -406,62 +495,84 @@ public abstract class AbstractWebdriverFunction extends AbstractFunction {
             lineNColumn.get()));
   }
   
-  private Tuple<SearchContext, By> detectElementSearchArguments(List<ZwlValue> args) {
+  // Expected position of arguments: fromElement, using, by
+  @SuppressWarnings("SameParameterValue")
+  protected List<RemoteWebElement> findElementsDetectingArgs(List<ZwlValue> args, boolean wait) {
     int argsCount = args.size();
-    SearchContext ctx = driver;
-    String using;
-    ByType byType = null;
     switch (argsCount) {
       case 3:
-        ctx = getElement(tryCastString(0, args.get(0)));
-        using = tryCastString(1, args.get(1));
-        byType = parseEnum(2, args.get(2), ByType.class);
-        break;
+        return findElements(args.get(0),
+            getBy(parseEnum(2, args.get(2), ByType.class), tryCastString(1, args.get(1))), wait);
       case 2:
-        // Check whether last argument is a by, if so first must be using, otherwise first is elements,
-        // and second is using with by being default.
-        try {
-          byType = parseEnum(1, args.get(1), ByType.class);
-        } catch (InvalidTypeException ignore) { }
-        if (byType == null) {
-          byType = ByType.CSS_SELECTOR; // our default By is a css selector.
-          ctx = getElement(tryCastString(0, args.get(0)));
-          using = tryCastString(1, args.get(1));
-        } else {
-          using = tryCastString(0, args.get(0));
-        }
-        break;
-      case 1:
-        byType = ByType.CSS_SELECTOR;
-        using = tryCastString(0, args.get(0));
-        break;
+        return findElements(driver,
+            getBy(parseEnum(1, args.get(1), ByType.class), tryCastString(0, args.get(0))), wait);
       default:
-        // args count is checked in calling function, a RunTime exception is thrown only if the function
-        // doesn't mention correct max/min args count which is a bug.
         throw new RuntimeException("findElementsDetectingArgs got unexpected no of arguments: " +
             argsCount);
     }
-    return Tuple.of(ctx, getBy(byType, using));
   }
   
   // Expected position of arguments: fromElement, using, by
-  protected List<RemoteWebElement> findElementsDetectingArgs(List<ZwlValue> args, boolean wait) {
-    Tuple<SearchContext, By> searchArgs = detectElementSearchArguments(args);
-    return findElements(searchArgs.x(), searchArgs.y(), wait);
-  }
-  
-  // Expected position of arguments: fromElement, using, by
+  @SuppressWarnings("SameParameterValue")
   protected RemoteWebElement findElementDetectingArgs(List<ZwlValue> args, boolean wait) {
-    Tuple<SearchContext, By> searchArgs = detectElementSearchArguments(args);
-    return findElement(searchArgs.x(), searchArgs.y(), wait);
+    int argsCount = args.size();
+    switch (argsCount) {
+      case 3:
+        return findElement(args.get(0),
+            getBy(parseEnum(2, args.get(2), ByType.class), tryCastString(1, args.get(1))), wait);
+      case 2:
+        return findElement(driver,
+            getBy(parseEnum(1, args.get(1), ByType.class), tryCastString(0, args.get(0))), wait);
+      default:
+        throw new RuntimeException("findElementDetectingArgs got unexpected no of arguments: " +
+            argsCount);
+    }
   }
   
-  protected void waitUntilTyped(WebElement e, CharSequence... keys) {
+  private void doSafeInteraction0()
+  
+  public void doSafeInteraction(ZwlValue elementId, Consumer<RemoteWebElement> interaction) {
     WebDriverWait wait = getWait(TimeoutType.ELEMENT_ACCESS,
-        "waiting for element to become typeable");
+        "waiting for element to render after staling");
+    wait.until(d -> {
+      RemoteWebElement el = getWebElementUsingElemId(elementId);
+      try {
+        interaction.accept(el);
+        return true;
+      } catch (StaleElementReferenceException staleEx) {
+        el = renewOnStaleEx(elementId, staleEx);
+        System.out.println("el after stale " + elementId);
+        interaction.accept(el);
+      }
+    });
+  }
+  
+  public <R> R doSafeInteraction(ZwlValue elementId, Function<RemoteWebElement, R> interaction) {
+    RemoteWebElement el = getWebElementUsingElemId(elementId);
+    try {
+      return interaction.apply(el);
+    } catch (StaleElementReferenceException staleEx) {
+      el = renewOnStaleEx(elementId, staleEx);
+      return interaction.apply(el);
+    }
+  }
+  
+  protected RemoteWebElement getValidElement(ZwlValue elementId) {
+    RemoteWebElement el = getWebElementUsingElemId(elementId);
+    try {
+      el.isEnabled();
+    } catch (StaleElementReferenceException staleEx) {
+      el = renewOnStaleEx(elementId, staleEx);
+    }
+    return el;
+  }
+  
+  public void waitUntilInteracted(ZwlValue elementId, Consumer<RemoteWebElement> interaction) {
+    WebDriverWait wait = getWait(TimeoutType.ELEMENT_ACCESS,
+        "waiting for element to become intractable");
     wait.until(d -> {
       try {
-        e.sendKeys(keys);
+        doSafeInteraction(elementId, interaction);
         return true;
       } catch (InvalidElementStateException ie) {
         return false;

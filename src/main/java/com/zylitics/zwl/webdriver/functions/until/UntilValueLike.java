@@ -1,6 +1,7 @@
 package com.zylitics.zwl.webdriver.functions.until;
 
 import com.google.common.base.Strings;
+import com.zylitics.zwl.datatype.ZwlValue;
 import com.zylitics.zwl.webdriver.APICoreProperties;
 import com.zylitics.zwl.webdriver.BuildCapability;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -23,8 +24,10 @@ public class UntilValueLike extends AbstractTextValue {
   }
   
   @Override
-  boolean desiredState(RemoteWebElement element, String textOrValue) {
-    String value = element.getAttribute("value");
+  boolean desiredState(ZwlValue elementId, String textOrValue) {
+    String value = doSafeInteraction(elementId, el -> {
+      return el.getAttribute("value");
+    });
     return !Strings.isNullOrEmpty(value) && getPattern(textOrValue).matcher(value).find();
   }
 }

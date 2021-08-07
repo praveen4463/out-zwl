@@ -33,7 +33,6 @@ abstract class AbstractAttribute extends AbstractUntilExpectation {
     if (args.size() != 3) {
       throw unexpectedEndOfFunctionOverload(args.size());
     }
-    String elemOrSelector = tryCastString(0, args.get(0));
     String attribute = tryCastString(1, args.get(1));
     String value = tryCastString(2, args.get(2));
     
@@ -42,19 +41,11 @@ abstract class AbstractAttribute extends AbstractUntilExpectation {
     }
     
     WebDriverWait wait = getWait(TimeoutType.ELEMENT_ACCESS);
-    if (!isValidElemId(elemOrSelector)) {
-      // ignore stale exception default so that even if element goes stale intermittent we can
-      // locate it and match text/value.
-      wait.ignoring(StaleElementReferenceException.class);
-    }
     return handleWDExceptions(() ->
-        new BooleanZwlValue(wait.until(d -> {
-          RemoteWebElement e = getElement(elemOrSelector, false);
-          return desiredState(e, attribute, value);
-        })));
+        new BooleanZwlValue(wait.until(d -> desiredState(args.get(0), attribute, value))));
   }
   
-  abstract boolean desiredState(RemoteWebElement element, String attribute, String value);
+  abstract boolean desiredState(ZwlValue elementId, String attribute, String value);
   
   @Override
   protected ZwlValue getFuncDefReturnValue() {

@@ -1,10 +1,12 @@
 package com.zylitics.zwl.webdriver.functions.until;
 
 import com.google.common.base.Strings;
+import com.zylitics.zwl.datatype.ZwlValue;
 import com.zylitics.zwl.webdriver.APICoreProperties;
 import com.zylitics.zwl.webdriver.BuildCapability;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.RemoteWebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import java.io.PrintStream;
 
@@ -23,10 +25,14 @@ public class UntilAttributeValueLike extends AbstractAttribute {
   }
   
   @Override
-  boolean desiredState(RemoteWebElement element, String attribute, String value) {
-    String attributeValue = element.getAttribute(attribute);
+  boolean desiredState(ZwlValue elementId, String attribute, String value) {
+    String attributeValue = doSafeInteraction(elementId, el -> {
+      return el.getAttribute(attribute);
+    });
     if (Strings.isNullOrEmpty(attributeValue)) {
-      attributeValue = element.getCssValue(attribute);
+      attributeValue = doSafeInteraction(elementId, el -> {
+        return el.getCssValue(attribute);
+      });
     }
     return !Strings.isNullOrEmpty(attributeValue)
         && getPattern(value).matcher(attributeValue).find();

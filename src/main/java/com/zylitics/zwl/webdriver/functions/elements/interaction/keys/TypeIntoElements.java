@@ -6,10 +6,12 @@ import com.zylitics.zwl.webdriver.BuildCapability;
 import com.zylitics.zwl.webdriver.functions.AbstractWebdriverFunction;
 import com.zylitics.zwl.datatype.ZwlValue;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.remote.RemoteWebElement;
 
 import java.io.PrintStream;
 import java.util.List;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public class TypeIntoElements extends AbstractWebdriverFunction {
   
@@ -50,8 +52,7 @@ public class TypeIntoElements extends AbstractWebdriverFunction {
     }
     String text = args.get(0).toString();
     return handleWDExceptions(() -> {
-      getElementsUnderstandingArgs(args.subList(1, argsCount)).forEach(e ->
-          waitUntilTyped(e, text));
+      args.subList(1, argsCount).forEach(eId -> waitUntilInteracted(eId, el -> el.sendKeys(text)));
       return _void;
     });
   }

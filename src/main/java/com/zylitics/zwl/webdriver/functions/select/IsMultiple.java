@@ -48,11 +48,11 @@ public class IsMultiple extends AbstractWebdriverFunction {
     }
     
     if (args.size() == 0) {
-      throw unexpectedEndOfFunctionOverload(args.size());
+      throw unexpectedEndOfFunctionOverload(0);
     }
-    String elemIdOrSelector = tryCastString(0, args.get(0));
+    
     return new BooleanZwlValue(handleWDExceptions(() ->
-        new Select(getElement(elemIdOrSelector)).isMultiple()));
+        doSafeInteraction(args.get(0), Select::new).isMultiple()));
   }
   
   @Override

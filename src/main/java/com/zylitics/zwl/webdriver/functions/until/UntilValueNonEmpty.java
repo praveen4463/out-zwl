@@ -23,9 +23,10 @@ public class UntilValueNonEmpty extends AbstractTextValueNonEmpty {
     return "untilValueNonEmpty";
   }
   
-  @Override
-  String textOrValue(RemoteWebElement element) {
-    return element.getAttribute("value");
+  String textOrValue(ZwlValue elementId) {
+    return doSafeInteraction(elementId, el -> {
+      return el.getAttribute("value");
+    });
   }
   
   @Override

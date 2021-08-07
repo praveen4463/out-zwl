@@ -1,16 +1,11 @@
 package com.zylitics.zwl.webdriver.locators;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.SearchContext;
-import org.openqa.selenium.WebElement;
-
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-public class ByAriaLabel extends By implements Serializable {
+public class ByAriaLabel extends AbstractByUsingJs implements Serializable {
   
   private static final long serialVersionUID = 1333358463696707572L;
   private final String ariaLabel;
@@ -24,18 +19,28 @@ public class ByAriaLabel extends By implements Serializable {
   }
   
   @Override
-  public WebElement findElement(SearchContext context) {
-    return By.cssSelector("*[aria-label='" + ariaLabel + "']").findElement(context);
+  protected String noSuchElementEx() {
+    return String.format("Cannot locate an element with aria-label=%s.", ariaLabel);
   }
   
   @Override
-  public List<WebElement> findElements(SearchContext context) {
-    return By.cssSelector("*[aria-label='" + ariaLabel + "']").findElements(context);
+  protected String stringToSearch() {
+    return ariaLabel;
+  }
+  
+  @Override
+  protected String funcName() {
+    return "findAllByAriaLabel";
+  }
+  
+  @Override
+  protected String fileName() {
+    return "findElementsByAriaLabel.min.js";
   }
   
   @Override
   public String toString() {
-    return "By.aria-label: " + ariaLabel;
+    return "By.ariaLabel: " + ariaLabel;
   }
   
   @SuppressWarnings("unused")

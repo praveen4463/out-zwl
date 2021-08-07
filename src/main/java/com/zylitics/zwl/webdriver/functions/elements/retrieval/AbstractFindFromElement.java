@@ -71,13 +71,12 @@ abstract class AbstractFindFromElement extends AbstractWebdriverFunction {
         default:
           byType = ByType.CSS_SELECTOR;  // our default By is a css selector.
       }
-      return find(getElement(tryCastString(0, args.get(0)), !noWait),
+      return find(args.get(0),
           tryCastString(1, args.get(1)),
           byType,
           !noWait);
     });
   }
   
-  protected abstract ZwlValue find(RemoteWebElement element, String using, ByType byType,
-                                   boolean wait);
+  protected abstract ZwlValue find(ZwlValue fromElement, String using, ByType byType, boolean wait);
 }

@@ -38,7 +38,7 @@ public class UntilStale extends AbstractUntilExpectation {
     if (args.size() != 1) {
       throw unexpectedEndOfFunctionOverload(args.size());
     }
-    RemoteWebElement e = getWebElementUsingElemId(tryCastString(0, args.get(0)));
+    RemoteWebElement e = getWebElementUsingElemId(args.get(0));
   
     if (buildCapability.isDryRunning()) {
       return evaluateDefValue(defaultValue);

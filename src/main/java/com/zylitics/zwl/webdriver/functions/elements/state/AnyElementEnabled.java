@@ -1,5 +1,6 @@
 package com.zylitics.zwl.webdriver.functions.elements.state;
 
+import com.zylitics.zwl.datatype.ZwlValue;
 import com.zylitics.zwl.webdriver.APICoreProperties;
 import com.zylitics.zwl.webdriver.BuildCapability;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -23,7 +24,8 @@ public class AnyElementEnabled extends AbstractMultiElementState {
   }
   
   @Override
-  protected boolean stateCheck(List<RemoteWebElement> elements) {
-    return elements.stream().anyMatch(RemoteWebElement::isEnabled);
+  protected boolean stateCheck(List<ZwlValue> elementIds) {
+    return elementIds.stream()
+        .anyMatch(eId -> doSafeInteraction(eId, RemoteWebElement::isEnabled));
   }
 }

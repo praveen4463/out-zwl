@@ -27,6 +27,8 @@ public class Uuid extends AbstractFunction {
   @Override
   public ZwlValue invoke(List<ZwlValue> args, Supplier<ZwlValue> defaultValue,
                          Supplier<String> lineNColumn) {
+    super.invoke(args, defaultValue, lineNColumn);
+    
     return new StringZwlValue(java.util.UUID.randomUUID().toString());
   }
 }

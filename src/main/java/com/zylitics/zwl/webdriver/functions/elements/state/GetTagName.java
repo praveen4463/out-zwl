@@ -24,8 +24,8 @@ public class GetTagName extends AbstractElementProperty {
   }
   
   @Override
-  protected String getProperty(RemoteWebElement element) {
-    return element.getTagName();
+  protected String getProperty(ZwlValue elementId) {
+    return doSafeInteraction(elementId, RemoteWebElement::getTagName);
   }
   
   @Override
