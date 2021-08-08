@@ -223,22 +223,34 @@ public abstract class AbstractWebdriverFunction extends AbstractFunction {
   }
   
   protected RemoteWebElement findElement(ZwlValue fromElement, By by, boolean wait) {
+    WebDriverWait waitAccess = getWait(TimeoutType.ELEMENT_ACCESS,
+        "waiting for element to render after staling");
+    return waitAccess.until(d -> findElement0(fromElement, by, wait));
+  }
+  
+  private RemoteWebElement findElement0(ZwlValue fromElement, By by, boolean wait) {
     try {
       return findElement(getWebElementUsingElemId(fromElement), by, wait);
     } catch (StaleElementReferenceException staleEx) {
       // fromElement contains stale reference.
-      RemoteWebElement staledElementFoundAgain = renewOnStaleEx(fromElement, staleEx);
-      return findElement(staledElementFoundAgain, by, wait);
+      renewOnStaleEx(fromElement, staleEx);
+      return null;
     }
   }
   
   protected List<RemoteWebElement> findElements(ZwlValue fromElement, By by, boolean wait) {
+    WebDriverWait waitAccess = getWait(TimeoutType.ELEMENT_ACCESS,
+        "waiting for element to render after staling");
+    return waitAccess.until(d -> findElements0(fromElement, by, wait));
+  }
+  
+  private List<RemoteWebElement> findElements0(ZwlValue fromElement, By by, boolean wait) {
     try {
       return findElements(getWebElementUsingElemId(fromElement), by, wait);
     } catch (StaleElementReferenceException staleEx) {
       // fromElement contains stale reference.
-      RemoteWebElement staledElementFoundAgain = renewOnStaleEx(fromElement, staleEx);
-      return findElements(staledElementFoundAgain, by, wait);
+      renewOnStaleEx(fromElement, staleEx);
+      return null;
     }
   }
   
@@ -529,31 +541,36 @@ public abstract class AbstractWebdriverFunction extends AbstractFunction {
     }
   }
   
-  private void doSafeInteraction0()
-  
   public void doSafeInteraction(ZwlValue elementId, Consumer<RemoteWebElement> interaction) {
     WebDriverWait wait = getWait(TimeoutType.ELEMENT_ACCESS,
         "waiting for element to render after staling");
-    wait.until(d -> {
-      RemoteWebElement el = getWebElementUsingElemId(elementId);
-      try {
-        interaction.accept(el);
-        return true;
-      } catch (StaleElementReferenceException staleEx) {
-        el = renewOnStaleEx(elementId, staleEx);
-        System.out.println("el after stale " + elementId);
-        interaction.accept(el);
-      }
-    });
+    wait.until(d -> doSafeInteraction0(elementId, interaction));
+  }
+  
+  private boolean doSafeInteraction0(ZwlValue elementId, Consumer<RemoteWebElement> interaction) {
+    RemoteWebElement el = getWebElementUsingElemId(elementId);
+    try {
+      interaction.accept(el);
+      return true;
+    } catch (StaleElementReferenceException staleEx) {
+      renewOnStaleEx(elementId, staleEx);
+      return false;
+    }
   }
   
   public <R> R doSafeInteraction(ZwlValue elementId, Function<RemoteWebElement, R> interaction) {
+    WebDriverWait wait = getWait(TimeoutType.ELEMENT_ACCESS,
+        "waiting for element to render after staling");
+    return wait.until(d -> doSafeInteraction0(elementId, interaction));
+  }
+  
+  private <R> R doSafeInteraction0(ZwlValue elementId, Function<RemoteWebElement, R> interaction) {
     RemoteWebElement el = getWebElementUsingElemId(elementId);
     try {
       return interaction.apply(el);
     } catch (StaleElementReferenceException staleEx) {
-      el = renewOnStaleEx(elementId, staleEx);
-      return interaction.apply(el);
+      renewOnStaleEx(elementId, staleEx);
+      return null;
     }
   }
   

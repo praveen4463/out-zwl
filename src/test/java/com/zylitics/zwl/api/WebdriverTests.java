@@ -418,9 +418,9 @@ public class WebdriverTests {
   private APICoreProperties.Webdriver getDefaultWDProps() {
     APICoreProperties.Webdriver wd = new APICoreProperties.Webdriver();
     wd.setUserDataBucket(USER_DATA_BUCKET);
-    wd.setDefaultTimeoutElementAccess(30_000);
-    wd.setDefaultTimeoutPageLoad(60_000);
-    wd.setDefaultTimeoutScript(30_000);
+    wd.setDefaultTimeoutElementAccess(5_000);
+    wd.setDefaultTimeoutPageLoad(30_000);
+    wd.setDefaultTimeoutScript(10_000);
     wd.setDefaultTimeoutNewWindow(10_000);
     wd.setElementShotDir(ELEMENT_SHOT_DIR);
     return wd;

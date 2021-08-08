@@ -111,4 +111,4 @@ Enhancements
    clearActive, findElementsWithSelectors, findElementWithSelectors, typeUsingMap, untilAllRemoved.
    
 Bug fixes
-1. We were not handling StaleEx at all and there was no way to handle them too. 
+1. We were not handling StaleEx at all and there was no way to handle them too.

@@ -14,7 +14,6 @@ click(findElement('Customer Service', by.text))
 # assert that we're into customer service page by validating heading
 assertTrue(exists(findElement('/^Hi, praveen. What can we help/', by.text)))
 
-
 openUrl('https://github.com/login')
 type(findElement('/^Username/', by.labelText), 'praveen4463')
 type(findElement('Password', by.labelText), 'Nturdjz#@')
@@ -32,12 +31,12 @@ sleep(5*1000)
 
 openUrl('https://google.com')
 type(findElement('Search', by.title), 'Zylitics')
-sleep(5*1000)
 click(findElement('/lucky$/i', by.text))
 sleep(5*1000)
-*/
+
 openUrl('https://login.live.com/login.srf')
 next = findElement('Next', by.text)
 typeActive('foooo', keys.enter)
 click(next)
 sleep(5*1000)
+*/
