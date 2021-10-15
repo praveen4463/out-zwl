@@ -119,3 +119,9 @@ Minor Enhancements
 
 1. Send a custom and understandable message back to user when their code has frozen
    the browser.
+
+## v0.6.2
+
+Minor Enhancements
+
+1. Added callTest function
