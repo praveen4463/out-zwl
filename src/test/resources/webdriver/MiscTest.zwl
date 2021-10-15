@@ -39,4 +39,24 @@ next = findElement('Next', by.text)
 typeActive('foooo', keys.enter)
 click(next)
 sleep(5*1000)
+
+openUrl('https://github.com/login')
+type(findElement('/^Username/', by.labelText), 'praveen4463')
+type(findElement('Password', by.labelText), 'Nturdjz#@')
+click(findElement('Sign in', by.text))
+sleep(2*1000)
+click(findElement('Homepage', by.ariaLabel))
+sleep(2*1000)
+
+openUrl('https://zylitics.io/login')
+# type(findElement('email', by.name), 'demo@zylitics.io', keys.tab, globals.ZL_DEMO_ACC_PWD)
+type(findElement('Email', by.linkText), 'demo@zylitics.io')
+type(findElement('Password', by.linkText), globals.ZL_DEMO_ACC_PWD)
+click(findElement('/^sign in$/i', by.text))
+assertTrue(exists(findElement('/project/i', by.text)))
+sleep(5*1000)
+
+
+openUrl('http://about.zylitics.io/contact/')
+print(getElementText(findElement('/(\\w|.)+@[a-z0-9]+.[a-z]+/', by.text, false)))
 */

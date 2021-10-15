@@ -112,3 +112,10 @@ Enhancements
    
 Bug fixes
 1. We were not handling StaleEx at all and there was no way to handle them too.
+
+## v0.6.1
+
+Minor Enhancements
+
+1. Send a custom and understandable message back to user when their code has frozen
+   the browser.

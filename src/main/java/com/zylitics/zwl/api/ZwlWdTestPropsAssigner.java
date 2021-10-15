@@ -53,8 +53,8 @@ class ZwlWdTestPropsAssigner {
     
     // instantiate WebDriverFunctions and assign
     WebdriverFunctions wdFunc = new WebdriverFunctions(wdProps, buildCapability, props.getDriver(),
-        props.getPrintStream(), props.getStorage(), props.getUserUploadsCloudPath(),
-        props.getBuildDir());
+        props.getPrintStream(), props.getCallTestHandler(), props.getStorage(),
+        props.getUserUploadsCloudPath(), props.getBuildDir());
     interpreter.addFunctions(wdFunc.get());
     
     // add readonly variables

@@ -29,6 +29,7 @@ import com.zylitics.zwl.webdriver.functions.timeout.SetElementAccessTimeout;
 import com.zylitics.zwl.webdriver.functions.timeout.SetPageLoadTimeout;
 import com.zylitics.zwl.webdriver.functions.timeout.SetScriptTimeout;
 import com.zylitics.zwl.webdriver.functions.until.*;
+import com.zylitics.zwl.webdriver.functions.util.CallTest;
 import com.zylitics.zwl.webdriver.functions.util.IsValidElemId;
 import com.zylitics.zwl.webdriver.functions.util.Sleep;
 import com.zylitics.zwl.interpret.Function;
@@ -37,6 +38,7 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import java.io.PrintStream;
 import java.nio.file.Path;
 import java.util.Set;
+import java.util.function.Consumer;
 
 /**
  * These are the webdriver functions applicable to all user agents and are as per the specs, if any
@@ -55,6 +57,8 @@ public class WebdriverFunctions {
   
   private final PrintStream printStream;
   
+  private final Consumer<String> callTestHandler;
+  
   private final Storage storage;
   
   private final String userUploadsCloudPath;
@@ -65,6 +69,7 @@ public class WebdriverFunctions {
                             BuildCapability buildCapability,
                             RemoteWebDriver driver,
                             PrintStream printStream,
+                            Consumer<String> callTestHandler,
                             Storage storage,
                             String userUploadsCloudPath,
                             Path buildDir) {
@@ -72,6 +77,7 @@ public class WebdriverFunctions {
     this.buildCapability = buildCapability;
     this.driver = driver;
     this.printStream = printStream;
+    this.callTestHandler = callTestHandler;
     this.storage = storage;
     this.userUploadsCloudPath = userUploadsCloudPath;
     this.buildDir = buildDir;
@@ -89,6 +95,7 @@ public class WebdriverFunctions {
     this.buildCapability = buildCapability;
     this.driver = null;
     this.printStream = printStream;
+    this.callTestHandler = null;
     this.storage = null;
     this.userUploadsCloudPath = null;
     this.buildDir = null;
@@ -280,7 +287,8 @@ public class WebdriverFunctions {
         new UntilVisible(wdProps, buildCapability, driver, printStream),
         // util
         new Sleep(wdProps, buildCapability, driver, printStream),
-        new IsValidElemId(wdProps, buildCapability, driver, printStream)
+        new IsValidElemId(wdProps, buildCapability, driver, printStream),
+        new CallTest(wdProps, buildCapability, driver, printStream, callTestHandler)
     );
     return builder.build();
   }

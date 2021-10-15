@@ -7,12 +7,15 @@ import javax.annotation.Nullable;
 import java.io.PrintStream;
 import java.nio.file.Path;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public interface ZwlWdTestProperties {
   
   RemoteWebDriver getDriver();
   
   PrintStream getPrintStream();
+  
+  Consumer<String> getCallTestHandler();
   
   Storage getStorage();
   

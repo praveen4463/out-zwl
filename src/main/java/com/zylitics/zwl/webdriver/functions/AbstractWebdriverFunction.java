@@ -14,6 +14,7 @@ import com.zylitics.zwl.webdriver.locators.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.RemoteWebElement;
+import org.openqa.selenium.remote.UnreachableBrowserException;
 import org.openqa.selenium.remote.UselessFileDetector;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -109,14 +110,62 @@ public abstract class AbstractWebdriverFunction extends AbstractFunction {
     printStream.println(withLineNCol(text));
   }
   
+  /*
+   Sometimes when something provided by test can't properly run in the browser, it goes into an
+   infinite wait, causing halt in driver > browser and in turn selenium > driver. I'm implementing
+   a few things so that users aren't getting cryptic errors such as 'Error communicating with the remote browser.'
+   or 'Supplied function might have stalled' that are thrown from RemoteWebDriver and FluentWait
+   respectively.
+   
+   Script and page load timeouts are defined at webdriver level. If current command uses a script to
+   work or a url is being loaded, driver uses these timeouts and bail out if they expire. Upon timeout
+   expire, driver server that is listening on some port, shuts down.
+   
+   Selenium uses Netty to connect to driver server and have a read timeout of 60 seconds which
+   means if it doesn't get a response to one of the commands within that time, a netty timeout
+   occurs.
+   
+   When a command is run using explicit wait, it usually check on the driver to see the status of the
+   command result. But when driver has shut down (due to bad commands running infinitely in server),
+   the first check waits for a response. This wait is ended only when the give wait timeout is reached.
+   This cases java.util.concurrent.TimeoutException and selenium returns 'Supplied function might have stalled'
+   message to user which is really cryptic.
+   
+   On the other hand, if the wait timeout is larger than or equal to the netty read timeout, exception
+   is relayed to RemoteWebDriver.execute which in turn throws a UnreachableBrowserException (assuming
+   that the driver server has shut down) that is also cryptic for user.
+   
+   When some command like openUrl runs, that uses timeout at webdriver level, and the timeout is more
+   than netty timeout, a UnreachableBrowserException exception first occurs and thrown. If its lesser,
+   test waits for receiving a response from selenium which is waiting for driver, and waits until
+   netty timeout before throwing error.
+   
+   When driver server shuts down and you attempt to interact with it, selenium waits until netty
+   timeout before throwing UnreachableBrowserException exception.
+   
+   We're checking in this function, if one of those errors are throw, convert them to a generic
+   error that is more understandable and related to a timeout so that users can know current command
+   has something wrong as it's taking more time to finish.
+   
+   TODO: We've to fix problems that cause these errors. Look at our scripts and find out why text
+    finding doesn't work with pattern like '/(\\w|.)+@[a-z0-9]+.[a-z]+/ and why openUrl hands with
+    some of localhost and ngrok urls.
+    Also keep a watch on these errors.
+   */
   public <V> V handleWDExceptions(Callable<V> code) {
     try {
       return code.call();
     } catch (ZwlLangException z) {
       throw z;
     } catch (WebDriverException wdEx) {
+      WebDriverException modifiedEx = wdEx;
+      if (wdEx instanceof UnreachableBrowserException || (wdEx.getMessage() != null
+          && wdEx.getMessage().contains("stalled") && wdEx instanceof TimeoutException)) {
+        String message = String.format("A timeout has occurred while executing '%s'.", getName());
+        modifiedEx = new WebDriverException(message, wdEx.getCause()); // np if cause is null
+      }
       // wrap webdriver exceptions and throw.
-      throw new ZwlLangException(fromPos.get(), toPos.get(), lineNColumn.get(), wdEx);
+      throw new ZwlLangException(fromPos.get(), toPos.get(), lineNColumn.get(), modifiedEx);
     } catch (Exception ex) {
       throw new RuntimeException(ex);
     }

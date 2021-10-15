@@ -46,6 +46,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.*;
+import java.util.function.Consumer;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -479,6 +480,11 @@ public class WebdriverTests {
       @Override
       public PrintStream getPrintStream() {
         return printStream;
+      }
+  
+      @Override
+      public Consumer<String> getCallTestHandler() {
+        return null;
       }
   
       @Override
