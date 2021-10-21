@@ -1,6 +1,7 @@
 package com.zylitics.zwl.webdriver.functions.util;
 
 import com.zylitics.zwl.datatype.Types;
+import com.zylitics.zwl.exception.EvalException;
 import com.zylitics.zwl.webdriver.APICoreProperties;
 import com.zylitics.zwl.webdriver.BuildCapability;
 import com.zylitics.zwl.webdriver.functions.AbstractWebdriverFunction;
@@ -53,10 +54,15 @@ public class CallTest extends AbstractWebdriverFunction {
     if (args.size() == 0) {
       throw unexpectedEndOfFunctionOverload(0);
     }
-  
-    callTestHandler.accept(args.get(0).toString());
     
-    return _void;
+    try {
+      callTestHandler.accept(args.get(0).toString());
+      return _void;
+    } catch (IllegalArgumentException i) {
+      // only handle IllegalArgumentException that may only be thrown during validation of current
+      // function.
+      throw new EvalException(fromPos.get(), toPos.get(), withLineNCol(i.getMessage()));
+    }
   }
   
   @Override
