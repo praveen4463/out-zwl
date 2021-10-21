@@ -125,3 +125,9 @@ Minor Enhancements
 Minor Enhancements
 
 1. Added callTest function
+
+## v0.6.3
+
+### Bug fixes:
+
+1. Fixed callTest function to handle file related error properly.
