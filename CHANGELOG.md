@@ -131,3 +131,9 @@ Minor Enhancements
 ### Bug fixes:
 
 1. Fixed callTest function to handle file related error properly.
+
+## v0.6.4
+
+Minor Enhancements
+
+1. Added `deviceWidth` and `breakpoints` readonlyvar to support mobile emulation.
