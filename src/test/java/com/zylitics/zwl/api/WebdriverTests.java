@@ -556,6 +556,11 @@ public class WebdriverTests {
           }
   
           @Override
+          public String getMeDeviceResolution() {
+            return null;
+          }
+  
+          @Override
           public Integer getCustomTimeoutElementAccess() {
             return buildCapability.getWdTimeoutsElementAccess();
           }
@@ -593,6 +598,11 @@ public class WebdriverTests {
             return new ZwlMainAppGlobals().get();
           }
         };
+      }
+  
+      @Override
+      public String getVMResolution() {
+        return "800x600";
       }
     };
   }

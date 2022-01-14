@@ -1,7 +1,9 @@
 package com.zylitics.zwl.api;
 
+import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
+import com.zylitics.zwl.datatype.DoubleZwlValue;
 import com.zylitics.zwl.datatype.MapZwlValue;
 import com.zylitics.zwl.datatype.StringZwlValue;
 import com.zylitics.zwl.datatype.ZwlValue;
@@ -9,6 +11,7 @@ import com.zylitics.zwl.interpret.DefaultZwlInterpreter;
 import com.zylitics.zwl.webdriver.constants.Browsers;
 
 import javax.annotation.Nullable;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -41,6 +44,20 @@ class ReadOnlyVariablesAssigner {
       return;
     }
     interpreter.addReadOnlyVariable("platform", new StringZwlValue(platform));
+  }
+  
+  void assignDeviceDimension(String vmResolution, @Nullable String meDeviceResolution) {
+    // This is very important to note that meDeviceResolution is what we need as device dimension
+    // if it's available, else it's vm's dimension.
+    String effectiveResolution = meDeviceResolution != null ? meDeviceResolution : vmResolution;
+    List<String> dims =
+        Splitter.on('x').omitEmptyStrings().splitToList(effectiveResolution);
+    if (dims.size() != 2) {
+      throw new RuntimeException("Unexpected device dimensions " + effectiveResolution);
+    }
+  
+    interpreter.addReadOnlyVariable("deviceWidth",
+        new DoubleZwlValue(Double.parseDouble(dims.get(0))));
   }
   
   void assignBuildVariables(@Nullable Map<String, String> buildVariables) {

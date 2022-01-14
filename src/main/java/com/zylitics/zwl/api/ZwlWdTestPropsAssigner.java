@@ -46,6 +46,7 @@ class ZwlWdTestPropsAssigner {
         .setWdBrowserName(capabilities.getBrowserName())
         .setWdBrowserVersion(capabilities.getBrowserVersion())
         .setWdPlatformName(capabilities.getPlatformName())
+        .setWdMeDeviceResolution(capabilities.getMeDeviceResolution())
         .setWdTimeoutsElementAccess(capabilities.getCustomTimeoutElementAccess())
         .setWdTimeoutsPageLoad(capabilities.getCustomTimeoutPageLoad())
         .setWdTimeoutsScript(capabilities.getCustomTimeoutScript())
@@ -61,6 +62,7 @@ class ZwlWdTestPropsAssigner {
     ReadOnlyVariablesAssigner rva = new ReadOnlyVariablesAssigner(interpreter);
     rva.assignBrowser(buildCapability.getWdBrowserName(), buildCapability.getWdBrowserVersion());
     rva.assignPlatform(buildCapability.getWdPlatformName());
+    rva.assignDeviceDimension(props.getVMResolution(), buildCapability.getWdMeDeviceResolution());
     ZwlWdTestProperties.Variables variables = props.getVariables();
     rva.assignBuildVariables(variables.getBuildVariables());
     rva.assignPreferences(variables.getPreferences());

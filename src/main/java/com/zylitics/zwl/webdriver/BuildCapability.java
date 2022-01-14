@@ -11,6 +11,8 @@ public class BuildCapability {
   
   private String wdPlatformName;
   
+  private String wdMeDeviceResolution;
+  
   private int wdTimeoutsScript;
   
   private int wdTimeoutsPageLoad;
@@ -48,6 +50,17 @@ public class BuildCapability {
   public BuildCapability setWdPlatformName(String wdPlatformName) {
     if (this.wdPlatformName == null) {
       this.wdPlatformName = wdPlatformName;
+    }
+    return this;
+  }
+  
+  public String getWdMeDeviceResolution() {
+    return wdMeDeviceResolution;
+  }
+  
+  public BuildCapability setWdMeDeviceResolution(String wdMeDeviceResolution) {
+    if (this.wdMeDeviceResolution == null) {
+      this.wdMeDeviceResolution = wdMeDeviceResolution;
     }
     return this;
   }

@@ -29,6 +29,8 @@ public interface ZwlWdTestProperties {
   
   Variables getVariables();
   
+  String getVMResolution();
+  
   interface Defaults {
     
     String getUserDataBucket();
@@ -51,6 +53,8 @@ public interface ZwlWdTestProperties {
     String getBrowserVersion();
   
     String getPlatformName();
+    
+    String getMeDeviceResolution();
   
     Integer getCustomTimeoutElementAccess();
   
