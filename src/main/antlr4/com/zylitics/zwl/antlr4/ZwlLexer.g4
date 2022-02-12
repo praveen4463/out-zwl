@@ -10,6 +10,9 @@ TO : 'to';
 ASSERT_THROWS : 'assertThrows';
 ASSERT_DOES_NOT_THROW : 'assertDoesNotThrow';
 EXISTS: 'exists';
+TRY: 'try';
+CATCH: 'catch';
+FINALLY: 'finally';
 
 // Separators
 LBRACE : '{';

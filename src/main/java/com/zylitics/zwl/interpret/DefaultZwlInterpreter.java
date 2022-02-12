@@ -281,6 +281,36 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
   }
   
   @Override
+  public ZwlValue visitTryStatement(TryStatementContext ctx) {
+    try {
+      visit(ctx.block(0));
+    } catch (Throwable t) {
+      String id = null;
+      if (ctx.Identifier() != null) {
+        TerminalNode idNode = ctx.Identifier();
+        id = idNode.getText();
+        if (vars.exists(id)) {
+          throw new EvalException(getFromPos(idNode), getToPos(idNode),
+              String.format("Variable %s in 'catch' statement is already assigned in outer scope%s",
+                  id, lineNColumn(idNode)));
+        }
+        String errorMsg = t.getMessage() == null ? "" : t.getMessage();
+        vars.assign(id, new StringZwlValue(errorMsg));
+      }
+      visit(ctx.block(1));
+      // remove the identifier once the catch block is executed
+      if (id != null && vars.exists(id)) {
+        vars.delete(id);
+      }
+    } finally {
+      if (ctx.finallyBlock() != null) {
+        visit(ctx.finallyBlock().block());
+      }
+    }
+    return _void;
+  }
+  
+  @Override
   public ZwlValue visitIfStatement(IfStatementContext ctx) {
     // report new line change only where the condition is met.
     if (parseBooleanExpr(ctx.ifBlock().expression())) {

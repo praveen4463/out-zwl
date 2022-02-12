@@ -23,6 +23,7 @@ mapKey
 statement
   : assignment
   | functionInvocation
+  | tryStatement
   | ifStatement
   | forStatement
   | whileStatement
@@ -52,6 +53,14 @@ defaultVal
 // will complete. In every step, once a dot is given an Identifer (and optional index) is required.
 identifierExpr
   : Identifier indexes? ( DOT identifierExpr )?
+  ;
+
+tryStatement
+  : TRY block CATCH ( LPAREN Identifier RPAREN )? block finallyBlock?
+  ;
+
+finallyBlock
+  : FINALLY block
   ;
 
 ifStatement

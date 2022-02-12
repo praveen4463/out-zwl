@@ -126,3 +126,16 @@ b = {
   "2gh.jh#id": "praveen"
 }
 assertTrue(b["2gh.jh#id"] == "praveen")
+
+try {
+  print('hi this is try')
+  a = [1]
+  #print(a[1])
+} catch (ex) {
+  printF('Exception is %s', ex)
+} finally {
+  print('I ran all the time')
+}
+
+ex = 'assigned again and fine'
+print(ex)

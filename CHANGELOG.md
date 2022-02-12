@@ -137,3 +137,9 @@ Minor Enhancements
 Minor Enhancements
 
 1. Added `deviceWidth` and `breakpoints` readonlyvar to support mobile emulation.
+
+## v0.6.5
+
+Decent Enhancements
+
+1. Added `try-catch-finally`.
