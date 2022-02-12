@@ -284,7 +284,7 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
   public ZwlValue visitTryStatement(TryStatementContext ctx) {
     try {
       visit(ctx.block(0));
-    } catch (Throwable t) {
+    } catch (ZwlLangException t) {
       String id = null;
       if (ctx.Identifier() != null) {
         TerminalNode idNode = ctx.Identifier();

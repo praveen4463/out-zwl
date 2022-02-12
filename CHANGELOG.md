@@ -143,3 +143,9 @@ Minor Enhancements
 Decent Enhancements
 
 1. Added `try-catch-finally`.
+
+## v0.6.6
+
+Patch
+
+1. Catching only `ZwlLangException` in `try-catch-finally`.
