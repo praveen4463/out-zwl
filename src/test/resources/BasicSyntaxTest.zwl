@@ -127,15 +127,47 @@ b = {
 }
 assertTrue(b["2gh.jh#id"] == "praveen")
 
+# try-catch ****************************************************************
+
+errorThrownAndCaught = false
+finallyRan = false
+exMsg = ''
 try {
-  print('hi this is try')
+  print('this is try')
   a = [1]
-  #print(a[1])
+  print(a[1]) # should throw error
 } catch (ex) {
+  errorThrownAndCaught = true
   printF('Exception is %s', ex)
+  exMsg = ex
 } finally {
+  finallyRan = true
   print('I ran all the time')
 }
 
+assertTrue(errorThrownAndCaught, "Looks like try catch didn't catch the error")
+assertTrue(finallyRan, "Looks like try catch's finally didn't work")
+assertTrue(nonEmpty(exMsg), "try catch's exception message is empty")
+
+finallyRan = false
+try {
+  print('try with just finally')
+} finally {
+  finallyRan = true
+  print('in finally of try with just finally')
+}
+
+assertTrue(finallyRan, "Looks like try catch's finally didn't work")
+
+catchRan = false
+try {
+  print('try with no finally and no ex var')
+} catch {
+  catchRan = true
+  print('in catch of try with just finally')
+}
+assertTrue(finallyRan, "Looks like try catch's catch didn't work")
+
+# Make sure the ex variable can be re-assigned
 ex = 'assigned again and fine'
 print(ex)

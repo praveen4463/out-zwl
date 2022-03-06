@@ -56,7 +56,13 @@ identifierExpr
   ;
 
 tryStatement
-  : TRY block CATCH ( LPAREN Identifier RPAREN )? block finallyBlock?
+  : TRY block catchBlock
+  | TRY block finallyBlock
+  | TRY block catchBlock finallyBlock
+  ;
+
+catchBlock
+  : CATCH ( LPAREN Identifier RPAREN )? block
   ;
 
 finallyBlock

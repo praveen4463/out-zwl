@@ -132,6 +132,20 @@ t = '2021-05-06T16:28:49.454Z'
 assertEqual('2021-06-06T16:28:49.454Z', dateAdd(t, duration.months, 1))
 assertEqual('2021-06-01T16:28:49.454Z', dateAdd(t, duration.days, 26))
 
+# dateIsBefore
+tBefore = dateAdd(t, duration.months, -1)
+tAfter = dateAdd(t, duration.months, 1)
+assertTrue(dateIsBefore(t, tAfter))
+assertTrue(dateIsAfter(t, tBefore))
+
+# withLastDayOfMonth
+month = formatDate(t, 'MM')
+# make sure the date has the month we're assuming in this test, so that we can assert on a fixed day of month
+assertEqual(5, month)
+tToLastDayOfMonthDate = withLastDayOfMonth(t)
+day = formatDate(tToLastDayOfMonthDate, 'dd')
+assertEqual(31, day) # for may
+
 # Numeric ******************************************************************************************
 
 # abs

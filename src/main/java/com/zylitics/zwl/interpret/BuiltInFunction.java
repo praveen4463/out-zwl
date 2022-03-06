@@ -52,6 +52,9 @@ public final class BuiltInFunction {
         new Instant(),
         new Elapsed(),
         new DateAdd(),
+        new DateIsBefore(),
+        new DateIsAfter(),
+        new WithLastDayOfMonth(),
     
         // Debugging
         new Print(),
@@ -63,6 +66,7 @@ public final class BuiltInFunction {
         new Floor(),
         new Max(),
         new Min(),
+        new ParseNum(),
         
         // String
         new ContainsString(),

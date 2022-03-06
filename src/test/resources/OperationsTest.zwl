@@ -22,6 +22,7 @@ assert(1 + 999 == 1000)
 assert(2 - -2 == 4)
 assert(-1 + 1 == 0)
 assert(1 - 50 == -49)
+assertEqual(33, parseNum('11') + parseNum('22'))
 
 # multiply
 assert(3 * 50 == 150)

@@ -45,6 +45,8 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
   private final Set<Function> functions;
   
   private final List<InterpreterLineChangeListener> lineChangeListeners = new ArrayList<>();
+  private final ExceptionTranslationProvider exceptionTranslationProvider =
+      new ExceptionTranslationProvider();
   
   private int currentLineInProgram = 0;
   
@@ -283,24 +285,27 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
   @Override
   public ZwlValue visitTryStatement(TryStatementContext ctx) {
     try {
-      visit(ctx.block(0));
+      visit(ctx.block());
     } catch (ZwlLangException t) {
-      String id = null;
-      if (ctx.Identifier() != null) {
-        TerminalNode idNode = ctx.Identifier();
-        id = idNode.getText();
-        if (vars.exists(id)) {
-          throw new EvalException(getFromPos(idNode), getToPos(idNode),
-              String.format("Variable %s in 'catch' statement is already assigned in outer scope%s",
-                  id, lineNColumn(idNode)));
+      if (ctx.catchBlock() != null) {
+        CatchBlockContext catchBlockContext = ctx.catchBlock();
+        LOG.error(t.getMessage(), t);
+        String id = null;
+        if (catchBlockContext.Identifier() != null) {
+          TerminalNode idNode = catchBlockContext.Identifier();
+          id = idNode.getText();
+          if (vars.exists(id)) {
+            throw new EvalException(getFromPos(idNode), getToPos(idNode),
+                String.format("Variable %s in 'catch' statement is already assigned in outer scope%s",
+                    id, lineNColumn(idNode)));
+          }
+          vars.assign(id, new StringZwlValue(exceptionTranslationProvider.get(t)));
         }
-        String errorMsg = t.getMessage() == null ? "" : t.getMessage();
-        vars.assign(id, new StringZwlValue(errorMsg));
-      }
-      visit(ctx.block(1));
-      // remove the identifier once the catch block is executed
-      if (id != null && vars.exists(id)) {
-        vars.delete(id);
+        visit(catchBlockContext.block());
+        // remove the identifier once the catch block is executed
+        if (id != null && vars.exists(id)) {
+          vars.delete(id);
+        }
       }
     } finally {
       if (ctx.finallyBlock() != null) {
