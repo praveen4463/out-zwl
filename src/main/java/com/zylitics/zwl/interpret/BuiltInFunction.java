@@ -69,6 +69,8 @@ public final class BuiltInFunction {
         new ParseNum(),
         
         // String
+        new CompareTo(),
+        new CompareToIgnoreCase(),
         new ContainsString(),
         new EndsWith(),
         new EqualsIgnoreCase(),

@@ -188,6 +188,13 @@ assertThrows(exceptions.assertionFailedEx, assertFalse(true))
 
 # String *******************************************************************************************
 
+# compareTo
+assertTrue(compareTo("4502 N Ivy St", "4504 N Holly St") < 0)
+assertTrue(compareTo("v1.20.3 NEW 300", "Test Design Element 1") > 0)
+assertTrue(compareTo("Small Cell Cluster - 1", "Prairie City, OR - Bonita, OR[B]") > 0)
+assertTrue(compareTo("N Holly St", "N Holly St") == 0)
+assertTrue(compareToIgnoreCase("n Holly St", "N Holly St") == 0)
+
 # containsString
 assertTrue(containsString("hi there", "there"))
 assertFalse(containsString("hi there", "hii"))

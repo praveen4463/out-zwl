@@ -160,3 +160,9 @@ Patch
 ### Enhancements
 
 1. Added `dateIsAfter`, `dateIsBefore`, `withLastDayOfMonth`, `parseNum`.
+
+## v0.6.8
+
+### Enhancements
+
+1. Added `compareTo`, `compareToIgnoreCase`
