@@ -150,12 +150,16 @@ assertTrue(finallyRan, "Looks like try catch's finally didn't work")
 assertTrue(nonEmpty(exMsg), "try catch's exception message is empty")
 
 finallyRan = false
-try {
-  print('try with just finally')
-} finally {
-  finallyRan = true
-  print('in finally of try with just finally')
-}
+# When not catched, exception is thrown
+assertThrows(exceptions.assertionFailedEx, {
+  try {
+    print('try with just finally')
+    assertTrue(false)
+  } finally {
+    finallyRan = true
+    print('in finally of try with just finally')
+  }
+})
 
 assertTrue(finallyRan, "Looks like try catch's finally didn't work")
 

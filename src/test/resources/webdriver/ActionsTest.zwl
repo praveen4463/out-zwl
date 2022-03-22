@@ -117,18 +117,11 @@ performAction(
   move(400, 170),
   release()
 )
-/*
-# Following doesn't work, example like https://jsfiddle.net/tabalinas/drp1cgar/8/ doesn't
-# work as well.
+
 #openUrl("https://jsfiddle.net/praveen4463/ex05Lgpz/")
 openUrl(staticSitePrefix + "drag_drop_c.html")
-switchFrame("iframe[name='result']")
-performAction(
-  move("#draggable"),
-  hold(),
-  move(".dropzone:nth-of-type(4)"),
-  release()
-)*/
+switchFrame(findElement("iframe[name='result']", by.cssSelector))
+dragAndDrop(findElement("draggable", by.id), findElement(".dropzone:nth-of-type(4)", by.cssSelector))
 
 # PERFORM_ACTION KEYS-------------------------------------------------------------------------------
 # send keys to elements with some key down using performAction

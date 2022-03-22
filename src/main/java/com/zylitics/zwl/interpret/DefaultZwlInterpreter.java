@@ -306,6 +306,9 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
         if (id != null && vars.exists(id)) {
           vars.delete(id);
         }
+      } else {
+        // when not catched, throw the exception
+        throw t;
       }
     } finally {
       if (ctx.finallyBlock() != null) {

@@ -166,3 +166,10 @@ Patch
 ### Enhancements
 
 1. Added `compareTo`, `compareToIgnoreCase`
+
+## v0.6.9
+
+### Bug fixes:
+
+1. Fixed `dragAndDrop` so it works with HTML5 dnd.
+2. Fixed `try-finally` problem. The exception wasn't thrown when `catch` was omitted.  
