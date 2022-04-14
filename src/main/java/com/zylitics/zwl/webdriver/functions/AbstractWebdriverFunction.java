@@ -148,7 +148,7 @@ public abstract class AbstractWebdriverFunction extends AbstractFunction {
    has something wrong as it's taking more time to finish.
    
    TODO: We've to fix problems that cause these errors. Look at our scripts and find out why text
-    finding doesn't work with pattern like '/(\\w|.)+@[a-z0-9]+.[a-z]+/ and why openUrl hands with
+    finding doesn't work with pattern like '/(\\w|.)+@[a-z0-9]+.[a-z]+/ and why openUrl hangs with
     some of localhost and ngrok urls.
     Also keep a watch on these errors.
    */
@@ -610,16 +610,23 @@ public abstract class AbstractWebdriverFunction extends AbstractFunction {
   public <R> R doSafeInteraction(ZwlValue elementId, Function<RemoteWebElement, R> interaction) {
     WebDriverWait wait = getWait(TimeoutType.ELEMENT_ACCESS,
         "waiting for element to render after staling");
-    return wait.until(d -> doSafeInteraction0(elementId, interaction));
+    return wait.until(d -> doSafeInteraction0(elementId, interaction)).orElse(null);
   }
   
-  private <R> R doSafeInteraction0(ZwlValue elementId, Function<RemoteWebElement, R> interaction) {
+  private <R> Optional<R> doSafeInteraction0(ZwlValue elementId,
+                                             Function<RemoteWebElement, R> interaction) {
     RemoteWebElement el = getWebElementUsingElemId(elementId);
     try {
-      return interaction.apply(el);
+      // Don't return the result of 'interaction' as-is because this method is executed within a
+      // WebDriver wait, which will retry the interaction if a 'false' or 'null' value is returned.
+      // The 'interaction' can always return a false or null value and the caller must get that
+      // actual value.
+      // Keep the return value in an optional, and return an empty Optional if there was no value (i.e null).
+      return Optional.ofNullable(interaction.apply(el));
     } catch (StaleElementReferenceException staleEx) {
       renewOnStaleEx(elementId, staleEx);
-      return null;
+      //noinspection OptionalAssignedToNull
+      return null; // Return a null so that the 'interaction' is retried.
     }
   }
   

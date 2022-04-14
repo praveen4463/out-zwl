@@ -41,17 +41,35 @@ public class Join extends AbstractFunction {
     super.invoke(args, defaultValue, lineNColumn);
     int argsCount = args.size();
   
-    if (argsCount >= 2) {
-      String separator = tryCastString(0, args.get(0));
-      List<ZwlValue> strings = args.subList(1, argsCount);
-      return new StringZwlValue(join(separator,
-          strings.stream().map(Objects::toString).collect(Collectors.toList())));
+    if (argsCount < 2) {
+      throw unexpectedEndOfFunctionOverload(argsCount);
     }
   
-    throw unexpectedEndOfFunctionOverload(argsCount);
+    String separator = tryCastString(0, args.get(0));
+    List<ZwlValue> strings;
+    
+    if (argsCount == 2 && args.get(1).getListValue().isPresent()) {
+      strings = args.get(1).getListValue().get();
+    } else {
+      strings = args.subList(1, argsCount);
+    }
+    
+    String result;
+    if (strings.size() == 0) {
+      result = "";
+    } else {
+      result = join(separator,
+          strings.stream().map(Objects::toString).collect(Collectors.toList()));
+    }
+    return new StringZwlValue(result);
   }
   
   private String join(String separator, List<String> strings) {
     return String.join(separator, strings);
+  }
+  
+  @Override
+  protected boolean doNotExpandListToArguments() {
+    return true;
   }
 }

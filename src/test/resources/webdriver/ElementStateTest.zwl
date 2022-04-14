@@ -3,10 +3,10 @@ staticSitePrefix = staticSite.urlPrefix
 # enabled/displayed/selected
 #openUrl("https://jsfiddle.net/praveen4463/0afkonjd/")
 openUrl(staticSitePrefix + "selectable_elements_c.html")
-switchFrame("iframe[name='result']")
-chk1 = findElement("#chk1")
-chk2 = findElement("#chk2")
-chk3 = findElement("#chk3")
+switchFrame(findElement("iframe[name='result']", by.cssSelector))
+chk1 = findElement("#chk1", by.cssSelector)
+chk2 = findElement("#chk2", by.cssSelector)
+chk3 = findElement("#chk3", by.cssSelector)
 all = [chk1, chk2, chk3]
 
 # all are displayed
@@ -85,10 +85,10 @@ assertFalse(allElementsSelected(all))
 assertTrue(anyElementSelected(all))
 
 #---------------------------------------------------------------------------------------------------
-assertTrue(elementExists("#chk1"))
+assertTrue(elementExists("#chk1", by.cssSelector))
 assertFalse(isStale(chk1))
 executeScript("document.body.removeChild(arguments[0])", chk1)
-assertFalse(elementExists("#chk1"))
+assertFalse(elementExists("#chk1", by.cssSelector))
 assertTrue(isStale(chk1))
 
 assertTrue(getTagName(chk2) == "input")

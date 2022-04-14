@@ -39,4 +39,9 @@ public class PutIn extends AbstractFunction {
     map.put(key, args.get(2));
     return _void;
   }
+  
+  @Override
+  protected boolean doNotExpandListToArguments() {
+    return true;
+  }
 }

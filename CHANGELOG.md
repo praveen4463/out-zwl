@@ -172,4 +172,19 @@ Patch
 ### Bug fixes:
 
 1. Fixed `dragAndDrop` so it works with HTML5 dnd.
-2. Fixed `try-finally` problem. The exception wasn't thrown when `catch` was omitted.  
+2. Fixed `try-finally` problem. The exception wasn't thrown when `catch` was omitted.
+
+## v0.6.10
+
+### Bug fixes:
+
+1. Fixed warning in `addTo` for list expand. Added `doNotExpandListToArgs` for a fix.
+2. Fixed `putIn` problem where if a `list` was passed, it converted into args wrongly.
+3. Fixed `join` so that an empty list can be passed.
+4. Fixed `randomFromRange` so that it won't throw exception if the number is greater than max int.
+5. Fixed `dragAndDrop` so that it doesn't try to refresh element's state if invalid. This is done
+   because the updated function don't use webdriver but js.
+6. Fixed `select` related functions and kept them inside error handling block that was before missing.
+7. Fixed problem in stale element refresh process so that the interaction wouldn't return it's result
+   as-is but keep that in an `Optional` so that the process doesn't wait if one of the interaction
+   result in `false` or `null`.

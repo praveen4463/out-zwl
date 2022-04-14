@@ -5,7 +5,7 @@ staticSitePrefix = staticSite.urlPrefix
 # scroll to element
 openUrl("https://developer.mozilla.org/en-US/docs/Web/API/Document/drag_event")
 viewportHeight = executeScript("return window.innerHeight;")
-frame = findElement("#frame_Examples")
+frame = findElement("#frame_examples", by.cssSelector)
 rectBefore = getElementRect(frame)
 scroll(frame)
 rectAfter = getElementViewportCoordinates(frame, false)
@@ -18,9 +18,9 @@ assertTrue(rectBefore.y > viewportHeight && rectAfter.y <= 1)
 # previously not in viewport.
 openUrl("https://developer.mozilla.org/en-US/docs/Web/API/Document/drag_event")
 viewportHeight = executeScript("return window.innerHeight;")
-frame = findElement("#frame_Examples")
+frame = findElement("#frame_examples", by.cssSelector)
 frameRect = getElementRect(frame)
-specs = findElement("#Specifications")
+specs = findElement("#specifications", by.cssSelector)
 specsRectBefore = getElementRect(specs)
 offsetY = specsRectBefore.y - frameRect.y
 scroll(frame, 0, offsetY)
@@ -37,9 +37,9 @@ assertTrue(getElementViewportCoordinates(frame, false).y <= 1)
 # under the hood
 #openUrl("https://jsfiddle.net/praveen4463/w0eg4azx/")
 openUrl(staticSitePrefix + "long_scroll_c.html")
-switchFrame("iframe[name='result']")
+switchFrame(findElement("iframe[name='result']", by.cssSelector))
 viewportHeight = executeScript("return window.innerHeight;")
-button = findElement("input")
+button = findElement("input", by.cssSelector)
 buttonRectBefore = getElementRect(button)
 scroll(button)
 buttonRectAfter = getElementViewportCoordinates(button, false)
@@ -48,10 +48,10 @@ assertTrue(buttonRectBefore.y > viewportHeight && buttonRectAfter.y <= 1)
 # DRAG AND DROP, PERFORM_ACTION POINTER MOVE/CLICK-------------------------------------------------
 # drag and drop, only one that works in chrome/ff both.
 openUrl("http://demo.guru99.com/test/drag_drop.html")
-dragAndDrop("#credit2", "#bank")
+dragAndDrop(findElement("credit2", by.id), findElement("bank", by.id))
 if browser.name != "IE" {
   # this works only when requireWindowFocus is true and currently we may not use it as it has issues in elem.sendKeys.
-  assertTrue(getElementText(findElement("#bank > li")) == "BANK")
+  assertTrue(getElementText(findElement("#bank > li", by.cssSelector)) == "BANK")
 }
 
 # drag and drop using performAction
@@ -66,14 +66,16 @@ openUrl("https://jqueryui.com/draggable/#sortable")
 # We can't use some new function like untilNotStale or untilEnabled because this element is on
 # both content and as it's found and is intractable, these will return true. The only reliable way
 # i found is to wait for the text since it is different in both contents.
-untilTextContains("div.demo-description > p", "seamlessly with sortables")
-switchFrame("iframe[src='/resources/demos/draggable/sortable.html']")
+untilTextContains(findElement("div.demo-description > p", by.cssSelector)
+  , "seamlessly with sortables")
+switchFrame(findElement("iframe[src='/resources/demos/draggable/sortable.html']", by.cssSelector))
+switchFrame(findElement("iframe[src='/resources/demos/draggable/sortable.html']", by.cssSelector))
 
-draggable = findElement("li#draggable") # safe to find now.
+draggable = findElement("li#draggable", by.cssSelector) # safe to find now.
 performAction(
   move(draggable),
   hold(),
-  move("#sortable > .ui-state-default:nth-of-type(2)", 0, -15),
+  move(findElement("#sortable > .ui-state-default:nth-of-type(2)", by.cssSelector), 0, -15),
   release()
 )
 
@@ -83,36 +85,36 @@ performAction(
 # for drivers later.
 #openUrl("https://jsfiddle.net/praveen4463/w63xLyu7/")
 openUrl(staticSitePrefix + "mouse_move_click_c.html")
-switchFrame("iframe[name='result']")
+switchFrame(findElement("iframe[name='result']", by.cssSelector))
 performAction(
-  move(".div1"),
+  move(findElement(".div1", by.cssSelector)),
   clickOnce(),
-  move(".div2"),
+  move(findElement(".div2", by.cssSelector)),
   clickOnce(),
-  move(".div3"),
+  move(findElement(".div3", by.cssSelector)),
   clickOnce(),
-  move(".div4"),
+  move(findElement(".div4", by.cssSelector)),
   clickOnce()
 )
 #openUrl("https://jsfiddle.net/praveen4463/qfxkoc39/")mouse_down_then_up
 openUrl(staticSitePrefix + "mouse_down_then_up_c.html")
-switchFrame("iframe[name='result']")
+switchFrame(findElement("iframe[name='result']", by.cssSelector))
 performAction(
-  move(".div1"),
+  move(findElement(".div1", by.cssSelector)),
   hold(),
-  move(".div2"),
+  move(findElement(".div2", by.cssSelector)),
   release(),
-  move(".div3"),
+  move(findElement(".div3", by.cssSelector)),
   hold(),
-  move(".div4"),
+  move(findElement(".div4", by.cssSelector)),
   release()
 )
 
 # A simple type of drop that works, no assert just for the eyes
 openUrl("https://jqueryui.com/draggable/#default")
-switchFrame(".demo-frame")
+switchFrame(findElement(".demo-frame", by.cssSelector))
 performAction(
-  move("#draggable"),
+  move(findElement("#draggable", by.cssSelector)),
   hold(),
   move(400, 170),
   release()
@@ -127,8 +129,8 @@ dragAndDrop(findElement("draggable", by.id), findElement(".dropzone:nth-of-type(
 # send keys to elements with some key down using performAction
 #openUrl("https://jsfiddle.net/praveen4463/hsotm4xb/")
 openUrl(staticSitePrefix + "content_editable_c.html")
-switchFrame("iframe[name='result']")
-div1 = findElement(".div1")
+switchFrame(findElement("iframe[name='result']", by.cssSelector))
+div1 = findElement(".div1", by.cssSelector)
 performAction(
   focus(div1),
   shiftDown(),

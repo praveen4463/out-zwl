@@ -2,9 +2,9 @@
 staticSitePrefix = staticSite.urlPrefix
 #openUrl("https://jsfiddle.net/praveen4463/wpb65c49/")
 openUrl(staticSitePrefix + "select_list_c.html")
-switchFrame("iframe[name='result']")
-multi = findElement("select[name='multi']")
-single = findElement("select[name='single']")
+switchFrame(findElement("iframe[name='result']", by.cssSelector))
+multi = findElement("select[name='multi']", by.cssSelector)
+single = findElement("select[name='single']", by.cssSelector)
 
 assertTrue(isMultiple(multi))
 assertTrue(size(getOptions(multi)) == 10)

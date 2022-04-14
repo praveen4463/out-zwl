@@ -35,12 +35,19 @@ public class RandomFromRange extends AbstractFunction {
     if (argsCount == 0) {
       throw unexpectedEndOfFunctionOverload(argsCount);
     }
-    
-    int low = parseDouble(0, args.get(0)).intValue();
-    int high = parseDouble(1, args.get(1)).intValue();
-    if (high < low) {
+  
+    Double dLow = parseDouble(0, args.get(0));
+    Double dHigh = parseDouble(1, args.get(1));
+    if (dLow > Integer.MAX_VALUE || dHigh > Integer.MAX_VALUE) {
       throw new EvalException(fromPos.get(), toPos.get(),
-          withLineNCol("Given range is invalid, it must be low to high"));
+          withLineNCol(getName() + " works with integers only. The max acceptable number is " +
+              Integer.MAX_VALUE));
+    }
+    int low = dLow.intValue();
+    int high = dHigh.intValue();
+    if (high <= low) {
+      throw new EvalException(fromPos.get(), toPos.get(),
+          withLineNCol("Given range is invalid, it must be low to high and not equal"));
     }
     return new DoubleZwlValue(new Random().nextInt(high - low) + low);
   }

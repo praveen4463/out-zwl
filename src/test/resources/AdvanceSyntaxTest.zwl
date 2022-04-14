@@ -37,6 +37,16 @@ assertTrue(mixed_map.name + " lives " + mixed_map.address == "praveen lives some
 
 assertTrue(mixed_map.hobbies[1] == "exercising", "mixed_map's array couldn't be accessed: " + mixed_map.hobbies[1])
 
+# Try adding an element to hobbies list
+hobbiesSize = length(mixed_map.hobbies)
+addTo(mixed_map.hobbies, "singing")
+assertEqual(hobbiesSize + 1, length(mixed_map.hobbies), "Couldn't add to the 'list in a map'")
+
+# Try adding a list to mixed_map
+putIn(mixed_map, 'num_list', [])
+addTo(mixed_map.num_list, 1)
+assertEqual(1, length(mixed_map.num_list), "Couldn't add to the 'new list in a map'")
+
 assertTrue(mixed_map.relatives.pet == "bond", "mixed_map's map couldn't be accessed")
 
 arr = [1, 2, 3, 6, 7]

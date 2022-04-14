@@ -51,8 +51,11 @@ public class GetFirstSelectedOption extends AbstractWebdriverFunction {
     if (args.size() == 0) {
       throw unexpectedEndOfFunctionOverload(0);
     }
-    WebElement option = doSafeInteraction(args.get(0), Select::new).getFirstSelectedOption();
-    return convertIntoZwlElemId((RemoteWebElement) option);
+    
+    return handleWDExceptions(() -> {
+      WebElement option = doSafeInteraction(args.get(0), Select::new).getFirstSelectedOption();
+      return convertIntoZwlElemId((RemoteWebElement) option);
+    });
   }
   
   @Override

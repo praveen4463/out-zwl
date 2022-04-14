@@ -67,19 +67,10 @@ public class DragAndDrop extends AbstractWebdriverFunction {
         // and get the new element.
         RemoteWebElement el1 = getValidElement(args.get(0));
         RemoteWebElement el2 = getValidElement(args.get(1));
-        WebDriverWait wait = getWait(TimeoutType.ELEMENT_ACCESS,
-            "waiting for element to become intractable");
-        wait.until(d -> {
-          try {
-            driver.executeScript(
-                String.format("%s\ndragAndDrop(arguments[0], arguments[1]);",
-                    getAtom()),
-                el1, el2);
-            return true;
-          } catch (InvalidElementStateException ie) {
-            return false;
-          }
-        });
+        driver.executeScript(
+            String.format("%s\ndragAndDrop(arguments[0], arguments[1]);",
+                getAtom()),
+            el1, el2);
       } else if (argsCount == 3) {
         waitUntilInteracted(args.get(0), el ->
             actions.dragAndDropBy(el,

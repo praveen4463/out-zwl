@@ -38,4 +38,9 @@ public class AddTo extends AbstractFunction {
     list.add(element);
     return _void;
   }
+  
+  @Override
+  protected boolean doNotExpandListToArguments() {
+    return true;
+  }
 }

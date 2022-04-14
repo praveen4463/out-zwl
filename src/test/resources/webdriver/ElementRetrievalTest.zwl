@@ -2,28 +2,19 @@
 staticSitePrefix = staticSite.urlPrefix
 #openUrl("https://jsfiddle.net/praveen4463/5zr6jcda/")
 openUrl(staticSitePrefix + "form_long_submittable_c.html")
-switchFrame("iframe[name='result']")
+switchFrame(findElement("iframe[name='result']", by.cssSelector))
 
 startFindElem = instant()
-assertThrows(exceptions.noSuchElemEx, findElement("unknown-elem", true))
+assertThrows(exceptions.noSuchElemEx, findElement("unknown-elem", by.cssSelector, true))
 tookMillisFindElem = elapsed(startFindElem)
 elemAccessTimeout = getTimeout(timeouts.elemAccess)
 assertTrue(elemAccessTimeout > 1 && tookMillisFindElem < elemAccessTimeout)
 # verifies that giving noWait=true won't wait when some element wasn't immediately found.
 
-form = findElement("#form1")
-assertTrue(getElementAttribute(findElementFromElement(form, "#fname"), "type") == "text")
+form = findElement("#form1", by.cssSelector)
+firstNameEl = findElementFromElement(form, "#fname", by.cssSelector)
+assertTrue(getElementAttribute(firstNameEl, "type") == "text")
+assertFalse(exists(getElementAttribute(firstNameEl, "non-existent-attr")))
+assertTrue(exists(getElementAttribute(firstNameEl, "type")))
 
-assertTrue(size(findElementsFromElement(form, "input[type='text']")) == 5)
-
-assertTrue(getElementAttribute(findElementWithSelectors("#unknown1",
-      "#unknown2",
-      "#lname",
-      "#unknown3"), "type"
-    ) == "text")
-
-assertTrue(size(findElementsWithSelectors("#unknown1",
-      "#unknown2",
-      "#unknown3",
-      "input[type='text']")
-    ) == 5)
+assertTrue(size(findElementsFromElement(form, "input[type='text']", by.cssSelector)) == 5)
