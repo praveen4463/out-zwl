@@ -4,10 +4,10 @@ import com.google.cloud.storage.Storage;
 import com.zylitics.zwl.datatype.Types;
 import com.zylitics.zwl.webdriver.APICoreProperties;
 import com.zylitics.zwl.webdriver.BuildCapability;
+import com.zylitics.zwl.webdriver.FileInputFilesProcessor;
 import com.zylitics.zwl.webdriver.functions.AbstractWebdriverFunction;
 import com.zylitics.zwl.datatype.ZwlValue;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import org.openqa.selenium.remote.RemoteWebElement;
 
 import java.io.PrintStream;
 import java.nio.file.Path;
@@ -27,7 +27,7 @@ public class SetFile extends AbstractWebdriverFunction {
    *
    * @param pathToUploadedFiles should be a string containing subdirectories that keep user
    *                            uploaded files. Subdirectories are separated by a forward slash
-   *                            , such as 1002/uploads where 1002 is userId.
+   *                            , such as 1002/uploads where 1002 is orgId.
    */
   public SetFile(APICoreProperties.Webdriver wdProps,
                  BuildCapability buildCapability,

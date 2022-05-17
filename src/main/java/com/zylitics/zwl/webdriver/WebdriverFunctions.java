@@ -31,6 +31,7 @@ import com.zylitics.zwl.webdriver.functions.timeout.SetScriptTimeout;
 import com.zylitics.zwl.webdriver.functions.until.*;
 import com.zylitics.zwl.webdriver.functions.util.CallTest;
 import com.zylitics.zwl.webdriver.functions.util.IsValidElemId;
+import com.zylitics.zwl.webdriver.functions.util.MatchesSnapshot;
 import com.zylitics.zwl.webdriver.functions.util.Sleep;
 import com.zylitics.zwl.interpret.Function;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -288,7 +289,9 @@ public class WebdriverFunctions {
         // util
         new Sleep(wdProps, buildCapability, driver, printStream),
         new IsValidElemId(wdProps, buildCapability, driver, printStream),
-        new CallTest(wdProps, buildCapability, driver, printStream, callTestHandler)
+        new CallTest(wdProps, buildCapability, driver, printStream, callTestHandler),
+        new MatchesSnapshot(wdProps, buildCapability, driver, printStream, storage,
+            userUploadsCloudPath, buildDir)
     );
     return builder.build();
   }

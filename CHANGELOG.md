@@ -188,3 +188,11 @@ Patch
 7. Fixed problem in stale element refresh process so that the interaction wouldn't return it's result
    as-is but keep that in an `Optional` so that the process doesn't wait if one of the interaction
    result in `false` or `null`.
+
+## v0.6.11
+
+### Enhancements
+
+1. Added `matchesSnapshot`
+2. User's upload directory now is organization's
+3. Bumped up libraries

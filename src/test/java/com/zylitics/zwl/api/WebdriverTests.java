@@ -67,7 +67,7 @@ public class WebdriverTests {
   
   private static final String ELEMENT_SHOT_DIR = "element-shot";
   private static final String ELEMENT_SHOT_NAME = "small-select";
-  private static final String USER_DATA_BUCKET = "zl-user-data";
+  private static final String USER_DATA_BUCKET = "zl-user-data-dev";
   private static final Boolean BROWSER_START_MAXIMIZE = true;
   private static final String EXAMPLE_USER_UPLOAD_CLOUD_PATH = "11021/uploads";
   
@@ -328,6 +328,13 @@ public class WebdriverTests {
   @EnumSource(value = Browsers.class)
   void miscTest(Browsers browser) throws Exception {
     run(browser, AllWebdriverTests.MISC_TEST.getFile());
+  }
+  
+  @Tag("snapshotmatch")
+  @ParameterizedTest
+  @EnumSource(value = Browsers.class)
+  void snapshotMatchTest(Browsers browser) throws Exception {
+    run(browser, AllWebdriverTests.SNAPSHOT_MATCH_TEST.getFile());
   }
   
   private void run(Browsers browser, String file) throws Exception {

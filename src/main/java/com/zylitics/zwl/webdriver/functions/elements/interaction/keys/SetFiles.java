@@ -4,10 +4,10 @@ import com.google.cloud.storage.Storage;
 import com.zylitics.zwl.datatype.Types;
 import com.zylitics.zwl.webdriver.APICoreProperties;
 import com.zylitics.zwl.webdriver.BuildCapability;
+import com.zylitics.zwl.webdriver.FileInputFilesProcessor;
 import com.zylitics.zwl.webdriver.functions.AbstractWebdriverFunction;
 import com.zylitics.zwl.datatype.ZwlValue;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import org.openqa.selenium.remote.RemoteWebElement;
 
 import java.io.PrintStream;
 import java.nio.file.Path;

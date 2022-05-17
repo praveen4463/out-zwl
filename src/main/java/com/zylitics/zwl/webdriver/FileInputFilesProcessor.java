@@ -1,4 +1,4 @@
-package com.zylitics.zwl.webdriver.functions.elements.interaction.keys;
+package com.zylitics.zwl.webdriver;
 
 import com.google.cloud.ReadChannel;
 import com.google.cloud.storage.Blob;
@@ -28,7 +28,7 @@ import java.util.function.Supplier;
  * Note that the deletion of directories on VM exist can be done at root which is the build dir,
  * thus individual dir like download dir don't require a shutdown hook.
  */
-class FileInputFilesProcessor {
+public class FileInputFilesProcessor {
   
   private static final String USER_DOWNLOAD_DIR = "user_downloads";
   
@@ -48,7 +48,7 @@ class FileInputFilesProcessor {
   
   private final Supplier<String> toPos;
   
-  FileInputFilesProcessor(Storage storage,
+  public FileInputFilesProcessor(Storage storage,
                           String userDataBucket,
                           String pathToUploadedFiles,
                           Set<String> fileNames,
@@ -80,7 +80,7 @@ class FileInputFilesProcessor {
    * @throws ZwlLangException when a {@link RuntimeException} is occurred so that user is
    * notified about the problem
    */
-  Set<String> process() throws ZwlLangException {
+  public Set<String> process() throws ZwlLangException {
     if (!Files.isDirectory(buildDir)) {
       throw new RuntimeException(buildDir.toAbsolutePath() + " isn't a directory");
     }

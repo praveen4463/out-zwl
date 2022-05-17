@@ -1,0 +1,6 @@
+openUrl("https://www.twistbioscience.com/")
+assertTrue(matchesSnapshot('twist-ngs.png', {
+      'expectedCoordinates': {x: 2148, y: 390},
+      'scrollPos': {x: 0, y: 864},
+      'acceptablePixelDeviation': 5
+    }), "Couldn't match.")
