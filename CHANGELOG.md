@@ -196,3 +196,9 @@ Patch
 1. Added `matchesSnapshot`
 2. User's upload directory now is organization's
 3. Bumped up libraries
+
+## v0.6.12
+
+### Enhancements
+
+1. Added `_global` global variable for the main purpose of argument passing.
