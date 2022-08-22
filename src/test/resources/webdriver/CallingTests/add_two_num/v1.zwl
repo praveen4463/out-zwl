@@ -1,0 +1,5 @@
+# Also make sure test path is correct
+assertEqual('CallingTests/add_two_num', getTestPath())
+
+args = getArgs()
+returnVal(args.f + args.s)

@@ -1,36 +1,38 @@
 package com.zylitics.zwl.webdriver.functions.util;
 
 import com.zylitics.zwl.datatype.Types;
-import com.zylitics.zwl.exception.EvalException;
+import com.zylitics.zwl.datatype.ZwlValue;
 import com.zylitics.zwl.webdriver.APICoreProperties;
 import com.zylitics.zwl.webdriver.BuildCapability;
 import com.zylitics.zwl.webdriver.functions.AbstractWebdriverFunction;
-import com.zylitics.zwl.datatype.ZwlValue;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 import java.io.PrintStream;
 import java.util.List;
-import java.util.function.Consumer;
+import java.util.Map;
 import java.util.function.Supplier;
 
-@Deprecated
-public class CallTest extends AbstractWebdriverFunction {
+public class ReturnVal extends AbstractWebdriverFunction {
   
-  private final Consumer<String> callTestHandler;
+  private final Map<String, ZwlValue> _global;
   
-  public CallTest(APICoreProperties.Webdriver wdProps,
-                  BuildCapability buildCapability,
-                  RemoteWebDriver driver,
-                  PrintStream printStream,
-                  Consumer<String> callTestHandler) {
+  private final String testPath;
+  
+  public ReturnVal(APICoreProperties.Webdriver wdProps,
+                 BuildCapability buildCapability,
+                 RemoteWebDriver driver,
+                 PrintStream printStream,
+                 Map<String, ZwlValue> _global,
+                 String testPath) {
     super(wdProps, buildCapability, driver, printStream);
-    
-    this.callTestHandler = callTestHandler;
+  
+    this._global = _global;
+    this.testPath = testPath;
   }
   
   @Override
   public String getName() {
-    return "callTest";
+    return "returnVal";
   }
   
   @Override
@@ -47,23 +49,20 @@ public class CallTest extends AbstractWebdriverFunction {
   public ZwlValue invoke(List<ZwlValue> args, Supplier<ZwlValue> defaultValue,
                          Supplier<String> lineNColumn) {
     super.invoke(args, defaultValue, lineNColumn);
-  
+    
     if (buildCapability.isDryRunning()) {
       return evaluateDefValue(defaultValue);
     }
-    
+  
     if (args.size() == 0) {
       throw unexpectedEndOfFunctionOverload(0);
     }
     
-    try {
-      callTestHandler.accept(args.get(0).toString());
-      return _void;
-    } catch (IllegalArgumentException i) {
-      // only handle IllegalArgumentException that may only be thrown during validation of current
-      // function.
-      throw new EvalException(fromPos.get(), toPos.get(), withLineNCol(i.getMessage()));
-    }
+    ZwlValue returnVal = args.get(0);
+    String funcReturnKey = FuncUtil.getFuncReturnKey(FuncUtil.getUniqueKeyFromTestPath(testPath));
+    
+    _global.put(funcReturnKey, returnVal);
+    return _void;
   }
   
   @Override

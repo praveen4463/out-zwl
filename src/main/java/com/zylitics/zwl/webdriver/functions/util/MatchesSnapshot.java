@@ -10,9 +10,7 @@ import com.zylitics.zwl.webdriver.BuildCapability;
 import com.zylitics.zwl.webdriver.FileInputFilesProcessor;
 import com.zylitics.zwl.webdriver.functions.AbstractWebdriverFunction;
 import org.bytedeco.javacpp.DoublePointer;
-import org.bytedeco.opencv.opencv_core.Mat;
-import org.bytedeco.opencv.opencv_core.Point;
-import org.bytedeco.opencv.opencv_core.Size;
+import org.bytedeco.opencv.opencv_core.*;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.slf4j.Logger;
@@ -21,32 +19,40 @@ import org.slf4j.LoggerFactory;
 import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Supplier;
 
 import static org.bytedeco.opencv.global.opencv_core.*;
 import static org.bytedeco.opencv.global.opencv_imgcodecs.IMREAD_GRAYSCALE;
 import static org.bytedeco.opencv.global.opencv_imgcodecs.imread;
+import static org.bytedeco.opencv.global.opencv_imgcodecs.imwrite;
 import static org.bytedeco.opencv.global.opencv_imgproc.*;
 
 public class MatchesSnapshot extends AbstractWebdriverFunction {
   
   private static final Logger LOG = LoggerFactory.getLogger(MatchesSnapshot.class);
   
-  private static final int MAX_PIXEL_DEVIATION_ALLOWED = 20;
+  private static final int MAX_PIXEL_DEVIATION_ALLOWED = 200;
+  
+  private static final String INTERNAL_DEBUG_KEY = "internalDebug";
+  
+  private static final String DEBUG_KEY = "debug";
   
   private static final String EXPECTED_COORDINATES_KEY = "expectedCoordinates";
   
-  private static final String SCROLL_POS_KEY = "scrollPos";
+  private static final String SCROLL_POS_KEY = "scrollPosition";
   
-  private static final String ACCEPTABLE_PIXEL_DEVIATION_KEY = "acceptablePixelDeviation";
+  private static final String ACCEPTABLE_PIXEL_DEVIATION_KEY =
+      "acceptablePixelDeviationInCoordinates";
   
   private static final String INVALID_COORDINATES_MSG =
       "Invalid coordinates, must be in {x: NUM, y: NUM} format.";
   
   private static final String INVALID_SCROLL_POS_MSG =
-      "Invalid scrollPos, must be in {x: NUM, y: NUM} format.";
+      "Invalid scrollPosition, must be in {x: NUM, y: NUM} format.";
   
   private final Storage storage;
   
@@ -162,7 +168,7 @@ public class MatchesSnapshot extends AbstractWebdriverFunction {
               .process().iterator().next();
       
       if (scrollX > -1 && scrollY > -1) {
-        driver.executeScript(String.format("window.scrollBy(%d, %d)", scrollX, scrollY));
+        driver.executeScript(String.format("window.scroll(%d, %d)", scrollX, scrollY));
       }
       
       byte[] pageScreenshot = driver.getScreenshotAs(OutputType.BYTES);
@@ -187,6 +193,21 @@ public class MatchesSnapshot extends AbstractWebdriverFunction {
       Point min = new Point();
       Point max = new Point();
       minMaxLoc(result, minVal, maxVal, min, max, null);
+      if (config.get(DEBUG_KEY) != null) {
+        writeBuildOutput(String.format("Details are: %s %s %s %s",
+            max.x(), max.y(), template.cols(), template.rows()));
+      }
+      if (config.get(INTERNAL_DEBUG_KEY) != null) {
+        System.out.printf("Details are: %s %s %s %s%n",
+            max.x(), max.y(), template.cols(), template.rows());
+        rectangle(sourceColor,
+            new Rect(max.x(), max.y(), template.cols(), template.rows()),
+            randColor(), 2, 0, 0);
+        // https://github.com/bytedeco/javacv-examples/blob/master/OpenCV_Cookbook/src/main/java/opencv_cookbook/OpenCVUtilsJava.java
+        String tempDir = System.getProperty("java.io.tmpdir");
+        Path sourceRectFile = Paths.get(tempDir, UUID.randomUUID() + ".jpg");
+        imwrite(sourceRectFile.toAbsolutePath().toString(), sourceColor);
+      }
   
       int xDiff = Math.abs(max.x() - expX);
       int yDiff = Math.abs(max.y() - expY);
@@ -206,6 +227,14 @@ public class MatchesSnapshot extends AbstractWebdriverFunction {
       LOG.error(t.getMessage(), t);
       throw new EvalException(fromPos.get(), toPos.get(), withLineNCol(t.getMessage()));
     }
+  }
+  
+  public static Scalar randColor(){
+    int b,g,r;
+    b= ThreadLocalRandom.current().nextInt(0, 255 + 1);
+    g= ThreadLocalRandom.current().nextInt(0, 255 + 1);
+    r= ThreadLocalRandom.current().nextInt(0, 255 + 1);
+    return new Scalar (b,g,r,0);
   }
   
   @Override

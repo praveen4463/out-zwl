@@ -202,3 +202,13 @@ Patch
 ### Enhancements
 
 1. Added `_global` global variable for the main purpose of argument passing.
+
+## v0.6.13
+
+### Enhancements
+
+1. `_global` is now not static but given from caller so that it remains different for each build.
+2. Added `call` function and various other supporting functions to be able to call functions in a
+better and natural way.
+3. Added ability to know Test Path of currently running test/function.
+4. `matchSnapshot` now has more arguments to help. Renamed a few args.

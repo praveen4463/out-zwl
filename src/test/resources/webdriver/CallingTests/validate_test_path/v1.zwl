@@ -1,0 +1,7 @@
+assertNotEqual('CallingTests/get_test_path_invalid/v2', getTestPath())
+
+assertEqual('CallingTests/validate_test_path', getTestPath())
+
+call('CallingTests/add_two_num', {f: 10, s: 17})
+
+assertEqual('CallingTests/validate_test_path', getTestPath())

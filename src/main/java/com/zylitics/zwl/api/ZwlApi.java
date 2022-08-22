@@ -76,10 +76,11 @@ public final class ZwlApi {
    *                          user code's.
    */
   public void interpret(ZwlWdTestProperties zwlWdTestProperties,
+                        String testPath,
                         @Nullable ZwlInterpreterVisitor zwlInterpreterVisitor) {
     Preconditions.checkNotNull(zwlWdTestProperties, "zwlWdTestProperties can't be null");
   
-    interpret(i -> new ZwlWdTestPropsAssigner(i, zwlWdTestProperties).assign(),
+    interpret(i -> new ZwlWdTestPropsAssigner(i, zwlWdTestProperties, testPath).assign(),
         zwlInterpreterVisitor, getParser().compilationUnit());
   }
   
@@ -113,12 +114,13 @@ public final class ZwlApi {
    */
   void interpretDevOnly(@Nullable ZwlWdTestProperties zwlWdTestProperties,
                         @Nullable ZwlDryRunProperties zwlDryRunProperties,
+                        @Nullable String testPath,
                         @Nullable ZwlInterpreterVisitor zwlInterpreterVisitor)
       throws ZwlLangException {
     interpret(i -> {
           // either wdTest or dryRun else none
           if (zwlWdTestProperties != null) {
-            new ZwlWdTestPropsAssigner(i, zwlWdTestProperties).assign();
+            new ZwlWdTestPropsAssigner(i, zwlWdTestProperties, testPath).assign();
           } else if (zwlDryRunProperties != null) {
             new ZwlDryRunPropsAssigner(i, zwlDryRunProperties).assign();
           }

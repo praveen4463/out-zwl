@@ -38,8 +38,6 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
   
   public static final String PREFERENCES_KEY = "preferences";
   
-  private static final Map<String, ZwlValue> GLOBAL = new HashMap<>();
-  
   private final Set<String> readOnlyVars = new HashSet<>();
   private final ZwlValue _void = new VoidZwlValue();
   
@@ -59,7 +57,6 @@ public class DefaultZwlInterpreter extends ZwlParserBaseVisitor<ZwlValue>
     // add internal readonly variables
     Map<String, ZwlValue> exceptions = new HashMap<>(Exceptions.asMap());
     exceptions.putAll(com.zylitics.zwl.webdriver.constants.Exceptions.asMap());
-    addReadOnlyVariable("_global", new MapZwlValue(GLOBAL));
     addReadOnlyVariable("exceptions",
         new MapZwlValue(Collections.unmodifiableMap(exceptions)));
     addReadOnlyVariable("browsers", new MapZwlValue(

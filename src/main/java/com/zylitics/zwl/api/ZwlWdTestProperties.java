@@ -1,6 +1,7 @@
 package com.zylitics.zwl.api;
 
 import com.google.cloud.storage.Storage;
+import com.zylitics.zwl.datatype.ZwlValue;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 import javax.annotation.Nullable;
@@ -73,5 +74,7 @@ public interface ZwlWdTestProperties {
   
     @Nullable
     Map<String, String> getGlobal();
+  
+    Map<String, ZwlValue> get_Global();
   }
 }

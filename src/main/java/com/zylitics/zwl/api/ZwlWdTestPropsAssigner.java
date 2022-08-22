@@ -9,16 +9,22 @@ import com.zylitics.zwl.webdriver.APICoreProperties;
 import com.zylitics.zwl.webdriver.BuildCapability;
 import com.zylitics.zwl.webdriver.WebdriverFunctions;
 
+import javax.annotation.Nullable;
+
 class ZwlWdTestPropsAssigner {
   
   private final DefaultZwlInterpreter interpreter;
   
   private final ZwlWdTestProperties props;
   
+  private final String testPath;
+  
   ZwlWdTestPropsAssigner(DefaultZwlInterpreter interpreter,
-                         ZwlWdTestProperties props) {
+                         ZwlWdTestProperties props,
+                         @Nullable String testPath) {
     this.interpreter = interpreter;
     this.props = props;
+    this.testPath = testPath;
   }
   
   void assign() {
@@ -51,11 +57,13 @@ class ZwlWdTestPropsAssigner {
         .setWdTimeoutsPageLoad(capabilities.getCustomTimeoutPageLoad())
         .setWdTimeoutsScript(capabilities.getCustomTimeoutScript())
         .setDryRunning(false); // have to set to false because the field is non primitive
+  
+    ZwlWdTestProperties.Variables variables = props.getVariables();
     
     // instantiate WebDriverFunctions and assign
     WebdriverFunctions wdFunc = new WebdriverFunctions(wdProps, buildCapability, props.getDriver(),
         props.getPrintStream(), props.getCallTestHandler(), props.getStorage(),
-        props.getUserUploadsCloudPath(), props.getBuildDir());
+        props.getUserUploadsCloudPath(), props.getBuildDir(), variables.get_Global(), testPath);
     interpreter.addFunctions(wdFunc.get());
     
     // add readonly variables
@@ -63,10 +71,10 @@ class ZwlWdTestPropsAssigner {
     rva.assignBrowser(buildCapability.getWdBrowserName(), buildCapability.getWdBrowserVersion());
     rva.assignPlatform(buildCapability.getWdPlatformName());
     rva.assignDeviceDimension(props.getVMResolution(), buildCapability.getWdMeDeviceResolution());
-    ZwlWdTestProperties.Variables variables = props.getVariables();
     rva.assignBuildVariables(variables.getBuildVariables());
     rva.assignPreferences(variables.getPreferences());
     rva.assignGlobal(variables.getGlobal());
+    rva.assign_Global(variables.get_Global());
   }
   
   private void validate() {

@@ -1,0 +1,2 @@
+age = randomFromRange(10, 100)
+returnVal(age)

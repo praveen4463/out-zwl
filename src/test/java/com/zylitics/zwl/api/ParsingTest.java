@@ -28,6 +28,13 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class ParsingTest {
   
+  @Test
+  void compareTest() {
+    String s1 = "Prairie City, OR";
+    String s2 = "pico cell - 2";
+    int res = s1.compareToIgnoreCase(s2);
+  }
+  
   // If a token isn't in our grammar, a token recognition error should should appear. Anytime if
   // the code has a lexical error (i.e unknown tokens) that will be reported first before going into
   // parse phase.

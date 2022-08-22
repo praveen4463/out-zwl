@@ -1,6 +1,17 @@
 openUrl("https://www.twistbioscience.com/")
 assertTrue(matchesSnapshot('twist-ngs.png', {
-      'expectedCoordinates': {x: 2148, y: 390},
-      'scrollPos': {x: 0, y: 864},
-      'acceptablePixelDeviation': 5
+      'expectedCoordinates': {x: 2148, y: 200},
+      'scrollPosition': {x: 0, y: 864},
+      'acceptablePixelDeviationInCoordinates': 200,
+      'debug': true
     }), "Couldn't match.")
+
+/*openUrl("https://vitruvi-us-staging-1-files.s3.amazonaws.com/storage_tempfiles/Vitruvi_Close_Out_Package_None_20220628111245.pdf#zoom=75&page=1")
+sleep(5 * 1000)
+#  captureElementScreenshot(findElement('embed', by.tagName))
+assertTrue(
+    matchesSnapshot('status-details-2.png', {
+      'expectedCoordinates': {x: 1495, y: 190},
+      'acceptablePixelDeviationInCoordinates': 10,
+      'debug': true
+    }), "Couldn't match.")*/

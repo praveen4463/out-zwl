@@ -29,7 +29,8 @@ public enum AllWebdriverTests {
   BUILD_CONFIG_TEST ("BuildConfigTest.zwl"),
   BUILD_CAPABILITIES_TEST ("BuildCapabilitiesTest.zwl"),
   MISC_TEST("MiscTest.zwl"),
-  SNAPSHOT_MATCH_TEST("SnapshotMatchingTest.zwl");
+  SNAPSHOT_MATCH_TEST("SnapshotMatchingTest.zwl"),
+  CALL_TEST("CallTest.zwl");
   
   private final String file;
   

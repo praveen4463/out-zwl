@@ -81,4 +81,8 @@ class ReadOnlyVariablesAssigner {
         new MapZwlValue(keyValue.entrySet().stream().collect(
             Collectors.toMap(Map.Entry::getKey, e -> new StringZwlValue(e.getValue())))));
   }
+  
+  void assign_Global(Map<String, ZwlValue> _global) {
+    interpreter.addReadOnlyVariable("_global", new MapZwlValue(_global));
+  }
 }

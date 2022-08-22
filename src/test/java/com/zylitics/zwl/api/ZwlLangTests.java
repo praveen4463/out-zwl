@@ -60,7 +60,7 @@ public class ZwlLangTests {
     // set external variable(s) into de only interpreter. It's important to use dev only so that
     // we can detect ambiguities in grammar early, they will be shown at the top of the test
     // result.
-    zwlApi.interpretDevOnly(null, null, zwlInterpreter -> {
+    zwlApi.interpretDevOnly(null, null, null, zwlInterpreter -> {
       // the utility of adding things like exceptions as constants is users don't have
       // copy paste exact string and can choose from suggestions (once we have this functionality
       // in IDE). Also we can shorten the names this way, this is less error prone.

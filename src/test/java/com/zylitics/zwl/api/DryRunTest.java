@@ -25,7 +25,7 @@ public class DryRunTest {
   void dryRunTest() throws Exception {
     ZwlApi zwlApi = new ZwlApi(Paths.get("resources/webdriver/DryRunTest.zwl"), Charsets.UTF_8,
         DEFAULT_TEST_LISTENERS);
-    zwlApi.interpretDevOnly(null, getZwlDryRunProperties(), z -> z.addFunction(new IsVoid()));
+    zwlApi.interpretDevOnly(null, getZwlDryRunProperties(), null, z -> z.addFunction(new IsVoid()));
   }
   
   // have to instantiate all fields as they can't be null, their properties could be.

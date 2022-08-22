@@ -1,0 +1,31 @@
+# Make sure map args work
+totalAge = call('CallingTests/add_two_num', {f: 10, s: 17})
+assertEqual(27, totalAge)
+
+# Verify getting path, assertions inside because we want to verify just getting path inside
+# functions work
+call('CallingTests/validate_test_path')
+
+# Nothing else than List or Map could be argument
+assertThrows("EvalException", {
+  call('CallingTests/add_two_num', 10)
+})
+
+# If path is invalid, an exception is thrown
+assertThrows("EvalException", {
+  call('CallingTests', 10)
+})
+
+# Make sure functions that don't take args but return something work
+age = call('CallingTests/get_age')
+assertTrue(age >= 10 && age <= 100)
+
+# Make sure list args work
+mulTwoNum = call('CallingTests/mul_two_num', [80, 3])
+assertEqual(240, mulTwoNum)
+
+# Make sure a func can invoke other funcs
+call('CallingTests/multiple_func_calls/v2')
+
+# Make sure _global is empty after all calls are made
+assertEqual(0, length(_global))

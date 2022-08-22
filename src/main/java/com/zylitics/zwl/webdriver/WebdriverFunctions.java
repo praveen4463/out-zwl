@@ -2,6 +2,7 @@ package com.zylitics.zwl.webdriver;
 
 import com.google.cloud.storage.Storage;
 import com.google.common.collect.ImmutableSet;
+import com.zylitics.zwl.datatype.ZwlValue;
 import com.zylitics.zwl.webdriver.functions.action.ActionFunctions;
 import com.zylitics.zwl.webdriver.functions.action.DragAndDrop;
 import com.zylitics.zwl.webdriver.functions.action.PerformAction;
@@ -29,15 +30,13 @@ import com.zylitics.zwl.webdriver.functions.timeout.SetElementAccessTimeout;
 import com.zylitics.zwl.webdriver.functions.timeout.SetPageLoadTimeout;
 import com.zylitics.zwl.webdriver.functions.timeout.SetScriptTimeout;
 import com.zylitics.zwl.webdriver.functions.until.*;
-import com.zylitics.zwl.webdriver.functions.util.CallTest;
-import com.zylitics.zwl.webdriver.functions.util.IsValidElemId;
-import com.zylitics.zwl.webdriver.functions.util.MatchesSnapshot;
-import com.zylitics.zwl.webdriver.functions.util.Sleep;
+import com.zylitics.zwl.webdriver.functions.util.*;
 import com.zylitics.zwl.interpret.Function;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 import java.io.PrintStream;
 import java.nio.file.Path;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -66,6 +65,10 @@ public class WebdriverFunctions {
   
   private final Path buildDir;
   
+  private final Map<String, ZwlValue> _global;
+  
+  private final String testPath;
+  
   public WebdriverFunctions(APICoreProperties.Webdriver wdProps,
                             BuildCapability buildCapability,
                             RemoteWebDriver driver,
@@ -73,7 +76,9 @@ public class WebdriverFunctions {
                             Consumer<String> callTestHandler,
                             Storage storage,
                             String userUploadsCloudPath,
-                            Path buildDir) {
+                            Path buildDir,
+                            Map<String, ZwlValue> _global,
+                            String testPath) {
     this.wdProps = wdProps;
     this.buildCapability = buildCapability;
     this.driver = driver;
@@ -82,6 +87,8 @@ public class WebdriverFunctions {
     this.storage = storage;
     this.userUploadsCloudPath = userUploadsCloudPath;
     this.buildDir = buildDir;
+    this._global = _global;
+    this.testPath = testPath;
   }
   
   /**
@@ -100,6 +107,8 @@ public class WebdriverFunctions {
     this.storage = null;
     this.userUploadsCloudPath = null;
     this.buildDir = null;
+    this._global = null;
+    this.testPath = null;
   }
   
   public Set<Function> get() {
@@ -290,8 +299,12 @@ public class WebdriverFunctions {
         new Sleep(wdProps, buildCapability, driver, printStream),
         new IsValidElemId(wdProps, buildCapability, driver, printStream),
         new CallTest(wdProps, buildCapability, driver, printStream, callTestHandler),
+        new Call(wdProps, buildCapability, driver, printStream, callTestHandler, _global),
         new MatchesSnapshot(wdProps, buildCapability, driver, printStream, storage,
-            userUploadsCloudPath, buildDir)
+            userUploadsCloudPath, buildDir),
+        new GetArgs(wdProps, buildCapability, driver, printStream, _global, testPath),
+        new ReturnVal(wdProps, buildCapability, driver, printStream, _global, testPath),
+        new GetTestPath(wdProps, buildCapability, driver, printStream, testPath)
     );
     return builder.build();
   }

@@ -4,6 +4,7 @@ import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -39,6 +40,7 @@ import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 import javax.annotation.Nullable;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -72,6 +74,8 @@ public class WebdriverTests {
   private static final String EXAMPLE_USER_UPLOAD_CLOUD_PATH = "11021/uploads";
   
   final PrintStream printStream = System.out;
+  
+  final Map<String, ZwlValue> _global = new HashMap<>();
   
   Path fakeBuildDir;
   RemoteWebDriver driver;
@@ -113,7 +117,7 @@ public class WebdriverTests {
       printStream.println("Reading and executing from " + file);
       ZwlApi zwlApi = new ZwlApi(Paths.get("resources/webdriver/" + t.getFile()), Charsets.UTF_8,
           DEFAULT_TEST_LISTENERS);
-      zwlApi.interpretDevOnly(zwlWdTestProperties, null, interpreterVisitor);
+      zwlApi.interpretDevOnly(zwlWdTestProperties, null, null, interpreterVisitor);
       
       if (t == AllWebdriverTests.ELEMENT_CAPTURE_TEST) {
         // element capture requires I/O access to check created file.
@@ -337,12 +341,19 @@ public class WebdriverTests {
     run(browser, AllWebdriverTests.SNAPSHOT_MATCH_TEST.getFile());
   }
   
+  @Tag("callTest")
+  @ParameterizedTest
+  @EnumSource(value = Browsers.class)
+  void callTest(Browsers browser) throws Exception {
+    run(browser, AllWebdriverTests.CALL_TEST.getFile());
+  }
+  
   private void run(Browsers browser, String file) throws Exception {
     Assumptions.assumeFalse(shouldSkip(browser), "Skipped");
     setup(browser);
     ZwlApi zwlApi = new ZwlApi(Paths.get("resources/webdriver/" + file), Charsets.UTF_8,
         DEFAULT_TEST_LISTENERS);
-    zwlApi.interpretDevOnly(zwlWdTestProperties, null, interpreterVisitor);
+    zwlApi.interpretDevOnly(zwlWdTestProperties, null, null, interpreterVisitor);
   }
   
   private boolean shouldSkip(Browsers browser) {
@@ -364,6 +375,19 @@ public class WebdriverTests {
     if (browser.equals(Browsers.CHROME)) {
       ChromeOptions chrome = new ChromeOptions();
       chrome.merge(caps);
+      if ( Boolean.getBoolean("isMobile")) {
+        Map<String, Object> deviceMetrics = new HashMap<>(CollectionUtil.getInitialCapacity(3));
+        deviceMetrics.put("width", Integer.getInteger("mobileWidth", 390));
+        deviceMetrics.put("height", Integer.getInteger("mobileHeight", 846));
+        deviceMetrics.put("pixelRatio", 3.0);
+  
+        Map<String, Object> mobileEmulation = new HashMap<>(CollectionUtil.getInitialCapacity(2));
+        mobileEmulation.put("deviceMetrics", deviceMetrics);
+        mobileEmulation.put("userAgent",
+            "Mozilla/5.0 (Linux; Android 4.2.1; en-us; Nexus 5 Build/JOP40D) AppleWebKit/535.19 (KHTML, like Gecko) Chrome/18.0.1025.166 Mobile Safari/535.19"
+        );
+        chrome.setExperimentalOption("mobileEmulation", mobileEmulation);
+      }
       driver = new ChromeDriver(ChromeDriverService.createDefaultService(), chrome);
     } else if (browser.equals(Browsers.FIREFOX)) {
       FirefoxOptions ff = new FirefoxOptions();
@@ -491,7 +515,33 @@ public class WebdriverTests {
   
       @Override
       public Consumer<String> getCallTestHandler() {
-        return null;
+        return (testPath) -> {
+          Preconditions.checkArgument(!Strings.isNullOrEmpty(testPath));
+          List<String> paths = Splitter.on('/').omitEmptyStrings().trimResults()
+              .splitToList(testPath);
+          String versionName;
+          switch (paths.size()) {
+            case 3:
+              versionName = paths.get(2);
+              break;
+            case 2:
+              versionName = "v1";
+              break;
+            default:
+              throw new IllegalArgumentException("Invalid test path given");
+          }
+          String filePath = String.format("%s/%s/%s.zwl", paths.get(0), paths.get(1),
+              versionName);
+          ZwlApi zwlApi;
+          try {
+            zwlApi = new ZwlApi(Paths.get("resources/webdriver/" + filePath), Charsets.UTF_8,
+                DEFAULT_TEST_LISTENERS);
+          } catch (IOException io) {
+            throw new RuntimeException(io);
+          }
+          
+          zwlApi.interpretDevOnly(zwlWdTestProperties, null, testPath, interpreterVisitor);
+        };
       }
   
       @Override
@@ -603,6 +653,11 @@ public class WebdriverTests {
           @Override
           public Map<String, String> getGlobal() {
             return new ZwlMainAppGlobals().get();
+          }
+          
+          @Override
+          public Map<String, ZwlValue> get_Global() {
+            return _global;
           }
         };
       }
