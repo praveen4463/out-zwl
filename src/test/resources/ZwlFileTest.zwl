@@ -1,0 +1,1004 @@
+@Test("add_route_template") {
+  /*
+  @args:
+  workerCode: String
+  vehicleId: String
+  workCode: String
+  @returns:
+  resourceId: String
+  */
+  RESOURCE_ID = 'OUT-RESOURCE-ID' + randomFromRange(11111, 99999)
+
+  mainSection = findElement(globals.MAIN_TABLE_SECTION_CSS_SELECTOR, by.cssSelector)
+  callTest('Common/get_add_record_modal/v1')
+  editModal = _global.editModal
+  detailsContainer = findElementFromElement(editModal,
+      globals.DIALOG_TAB_ACTIVE_CSS_SELECTOR, by.cssSelector)
+  putIn(_global, 'container', detailsContainer)
+
+  resourceId = findElementFromElement(detailsContainer,
+      format(globals.TESTID_TO_INPUT_XPATH_TMPL, globals.RESOURCE_ID_TID), by.xPath)
+  clear(resourceId)
+  type(resourceId, RESOURCE_ID)
+
+  firstNames = findElementsFromElement(detailsContainer,
+      format(globals.TESTID_TO_INPUT_XPATH_TMPL, globals.FNAME_TESTID), by.xPath, true)
+  if nonEmpty(firstNames) {
+    type(firstNames[0], globals.RESOURCE_FNAME_TEST)
+  }
+
+  lastNames = findElementsFromElement(detailsContainer,
+      format(globals.TESTID_TO_INPUT_XPATH_TMPL, globals.LNAME_TESTID), by.xPath, true)
+  if nonEmpty(lastNames) {
+    type(lastNames[0], globals.LNAME_TEST)
+  }
+
+  putIn(_global, 'testId', globals.ROUTE_COLOR_TID)
+  putIn(_global, 'toSetColor', globals.COLOR_VALUE_TEST)
+  callTest('Common/set_color_picker_if_available/v1')
+
+  callTest('Common/select_best_available_branch/v1')
+  callTest('DispatchGroups/select_dispatch_group_id_if_available/v1')
+
+  prodFactors = findElementsFromElement(detailsContainer,
+      format(globals.TESTID_TO_INPUT_XPATH_TMPL, globals.PROD_FACTOR_TID), by.xPath, true)
+  if nonEmpty(prodFactors) {
+    clear(prodFactors[0])
+    type(prodFactors[0], globals.PROD_FACTOR_TEST)
+  }
+
+  reloadLimits = findElementsFromElement(detailsContainer,
+      format(globals.TESTID_TO_INPUT_XPATH_TMPL, globals.RELOAD_LIMIT_TID), by.xPath, true)
+  if nonEmpty(reloadLimits) {
+    clear(reloadLimits[0])
+    type(reloadLimits[0], globals.RELOAD_LIMIT_TEST)
+  }
+
+  putIn(_global, 'durationTestId', globals.RELOAD_TIME_TID)
+  putIn(_global, 'toSetDuration', globals.DURATION_VALUE_TEST)
+  callTest('Common/set_duration_if_available/v1')
+
+  putIn(_global, 'contactTestId', globals.CONTACT_ID_TESTID)
+  callTest('Common/populate_contact_type_forms_if_available/v1')
+
+  # Get worker identifier and select driver and loader
+  putIn(_global, 'workerCode', _global.workerCode)
+  callTest('Common/get_worker_identifier/v1')
+  workerIdentifier = _global.workerIdentifier
+
+  drivers = findElementsFromElement(detailsContainer,
+      format(globals.TESTID_TO_SELECT_XPATH_TMPL, globals.DRIVER_TID), by.xPath, true)
+  if nonEmpty(drivers) {
+    selectByVisibleText(drivers[0], workerIdentifier)
+  }
+
+  loaders = findElementsFromElement(detailsContainer,
+      format(globals.TESTID_TO_SELECT_XPATH_TMPL, globals.LOADER_TID), by.xPath, true)
+  if nonEmpty(loaders) {
+    selectByVisibleText(loaders[0], workerIdentifier)
+  }
+
+  # Get vehicle identifier and select vehicle 1 and 2
+  putIn(_global, 'code', _global.vehicleId)
+  putIn(_global, 'description', globals.VEHICLE_DESC_TEST)
+  callTest('Common/get_code_desc_identifier/v1')
+  vehicleIdentifier = _global.idDescIdentifier
+
+  vehicle1s = findElementsFromElement(detailsContainer,
+      format(globals.TESTID_TO_SELECT_XPATH_TMPL, globals.VEHICLE1_TID), by.xPath, true)
+  if nonEmpty(vehicle1s) {
+    selectByVisibleText(vehicle1s[0], vehicleIdentifier)
+  }
+
+  vehicle2s = findElementsFromElement(detailsContainer,
+      format(globals.TESTID_TO_SELECT_XPATH_TMPL, globals.VEHICLE2_TID), by.xPath, true)
+  if nonEmpty(vehicle2s) {
+    selectByVisibleText(vehicle2s[0], vehicleIdentifier)
+  }
+
+  # Enable a work code
+  tabList = findElementFromElement(editModal, globals.DIALOG_TAB_LIST_ROLE, by.role)
+  click(findElementFromElement(tabList, 'Work Codes', by.text))
+  workCodesContainer = findElementFromElement(editModal,
+      globals.DIALOG_TAB_ACTIVE_CSS_SELECTOR, by.cssSelector)
+
+  # Get work code identifier and enable it
+  putIn(_global, 'code', _global.workCode) # Access any of work code we added, just need to be enable 1.
+  putIn(_global, 'description', globals.WORK_CODE_DESC_TEST)
+  callTest('Common/get_code_desc_identifier/v1')
+  workCodeIdentifier = _global.idDescIdentifier
+  click(findElementFromElement(workCodesContainer,
+      format(globals.LABEL_TO_SWITCH_XPATH_TMPL, workCodeIdentifier), by.xPath))
+
+  # Put addresses in all days, enable works (necessary for other functionalities
+  # such as Scheduling from Home) for Schedule tab
+  click(findElementFromElement(tabList, 'Schedule', by.text))
+  scheduleContainer = findElementFromElement(editModal,
+      globals.DIALOG_TAB_ACTIVE_CSS_SELECTOR, by.cssSelector)
+  putIn(_global, 'container', scheduleContainer)
+
+  putIn(_global, 'dayOfWeek', globals.SUNDAY)
+  callTest('Common/select_tabbed_day_of_week/v1')
+
+  putIn(_global, 'addressTestId', globals.START_ADDRESS_TID)
+  callTest('Common/populate_address/v1')
+  click(findElementFromElement(scheduleContainer, 'Copy From Start Address', by.text))
+
+  works = findElementFromElement(scheduleContainer,
+      format(globals.TESTID_TO_SWITCH_XPATH_TMPL, globals.WORKS_TID), by.xPath)
+  putIn(_global, 'switch', works)
+  putIn(_global, 'toSetSwitchValue', true)
+  callTest('Common/set_switch/v1')
+
+  click(findElementFromElement(scheduleContainer, 'Copy To Other Days', by.text))
+  copyDayDlg = findElement('dialog-copy-day-of-week', by.tagName)
+  callTest('Common/get_all_days/v1')
+  allDaysExceptSunday = _global.allDays
+  removeFrom(allDaysExceptSunday, globals.SUNDAY)
+  for day in allDaysExceptSunday {
+    copyToDaySwitch = findElementFromElement(copyDayDlg,
+        format(globals.LABEL_TO_SWITCH_XPATH_TMPL, day), by.xPath)
+    click(copyToDaySwitch) # No function call needed, just click to enable
+  }
+  click(findElementFromElement(copyDayDlg, 'Copy Day of Week', by.text))
+
+  click(findElementFromElement(editModal, 'Save', by.text))
+
+  putIn(_global, globals.FILTER_KEY_FOR_RECORD_KEY, globals.RESOURCE_ID_FILTER_KEY)
+  putIn(_global, globals.FILTER_VALUE_FOR_RECORD_KEY, RESOURCE_ID)
+  callTest('Common/filter_records_using_key_value/v1')
+  assertTrue(
+      nonEmpty(findElementsFromElement(mainSection, RESOURCE_ID, by.text)),
+      "Couldn't add new Route Template")
+
+  putIn(_global, 'resourceId', RESOURCE_ID)
+}
+
+@Test("add_route_template0") {
+  sidebar = findElement(globals.SIDEBAR_CSS_SELECTOR, by.cssSelector)
+  putIn(_global, 'sidebar', sidebar)
+
+  try {
+    call('RouteTemplates/prepare_and_invoke_add_route', {sidebar: sidebar})
+  } finally {
+    callTest('Common/close_open_dialogs/v1')
+    if containsKey(_global, 'resourceId') {
+      callTest('Common/disable_record/v1')
+    }
+    if containsKey(_global, 'workerCode') {
+      click(findElementFromElement(sidebar, globals.WORKERS_LINK_TESTID, by.testId))
+      putIn(_global, globals.FILTER_KEY_FOR_RECORD_KEY, globals.WORKER_ID_FILTER_KEY)
+      putIn(_global, globals.FILTER_VALUE_FOR_RECORD_KEY, _global.workerCode)
+      callTest('Common/disable_record/v1')
+    }
+    if containsKey(_global, 'dispatchCode') {
+      click(findElementFromElement(sidebar, globals.DISPATCH_GROUP_LINK_TESTID, by.testId))
+      putIn(_global, globals.FILTER_KEY_FOR_RECORD_KEY, globals.DISPATCH_GROUP_FILTER_KEY)
+      putIn(_global, globals.FILTER_VALUE_FOR_RECORD_KEY, _global.dispatchCode)
+      callTest('Common/disable_record/v1')
+    }
+    if containsKey(_global, 'vehicleId') {
+      click(findElementFromElement(sidebar, globals.VEHICLE_LINK_TESTID, by.testId))
+      putIn(_global, globals.FILTER_KEY_FOR_RECORD_KEY, globals.VEHICLE_ID_FILTER_KEY)
+      putIn(_global, globals.FILTER_VALUE_FOR_RECORD_KEY, _global.vehicleId)
+      callTest('Common/disable_record/v1')
+    }
+    if containsKey(_global, 'workCode') {
+      click(findElementFromElement(sidebar, globals.WORK_CODE_LINK_TESTID, by.testId))
+      putIn(_global, globals.FILTER_KEY_FOR_RECORD_KEY, globals.WORK_CODE_ID_FILTER_KEY)
+      putIn(_global, globals.FILTER_VALUE_FOR_RECORD_KEY, _global.workCode)
+      callTest('Common/disable_record/v1')
+    }
+  }
+}
+
+@Test("Can add and disable a route template") {
+  openUrl(buildVars.BASE_URL)
+  putIn(_global, 'linkTestId', globals.WORKERS_LINK_TESTID)
+  callTest('Common/login_and_go_to_page/v1')
+
+  if !_global[globals.PAGE_NOT_FOUND_KEY] {
+    callTest('RouteTemplates/add_route_template0/v1')
+  }
+}
+
+@Test("Can schedule a route from home page") {
+  openUrl(buildVars.BASE_URL)
+  putIn(_global, 'linkTestId', globals.WORKERS_LINK_TESTID)
+  callTest('Common/login_and_go_to_page/v1')
+
+  if !_global[globals.PAGE_NOT_FOUND_KEY] {
+    sidebar = findElement(globals.SIDEBAR_CSS_SELECTOR, by.cssSelector)
+    call('RouteTemplates/schedule_route_from_home', {sidebar: sidebar})
+  }
+}
+
+@Test("cleanup_part_schedule_route") {
+  /*
+  sidebar: Element
+  cleanupIds: Map (all keys optional)
+    resourceId: String
+    workerCode: String
+    dispatchCode: String
+    vehicleId: String
+    workCode: String
+  */
+  args = getArgs()
+  sidebar = args.sidebar
+  cleanupIds = args.cleanupIds
+
+  callTest('Common/close_open_dialogs/v1')
+  if containsKey(cleanupIds, 'resourceId') {
+    click(findElementFromElement(sidebar, globals.ROUTE_TEMPLATES_LINK_TESTID, by.testId))
+    call('Common/disable_record/v2', [globals.RESOURCE_ID_FILTER_KEY, cleanupIds.resourceId])
+  }
+  if containsKey(cleanupIds, 'workerCode') {
+    click(findElementFromElement(sidebar, globals.WORKERS_LINK_TESTID, by.testId))
+    call('Common/disable_record/v2', [globals.WORKER_ID_FILTER_KEY, cleanupIds.workerCode])
+  }
+  if containsKey(cleanupIds, 'dispatchCode') {
+    click(findElementFromElement(sidebar, globals.DISPATCH_GROUP_LINK_TESTID, by.testId))
+    call('Common/disable_record/v2', [globals.DISPATCH_GROUP_FILTER_KEY, cleanupIds.dispatchCode])
+  }
+  if containsKey(cleanupIds, 'vehicleId') {
+    click(findElementFromElement(sidebar, globals.VEHICLE_LINK_TESTID, by.testId))
+    call('Common/disable_record/v2', [globals.VEHICLE_ID_FILTER_KEY, cleanupIds.vehicleId])
+  }
+  if containsKey(cleanupIds, 'workCode') {
+    click(findElementFromElement(sidebar, globals.WORK_CODE_LINK_TESTID, by.testId))
+    call('Common/disable_record/v2', [globals.WORK_CODE_ID_FILTER_KEY, cleanupIds.workCode])
+  }
+}
+
+@Test("edit_scheduling") {
+  /*
+  @args:
+  container: Element
+  dayToFieldTidToValue: Map
+    {Sunday: {Works: true, ...}, ...}
+  copyDayToAnotherDay : Map
+    {Sunday: Monday,..}
+  */
+  dfttv = _global[globals.DAY_TO_FIELD_TID_TO_VALUE_KEY]
+  cdad = _global.copyDayToAnotherDay
+  container = _global.container
+
+  for day, fttv in dfttv {
+    putIn(_global, 'dayOfWeek', day)
+    callTest('Common/select_tabbed_day_of_week/v1')
+
+    works = findElementsFromElement(container,
+        format(globals.TESTID_TO_SWITCH_XPATH_TMPL, globals.WORKS_TID), by.xPath, true)
+    if nonEmpty(works) {
+      putIn(_global, 'switch', works[0])
+      putIn(_global, 'toSetSwitchValue', fttv[globals.WORKS_TID])
+      callTest('Common/set_switch/v1')
+    }
+
+    putIn(_global, 'testId', globals.START_TIME_TID)
+    putIn(_global, 'toSetTime', fttv[globals.START_TIME_TID])
+    callTest('Common/set_time_if_available/v1')
+
+    putIn(_global, 'testId', globals.END_TIME_TID)
+    putIn(_global, 'toSetTime', fttv[globals.END_TIME_TID])
+    callTest('Common/set_time_if_available/v1')
+
+    putIn(_global, 'testId', globals.EARLIEST_START_TID)
+    putIn(_global, 'toSetTime', fttv[globals.EARLIEST_START_TID])
+    callTest('Common/set_time_if_available/v1')
+
+    putIn(_global, 'testId', globals.LATEST_START_TID)
+    putIn(_global, 'toSetTime', fttv[globals.LATEST_START_TID])
+    callTest('Common/set_time_if_available/v1')
+
+    if containsKey(cdad, day) {
+      click(findElementFromElement(container, 'Copy To Other Days', by.text))
+      copyDayDlg = findElement('dialog-copy-day-of-week', by.tagName)
+      copyToDaySwitch = findElementFromElement(copyDayDlg,
+          format(globals.LABEL_TO_SWITCH_XPATH_TMPL, cdad[day]), by.xPath)
+      click(copyToDaySwitch) # No function call needed, just click to enable
+      click(findElementFromElement(copyDayDlg, 'Copy Day of Week', by.text))
+    }
+  }
+}
+
+@Test("edit_work_codes") {
+  /*
+  @args:
+  container: Element
+  workCodeIdentifierToValue: Map
+  */
+  wkitv = _global.workCodeIdentifierToValue
+  container = _global.container
+
+  for wki, value in wkitv {
+    switch = findElementFromElement(container,
+      format(globals.LABEL_TO_SWITCH_XPATH_TMPL, wki), by.xPath)
+    putIn(_global, 'switch', switch)
+    putIn(_global, 'toSetSwitchValue', value)
+    callTest('Common/set_switch/v1')
+  }
+}
+
+@Test("get_add_route_cleanup_ids") {
+  ids = {}
+  if containsKey(_global, 'resourceId') {
+    putIn(ids, 'resourceId', _global.resourceId)
+  }
+  if containsKey(_global, 'workerCode') {
+    putIn(ids, 'workerCode', _global.workerCode)
+  }
+  if containsKey(_global, 'dispatchCode') {
+    putIn(ids, 'dispatchCode', _global.dispatchCode)
+  }
+  if containsKey(_global, 'vehicleId') {
+    putIn(ids, 'vehicleId', _global.vehicleId)
+  }
+  if containsKey(_global, 'workCode') {
+    putIn(ids, 'workCode', _global.workCode)
+  }
+  returnVal(ids)
+}
+
+@Test("prepare_and_invoke_add_route") {
+  args = getArgs()
+  sidebar = args.sidebar
+
+  click(findElementFromElement(sidebar, globals.WORKERS_LINK_TESTID, by.testId))
+  callTest('Workers/add_worker/v1')
+  callTest('DispatchGroups/add_dispatch_group_if_available/v1')
+  click(findElementFromElement(sidebar, globals.VEHICLE_LINK_TESTID, by.testId))
+  callTest('Vehicles/add_vehicle/v1')
+  click(findElementFromElement(sidebar, globals.WORK_CODE_LINK_TESTID, by.testId))
+  callTest('WorkCodes/add_work_code/v1')
+  click(findElementFromElement(sidebar, globals.ROUTE_TEMPLATES_LINK_TESTID, by.testId))
+  # A refresh is necessary to load the previously added records in dropdown. Remove once the
+  # issue is fixed.
+  refresh()
+  callTest('RouteTemplates/add_route_template/v1')
+}
+
+@Test("schedule_route_from_home") {
+  args = getArgs()
+  sidebar = args.sidebar
+
+  try {
+    call('RouteTemplates/try_part_schedule_route', {sidebar: sidebar})
+    call('RouteTemplates/unschedule_route', {sidebar: sidebar, resourceId: _global.resourceId})
+  } finally {
+    cleanupIds = {}
+    # Store Ids for cleanup
+    if containsKey(_global, 'resourceId') {
+      putIn(cleanupIds, 'resourceId', _global.resourceId)
+    }
+    if containsKey(_global, 'workerCode') {
+      putIn(cleanupIds, 'workerCode', _global.workerCode)
+    }
+    if containsKey(_global, 'dispatchCode') {
+      putIn(cleanupIds, 'dispatchCode', _global.dispatchCode)
+    }
+    if containsKey(_global, 'vehicleId') {
+      putIn(cleanupIds, 'vehicleId', _global.vehicleId)
+    }
+    if containsKey(_global, 'workCode') {
+      putIn(cleanupIds, 'workCode', _global.workCode)
+    }
+    call('RouteTemplates/cleanup_part_schedule_route', {sidebar: sidebar, cleanupIds: cleanupIds})
+  }
+}
+
+@Test("try_part_schedule_route") {
+  args = getArgs()
+  sidebar = args.sidebar
+  putIn(_global, 'sidebar', sidebar)
+
+  call('RouteTemplates/prepare_and_invoke_add_route', {sidebar: sidebar})
+  resourceId = _global.resourceId
+  putIn(_global, globals.FILTER_KEY_FOR_RECORD_KEY, globals.RESOURCE_ID_FILTER_KEY)
+  putIn(_global, globals.FILTER_VALUE_FOR_RECORD_KEY, resourceId)
+
+  # Go to home page
+  click(findElementFromElement(sidebar, "Home", by.text))
+  routeContainer = findElement(globals.ROUTE_CONTAINER_XPATH, by.xPath)
+  addBtn = findElementFromElement(routeContainer, "//i[contains(@class, 'fa-plus')]/parent::button", by.xPath)
+  click(addBtn)
+  editModal = findElement(globals.EDIT_RECORD_DIALOG_TAG, by.tagName)
+
+  # Set the date range to today's date
+  currDate = call('Common/get_current_date/v2', {format: globals.STD_DATE_FORMAT})
+  fromDatePicker = findElementFromElement(editModal, globals.DATE_FROM_NAME, by.name)
+  toDatePicker = findElementFromElement(editModal, globals.DATE_TO_NAME, by.name)
+  call('Common/select_date_from_calendar', {datePicker: fromDatePicker, calDate: currDate})
+  call('Common/select_date_from_calendar', {datePicker: toDatePicker, calDate: currDate})
+
+  # Find the newly added resource row, and click on the checkbox. Don't worry about whether resource is
+  # available on today's date because we've scheduled it for all days.
+  putIn(_global, 'code', _global.resourceId)
+  putIn(_global, 'firstName', globals.RESOURCE_FNAME_TEST)
+  putIn(_global, 'lastName', globals.LNAME_TEST)
+  callTest('Common/get_code_f_l_name_identifier/v1')
+  resourceIdentifier = _global.flNameIdentifier
+  resourceSelectCheckbox = findElementFromElement(editModal,
+      format("//*[text()='%s']/parent::tr//*[@class='select-row']//checkbox/*[@class='grd-check']", resourceIdentifier),
+      by.xPath)
+  click(resourceSelectCheckbox)
+
+  click(findElementFromElement(editModal, 'Schedule', by.text))
+  # To make sure scheduling occurred, resource should be visible in the route container
+  scheduledRecords = findElementsFromElement(routeContainer, resourceIdentifier, by.text)
+  assertTrue(nonEmpty(scheduledRecords), "Couldn't create a route schedule")
+  closeBtn = findElementFromElement(editModal, 'Close', by.text)
+  untilEnabled(closeBtn)
+  click(closeBtn)
+}
+
+@Test("unschedule_route") {
+  /*
+  resourceId: String
+  */
+  args = getArgs()
+  sidebar = args.sidebar
+  resourceId = args.resourceId
+
+  click(findElementFromElement(sidebar, "Home", by.text))
+
+  resourceIdentifier = call('Common/get_resource_identifier', {resourceId: resourceId})
+
+  routeContainer = findElement(globals.ROUTE_CONTAINER_XPATH, by.xPath)
+
+  scheduledRecord = findElementFromElement(routeContainer, resourceIdentifier, by.text)
+
+  # Cleanup, unschedule it.
+  editContextMenu = call('Util/right_click_until_open/v2', {
+    toClick: scheduledRecord,
+    [globals.ELM_FIND_PROPS_KEY]: {
+      u: globals.RECORD_DROPDOWN_CSS_SELECTOR,
+      by: by.cssSelector
+    },
+    msgOnError: "Couldn't get the context menu after right clicking on a scheduled route."
+  })
+  click(findElementFromElement(
+      editContextMenu,
+      'Unschedule',
+      by.text))
+  call('Common/accept_confirm_dialog/v2', {confirmText: 'Ok'})
+
+  # Make sure it unscheduled
+  try {
+    untilRemoved(routeContainer, resourceIdentifier, by.text)
+  } catch {
+    assertTrue(false, "Couldn't unschedule route: " + resourceIdentifier)
+  }
+}
+
+@Test("verify_edit_rt") {
+  sidebar = findElement(globals.SIDEBAR_CSS_SELECTOR, by.cssSelector)
+  putIn(_global, 'sidebar', sidebar)
+
+  # Add multiple work codes to be able to turn ON and OFF several of them (one of the edit spec)
+  # Keep them in a list to be able to delete later
+  newWorkCodes = []
+
+  try {
+    callTest('Workers/add_worker/v1')
+    callTest('DispatchGroups/add_dispatch_group_if_available/v1')
+    click(findElementFromElement(sidebar, globals.VEHICLE_LINK_TESTID, by.testId))
+    callTest('Vehicles/add_vehicle/v1')
+    click(findElementFromElement(sidebar, globals.WORK_CODE_LINK_TESTID, by.testId))
+    # Add 4 work codes
+    for i = 1 to 4 {
+      callTest('WorkCodes/add_work_code/v1')
+      addTo(newWorkCodes, _global.workCode)
+    }
+    click(findElementFromElement(sidebar, globals.ROUTE_TEMPLATES_LINK_TESTID, by.testId))
+    # A refresh is necessary to load the previously added records in dropdown. Remove once the
+    # issue is fixed.
+    refresh()
+    callTest('RouteTemplates/add_route_template/v1')
+    resourceId = _global.resourceId
+    putIn(_global, globals.FILTER_KEY_FOR_RECORD_KEY, globals.RESOURCE_ID_FILTER_KEY)
+    putIn(_global, globals.FILTER_VALUE_FOR_RECORD_KEY, resourceId)
+
+    # 1. Verify existing fields
+    mainSection = findElement(globals.MAIN_TABLE_SECTION_CSS_SELECTOR, by.cssSelector)
+    putIn(_global, globals.MAIN_TABLE_KEY, mainSection)
+    callTest('Common/get_record_from_table_using_search_when_needed/v1')
+    putIn(_global, 'toEdit', _global[globals.RECORD_FROM_TABLE_KEY])
+    callTest('Common/get_edit_record_modal/v1')
+    editModal = _global.editModal
+    tabList = findElementFromElement(editModal, globals.DIALOG_TAB_LIST_ROLE, by.role)
+    detailsContainer = findElementFromElement(editModal,
+        globals.DIALOG_TAB_ACTIVE_CSS_SELECTOR, by.cssSelector)
+
+    # Get worker identifier for driver and loader
+    putIn(_global, 'workerCode', _global.workerCode)
+    callTest('Common/get_worker_identifier/v1')
+    workerIdentifier = _global.workerIdentifier
+
+    # Get vehicle identifier for vehicle 1 and 2
+    putIn(_global, 'code', _global.vehicleId)
+    putIn(_global, 'description', globals.VEHICLE_DESC_TEST)
+    callTest('Common/get_code_desc_identifier/v1')
+    vehicleIdentifier = _global.idDescIdentifier
+
+    fttv = {
+      [globals.FNAME_TESTID]: globals.RESOURCE_FNAME_TEST,
+      [globals.LNAME_TESTID]: globals.LNAME_TEST,
+      [globals.ROUTE_COLOR_TID]: globals.COLOR_VALUE_TEST,
+      [globals.PROD_FACTOR_TID]: globals.PROD_FACTOR_TEST,
+      [globals.RELOAD_LIMIT_TID]: globals.RELOAD_LIMIT_TEST,
+      [globals.RELOAD_TIME_TID]: globals.DURATION_VALUE_TEST,
+      [globals.DRIVER_TID]: workerIdentifier,
+      [globals.LOADER_TID]: workerIdentifier,
+      [globals.VEHICLE1_TID]: vehicleIdentifier,
+      [globals.VEHICLE2_TID]: vehicleIdentifier
+    }
+    tsft = []
+    putIn(_global, globals.FIELD_TID_TO_VALUE_KEY, fttv)
+    putIn(_global, globals.TO_SKIP_FIELD_TID_KEY, tsft)
+    putIn(_global, 'container', detailsContainer)
+    callTest('RouteTemplates/verify_route_template_details/v1')
+
+    # 2. Edit some of the fields in details
+    newFName = fttv[globals.FNAME_TESTID] + '-E'
+    newLName = fttv[globals.LNAME_TESTID] + '-E'
+    newColor = '#da0b0b'
+
+    firstName = findElementFromElement(detailsContainer,
+        format(globals.TESTID_TO_INPUT_XPATH_TMPL, globals.FNAME_TESTID), by.xPath)
+    clear(firstName)
+    type(firstName, newFName)
+
+    lastName = findElementFromElement(detailsContainer,
+        format(globals.TESTID_TO_INPUT_XPATH_TMPL, globals.LNAME_TESTID), by.xPath)
+    clear(lastName)
+    type(lastName, newLName)
+
+    assertNotEqual(newColor, fttv[globals.ROUTE_COLOR_TID])
+    putIn(_global, 'testId', globals.ROUTE_COLOR_TID)
+    putIn(_global, 'toSetColor', newColor)
+    callTest('Common/set_color_picker_if_available/v1')
+
+    # 3. Edit some of the fields in Schedules
+    click(findElementFromElement(tabList, 'Schedule', by.text))
+    scheduleContainer = findElementFromElement(editModal,
+        globals.DIALOG_TAB_ACTIVE_CSS_SELECTOR, by.cssSelector)
+    putIn(_global, 'container', scheduleContainer)
+    dfttv = {
+      [globals.SUNDAY]: {
+        [globals.WORKS_TID]: true,
+        [globals.START_TIME_TID]: '05:49',
+        [globals.END_TIME_TID]: '16:59',
+        [globals.EARLIEST_START_TID]: '04:15',
+        [globals.LATEST_START_TID]: '05:49'
+      },
+      [globals.TUESDAY]: {
+        [globals.WORKS_TID]: false,
+        [globals.START_TIME_TID]: '05:48',
+        [globals.END_TIME_TID]: '16:58',
+        [globals.EARLIEST_START_TID]: '04:14',
+        [globals.LATEST_START_TID]: '05:48'
+      },
+      [globals.THURSDAY]: {
+        [globals.WORKS_TID]: false,
+        [globals.START_TIME_TID]: '05:47',
+        [globals.END_TIME_TID]: '16:57',
+        [globals.EARLIEST_START_TID]: '04:13',
+        [globals.LATEST_START_TID]: '05:47'
+      },
+      [globals.SATURDAY]: {
+        [globals.WORKS_TID]: true,
+        [globals.START_TIME_TID]: '05:46',
+        [globals.END_TIME_TID]: '16:56',
+        [globals.EARLIEST_START_TID]: '04:12',
+        [globals.LATEST_START_TID]: '05:46'
+      }
+    }
+    cdad = {
+      [globals.SUNDAY]: globals.MONDAY,
+      [globals.TUESDAY]: globals.WEDNESDAY,
+      [globals.THURSDAY]: globals.FRIDAY
+    }
+    putIn(_global, globals.DAY_TO_FIELD_TID_TO_VALUE_KEY, dfttv)
+    putIn(_global, 'copyDayToAnotherDay', cdad)
+    callTest('RouteTemplates/edit_scheduling/v1')
+
+    # 4. Edit some of the fields in Work Codes
+    click(findElementFromElement(tabList, 'Work Codes', by.text))
+    workCodesContainer = findElementFromElement(editModal,
+        globals.DIALOG_TAB_ACTIVE_CSS_SELECTOR, by.cssSelector)
+    putIn(_global, 'container', workCodesContainer)
+    # Enable and disable work codes. To do that, randomly apply a true/false value to work codes.
+    wkitv = {}
+    i = 0
+    for wc in newWorkCodes {
+      i++
+      putIn(_global, 'code', wc)
+      putIn(_global, 'description', globals.WORK_CODE_DESC_TEST)
+      callTest('Common/get_code_desc_identifier/v1')
+      workCodeIdentifier = _global.idDescIdentifier
+      wcValue = true
+      if i % 2 == 0 {
+        wcValue = false
+      }
+      putIn(wkitv, workCodeIdentifier, wcValue)
+    }
+    putIn(_global, 'workCodeIdentifierToValue', wkitv)
+    callTest('RouteTemplates/edit_work_codes/v1')
+
+    click(findElementFromElement(editModal, 'Save', by.text))
+
+    # 5. Verify edited fields in details
+    callTest('Common/get_record_from_table_using_search_when_needed/v1')
+    putIn(_global, 'toEdit', _global[globals.RECORD_FROM_TABLE_KEY])
+    callTest('Common/get_edit_record_modal/v1')
+    editModal = _global.editModal
+    detailsContainer = findElementFromElement(editModal,
+        globals.DIALOG_TAB_ACTIVE_CSS_SELECTOR, by.cssSelector)
+    fttv = {
+      [globals.FNAME_TESTID]: newFName,
+      [globals.LNAME_TESTID]: newLName,
+      [globals.ROUTE_COLOR_TID]: newColor
+    }
+    tsft = [
+      globals.BRANCH_TESTID,
+      globals.DISPATCH_GROUP_ID_TEST_ID,
+      globals.PROD_FACTOR_TID,
+      globals.RELOAD_LIMIT_TID,
+      globals.RELOAD_TIME_TID,
+      globals.DRIVER_TID,
+      globals.LOADER_TID,
+      globals.VEHICLE1_TID,
+      globals.VEHICLE2_TID
+    ]
+    putIn(_global, globals.FIELD_TID_TO_VALUE_KEY, fttv)
+    putIn(_global, globals.TO_SKIP_FIELD_TID_KEY, tsft)
+    putIn(_global, 'container', detailsContainer)
+    callTest('RouteTemplates/verify_route_template_details/v1')
+
+    # 6. Verify contact (Editing will go along if needed cause we're opening the dialog here)
+    if nonEmpty(findElementsFromElement(detailsContainer, globals.CONTACT_ID_TESTID, by.testId, true)) {
+      putIn(_global, 'contactTestId', globals.CONTACT_ID_TESTID)
+      callTest('Common/get_contact_modal/v1')
+      callTest('Common/verify_default_contact_type_form_details/v1')
+      click(findElementFromElement(_global.contactModal, globals.DIALOG_CLOSE_BUTTON_ARIA_LABEL,
+          by.ariaLabel))
+    }
+
+    # 7. Verify schedule
+    # Prepare modified value of 'dfttv' because we've copied to other days but when verifying we
+    # will go to every tab to make sure we copied correctly.
+    # Get all 'copyToDay's from 'cdad', put then in 'dfttv' after getting 'day's value.
+    for day, copyToDay in cdad {
+      putIn(dfttv, copyToDay, dfttv[day])
+    }
+    click(findElementFromElement(tabList, 'Schedule', by.text))
+    scheduleContainer = findElementFromElement(editModal,
+        globals.DIALOG_TAB_ACTIVE_CSS_SELECTOR, by.cssSelector)
+    putIn(_global, 'container', scheduleContainer)
+    putIn(_global, globals.DAY_TO_FIELD_TID_TO_VALUE_KEY, dfttv)
+    callTest('RouteTemplates/verify_scheduling/v1')
+
+    # 8. Verify work codes
+    click(findElementFromElement(tabList, 'Work Codes', by.text))
+    workCodesContainer = findElementFromElement(editModal,
+        globals.DIALOG_TAB_ACTIVE_CSS_SELECTOR, by.cssSelector)
+    putIn(_global, 'container', workCodesContainer)
+    putIn(_global, 'workCodeIdentifierToValue', wkitv)
+    callTest('RouteTemplates/verify_work_codes/v1')
+  } finally {
+    callTest('Common/close_open_dialogs/v1')
+    if containsKey(_global, 'resourceId') {
+      callTest('Common/disable_record/v1')
+    }
+    if containsKey(_global, 'workerCode') {
+      click(findElementFromElement(sidebar, globals.WORKERS_LINK_TESTID, by.testId))
+      putIn(_global, globals.FILTER_KEY_FOR_RECORD_KEY, globals.WORKER_ID_FILTER_KEY)
+      putIn(_global, globals.FILTER_VALUE_FOR_RECORD_KEY, _global.workerCode)
+      callTest('Common/disable_record/v1')
+    }
+    if containsKey(_global, 'dispatchCode') {
+      click(findElementFromElement(sidebar, globals.DISPATCH_GROUP_LINK_TESTID, by.testId))
+      putIn(_global, globals.FILTER_KEY_FOR_RECORD_KEY, globals.DISPATCH_GROUP_FILTER_KEY)
+      putIn(_global, globals.FILTER_VALUE_FOR_RECORD_KEY, _global.dispatchCode)
+      callTest('Common/disable_record/v1')
+    }
+    if containsKey(_global, 'vehicleId') {
+      click(findElementFromElement(sidebar, globals.VEHICLE_LINK_TESTID, by.testId))
+      putIn(_global, globals.FILTER_KEY_FOR_RECORD_KEY, globals.VEHICLE_ID_FILTER_KEY)
+      putIn(_global, globals.FILTER_VALUE_FOR_RECORD_KEY, _global.vehicleId)
+      callTest('Common/disable_record/v1')
+    }
+    if nonEmpty(newWorkCodes) {
+      click(findElementFromElement(sidebar, globals.WORK_CODE_LINK_TESTID, by.testId))
+      putIn(_global, globals.FILTER_KEY_FOR_RECORD_KEY, globals.WORK_CODE_ID_FILTER_KEY)
+      for wc in newWorkCodes {
+        putIn(_global, globals.FILTER_VALUE_FOR_RECORD_KEY, wc)
+        callTest('Common/disable_record/v1')
+      }
+    }
+  }
+}
+
+@Test("Verify new route template record and edit in details, workcodes, schedule tabs") {
+  openUrl(buildVars.BASE_URL)
+  putIn(_global, 'linkTestId', globals.WORKERS_LINK_TESTID)
+  callTest('Common/login_and_go_to_page/v1')
+
+  if !_global[globals.PAGE_NOT_FOUND_KEY] {
+    callTest('RouteTemplates/verify_edit_rt/v1')
+  }
+}
+
+@Test("verify_route_template_details") {
+  /*
+  @args:
+  container: Element
+  fttv : Map
+  tsft: List
+  @returns:
+  Nothing
+  */
+  fttv = _global[globals.FIELD_TID_TO_VALUE_KEY]
+  tsft = _global[globals.TO_SKIP_FIELD_TID_KEY]
+  container = _global.container
+
+  if !containsElement(tsft, globals.FNAME_TESTID) {
+    firstNames = findElementsFromElement(container,
+        format(globals.TESTID_TO_INPUT_XPATH_TMPL, globals.FNAME_TESTID), by.xPath, true)
+    if nonEmpty(firstNames) {
+      assertEqual(fttv[globals.FNAME_TESTID], getElementValue(firstNames[0]))
+    }
+  }
+
+  if !containsElement(tsft, globals.LNAME_TESTID) {
+    lastNames = findElementsFromElement(container,
+        format(globals.TESTID_TO_INPUT_XPATH_TMPL, globals.LNAME_TESTID), by.xPath, true)
+    if nonEmpty(lastNames) {
+      assertEqual(fttv[globals.LNAME_TESTID], getElementValue(lastNames[0]))
+    }
+  }
+
+  if !containsElement(tsft, globals.ROUTE_COLOR_TID) {
+    routeColorPickers = findElementsFromElement(container,
+        format(globals.TESTID_TO_INPUT_XPATH_TMPL, globals.ROUTE_COLOR_TID),
+        by.xPath, true)
+    if nonEmpty(routeColorPickers) {
+      assertEqual(fttv[globals.ROUTE_COLOR_TID], getElementValue(routeColorPickers[0]))
+    }
+  }
+
+  if !containsElement(tsft, globals.BRANCH_TESTID) {
+    callTest('Common/verify_branch/v1')
+  }
+
+  if !containsElement(tsft, globals.DISPATCH_GROUP_ID_TEST_ID) {
+    callTest('DispatchGroups/verify_dispatch_group_id_if_available/v1')
+  }
+
+  if !containsElement(tsft, globals.PROD_FACTOR_TID) {
+    prodFactors = findElementsFromElement(container,
+        format(globals.TESTID_TO_INPUT_XPATH_TMPL, globals.PROD_FACTOR_TID), by.xPath, true)
+    if nonEmpty(prodFactors) {
+      assertEqual(fttv[globals.PROD_FACTOR_TID], getElementValue(prodFactors[0]))
+    }
+  }
+
+  if !containsElement(tsft, globals.RELOAD_LIMIT_TID) {
+    reloadLimits = findElementsFromElement(container,
+        format(globals.TESTID_TO_INPUT_XPATH_TMPL, globals.RELOAD_LIMIT_TID), by.xPath, true)
+    if nonEmpty(reloadLimits) {
+      assertEqual(fttv[globals.RELOAD_LIMIT_TID], getElementValue(reloadLimits[0]))
+    }
+  }
+
+  if !containsElement(tsft, globals.RELOAD_TIME_TID) {
+    putIn(_global, 'durationTestId', globals.RELOAD_TIME_TID)
+    putIn(_global, 'toMatchDuration', fttv[globals.RELOAD_TIME_TID])
+    callTest('Common/validate_duration_matches_with_field_if_available/v1')
+  }
+
+  if !containsElement(tsft, globals.DRIVER_TID) {
+    drivers = findElementsFromElement(container,
+        format(globals.TESTID_TO_SELECT_XPATH_TMPL, globals.DRIVER_TID), by.xPath, true)
+    if nonEmpty(drivers) {
+      putIn(_global, 'select', drivers[0])
+      putIn(_global, 'moreThan', 1)
+      callTest('Util/wait_for_more_than_x_options/v1')
+      assertEqual(fttv[globals.DRIVER_TID], getElementText(getFirstSelectedOption(drivers[0])))
+    }
+  }
+
+  if !containsElement(tsft, globals.LOADER_TID) {
+    loaders = findElementsFromElement(container,
+        format(globals.TESTID_TO_SELECT_XPATH_TMPL, globals.LOADER_TID), by.xPath, true)
+    if nonEmpty(loaders) {
+      putIn(_global, 'select', loaders[0])
+      putIn(_global, 'moreThan', 1)
+      callTest('Util/wait_for_more_than_x_options/v1')
+      assertEqual(fttv[globals.LOADER_TID], getElementText(getFirstSelectedOption(loaders[0])))
+    }
+  }
+
+  if !containsElement(tsft, globals.VEHICLE1_TID) {
+    vehicle1s = findElementsFromElement(container,
+        format(globals.TESTID_TO_SELECT_XPATH_TMPL, globals.VEHICLE1_TID), by.xPath, true)
+    if nonEmpty(vehicle1s) {
+      putIn(_global, 'select', vehicle1s[0])
+      putIn(_global, 'moreThan', 1)
+      callTest('Util/wait_for_more_than_x_options/v1')
+      assertEqual(fttv[globals.VEHICLE1_TID], getElementText(getFirstSelectedOption(vehicle1s[0])))
+    }
+  }
+
+  if !containsElement(tsft, globals.VEHICLE2_TID) {
+    vehicle2s = findElementsFromElement(container,
+        format(globals.TESTID_TO_SELECT_XPATH_TMPL, globals.VEHICLE2_TID), by.xPath, true)
+    if nonEmpty(vehicle2s) {
+      putIn(_global, 'select', vehicle2s[0])
+      putIn(_global, 'moreThan', 1)
+      callTest('Util/wait_for_more_than_x_options/v1')
+      assertEqual(fttv[globals.VEHICLE2_TID], getElementText(getFirstSelectedOption(vehicle2s[0])))
+    }
+  }
+}
+
+@Test("verify_scheduling") {
+  /*
+  @args:
+  container: Element
+  dayToFieldTidToValue: Map
+    {Sunday: {Works: true, ...}, ...}
+  */
+  dfttv = _global[globals.DAY_TO_FIELD_TID_TO_VALUE_KEY]
+  container = _global.container
+
+  for day, fttv in dfttv {
+    putIn(_global, 'dayOfWeek', day)
+    callTest('Common/select_tabbed_day_of_week/v1')
+    works = findElementsFromElement(container,
+        format(globals.TESTID_TO_SWITCH_XPATH_TMPL, globals.WORKS_TID), by.xPath, true)
+    if nonEmpty(works) {
+      assertEqual(fttv[globals.WORKS_TID],
+          isElementSelected(findElementFromElement(works[0], globals.CHECKBOX_CSS_SELECTOR, by.cssSelector)))
+    }
+
+    startTimes = findElementsFromElement(container,
+        format(globals.TESTID_TO_INPUT_XPATH_TMPL, globals.START_TIME_TID), by.xPath, true)
+    if nonEmpty(startTimes) {
+      assertEqual(fttv[globals.START_TIME_TID], getElementValue(startTimes[0]))
+    }
+
+    endTimes = findElementsFromElement(container,
+        format(globals.TESTID_TO_INPUT_XPATH_TMPL, globals.END_TIME_TID), by.xPath, true)
+    if nonEmpty(endTimes) {
+      assertEqual(fttv[globals.END_TIME_TID], getElementValue(endTimes[0]))
+    }
+
+    earliestStarts = findElementsFromElement(container,
+        format(globals.TESTID_TO_INPUT_XPATH_TMPL, globals.EARLIEST_START_TID), by.xPath, true)
+    if nonEmpty(earliestStarts) {
+      assertEqual(fttv[globals.EARLIEST_START_TID], getElementValue(earliestStarts[0]))
+    }
+
+    latestStarts = findElementsFromElement(container,
+        format(globals.TESTID_TO_INPUT_XPATH_TMPL, globals.LATEST_START_TID), by.xPath, true)
+    if nonEmpty(latestStarts) {
+      assertEqual(fttv[globals.LATEST_START_TID], getElementValue(latestStarts[0]))
+    }
+  }
+}
+
+@Test("verify_work_codes") {
+  /*
+  @args:
+  container: Element
+  workCodeIdentifierToValue: Map
+  */
+  wkitv = _global.workCodeIdentifierToValue
+  container = _global.container
+  for wki, value in wkitv {
+    switch = findElementFromElement(container,
+      format(globals.LABEL_TO_SWITCH_XPATH_TMPL, wki), by.xPath)
+    assertEqual(value,
+        isElementSelected(findElementFromElement(switch, globals.CHECKBOX_CSS_SELECTOR, by.cssSelector)))
+  }
+}
+
+@Test("misc") {
+  # Tests advance syntax of ZWL
+
+  mixed_array = [ "jackson", 345, "was", true, "micheal", "legend", 43.56, [100, 200],
+      { city: "noida", country: "india" } ]
+
+  variableKey = 100
+  mixed_map = {
+    name: "praveen",
+    age: 456,
+    isMale: true,
+    taxLevel: 10.5,
+    address: "somewhere in Noida, India",
+    hobbies: ["reading", "exercising", "writing"],
+    relatives: { parents: "cstiwari/btiwari", wife: "tanu", pet: "bond" },
+    [variableKey]: 23 * 2
+  }
+
+  assertTrue(mixed_array[3], "mixed_array's third element should have been true")
+
+  assertTrue(mixed_array[1] + mixed_array[6] == 388.56, "addition of numeric in mixed_array failed")
+
+  assertTrue(mixed_array[4] + " " + mixed_array[0] + " " +  mixed_array[2] + " " + mixed_array[5]
+      == "micheal jackson was legend", "mixed_array string joining didn't work")
+
+  assertTrue(mixed_array[7][1] == 200, "mixed_array's array couldn't be accessed")
+
+  assertTrue(mixed_array[8].city == "noida", "mixed_array's map couldn't be accessed")
+
+  assertTrue(mixed_map[variableKey] == 46)
+
+  assertTrue(mixed_map.age + mixed_map.taxLevel == 466.5, "addition of numeric in mixed_map failed")
+
+  assertTrue(mixed_map.isMale, "mixed_map's bool property should have been true")
+
+  assertTrue(mixed_map.name + " lives " + mixed_map.address == "praveen lives somewhere in Noida, India",
+      "mixed_map string joining didn't work")
+
+  assertTrue(mixed_map.hobbies[1] == "exercising", "mixed_map's array couldn't be accessed: " + mixed_map.hobbies[1])
+
+  # Try adding an element to hobbies list
+  hobbiesSize = length(mixed_map.hobbies)
+  addTo(mixed_map.hobbies, "singing")
+  assertEqual(hobbiesSize + 1, length(mixed_map.hobbies), "Couldn't add to the 'list in a map'")
+
+  # Try adding a list to mixed_map
+  putIn(mixed_map, 'num_list', [])
+  addTo(mixed_map.num_list, 1)
+  assertEqual(1, length(mixed_map.num_list), "Couldn't add to the 'new list in a map'")
+
+  assertTrue(mixed_map.relatives.pet == "bond", "mixed_map's map couldn't be accessed")
+
+  arr = [1, 2, 3, 6, 7]
+  assertTrue(removeFrom(arr, 6))
+  assertFalse(removeFrom(arr, 9))
+  assertTrue(arr == [1, 2, 3, 7])
+
+  assertTrue(removeFrom(mixed_map, 'age'))
+  assertFalse(removeFrom(mixed_map, 'age'))
+  assertFalse(containsKey(mixed_map, 'age'))
+
+  list = []
+  addTo(list, 1)
+  addTo(list, 2)
+  addTo(list, 6)
+  assertTrue(list == [1, 2, 6])
+
+  map = {}
+  putIn(map, 'age', 1)
+  putIn(map, 'name', 'harry')
+  putIn(map, 'phone', 2)
+  assertTrue(map == {age: 1, name: 'harry', phone: 2})
+  putIn(map, 'age', 11)
+  assertTrue(map.age == 11)
+
+  removeAt(list, 1)
+  assertTrue(list == [1, 6])
+  assertThrows(exceptions.indexOutOfRangeEx, removeAt(list, 2))
+
+  setAt(list, 0, 'yo')
+  setAt(list, 1, true)
+  assertTrue(list == ['yo', true])
+  assertThrows(exceptions.indexOutOfRangeEx, setAt(list, 2, 3))
+
+  removeAll(list)
+  removeAll(map)
+  assertTrue(length(list) == 0)
+  assertTrue(length(map) == 0)
+
+  # list and map print doesn't throw error
+  l = [1, 2]
+  assertDoesNotThrow(print(l))
+  m = {name: 'praveen', age: 29}
+  assertDoesNotThrow(print(m))
+  # list and map toString are expected
+  assertTrue('' + l == '[1, 2]')
+}

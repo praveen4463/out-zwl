@@ -6,8 +6,10 @@ import com.zylitics.zwl.antlr4.ZwlParser;
 import com.zylitics.zwl.exception.EvalException;
 import com.zylitics.zwl.antlr4.BailErrorStrategy;
 import com.zylitics.zwl.antlr4.BailZwlLexer;
+import com.zylitics.zwl.interpret.DefaultZwlFileInterpreter;
 import com.zylitics.zwl.interpret.DefaultZwlInterpreter;
 import com.zylitics.zwl.exception.*;
+import com.zylitics.zwl.model.ZwlFileTest;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.atn.PredictionMode;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -105,6 +107,11 @@ public final class ZwlApi {
     
     interpret(i -> new ZwlDryRunPropsAssigner(i, zwlDryRunProperties).assign(),
         zwlInterpreterVisitor, getParser().compilationUnit());
+  }
+  
+  public void interpret(List<ZwlFileTest> zwlFileTests) {
+    DefaultZwlFileInterpreter interpreter = new DefaultZwlFileInterpreter(zwlFileTests);
+    interpreter.visit(getParser().compilationUnit());
   }
   
   /**

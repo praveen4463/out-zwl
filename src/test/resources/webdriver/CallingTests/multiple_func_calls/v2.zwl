@@ -3,6 +3,3 @@ totalAge = call('CallingTests/add_two_num', {f: 10, s: 17})
 mulTwoNum = call('CallingTests/mul_two_num', [80, 3])
 
 assertEqual(267, totalAge + mulTwoNum)
-
-
-

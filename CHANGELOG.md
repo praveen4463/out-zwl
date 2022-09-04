@@ -212,3 +212,9 @@ Patch
 better and natural way.
 3. Added ability to know Test Path of currently running test/function.
 4. `matchSnapshot` now has more arguments to help. Renamed a few args.
+
+## v0.6.14
+
+### Enhancements
+
+1. Added support for parsing and interpreting a zwl file system file.

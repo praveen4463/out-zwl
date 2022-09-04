@@ -12,6 +12,10 @@ block
   : LBRACE statement* RBRACE
   ;
 
+testDefinition
+  : TEST_DECLARE LPAREN StringLiteral RPAREN block
+  ;
+
 indexes
   : ( LBRAC expression RBRAC )+
   ;
@@ -21,7 +25,8 @@ mapKey
   ;
 
 statement
-  : assignment
+  : testDefinition
+  | assignment
   | functionInvocation
   | tryStatement
   | ifStatement

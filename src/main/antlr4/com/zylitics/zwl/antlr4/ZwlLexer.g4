@@ -13,6 +13,7 @@ EXISTS: 'exists';
 TRY: 'try';
 CATCH: 'catch';
 FINALLY: 'finally';
+TEST_DECLARE : '@Test';
 
 // Separators
 LBRACE : '{';

@@ -5,14 +5,20 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.zylitics.zwl.constants.Exceptions;
 import com.zylitics.zwl.datatype.*;
+import com.zylitics.zwl.model.ZwlFileTest;
 import org.antlr.v4.runtime.ANTLRErrorListener;
 import org.antlr.v4.runtime.ConsoleErrorListener;
 import org.antlr.v4.runtime.DiagnosticErrorListener;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * This test class also shows how to add an external variable into the interpreter.
@@ -53,10 +59,23 @@ public class ZwlLangTests {
     run("AdvanceSyntaxTest.zwl");
   }
   
-  private void run(String file) throws IOException {
-    // for these tests, we'll just add console and diagnostic listener.
-    ZwlApi zwlApi = new ZwlApi(Paths.get("resources/" + file), Charsets.UTF_8,
+  @Tag("zwlFileTest")
+  @Test
+  void zwlFileTest() throws IOException {
+    ZwlApi zwlApi = new ZwlApi(Paths.get("resources/ZwlFileTest.zwl"), Charsets.UTF_8,
         DEFAULT_TEST_LISTENERS);
+    List<ZwlFileTest> tests = new ArrayList<>();
+    zwlApi.interpret(tests);
+    assertEquals(18, tests.size());
+    // System.out.println(tests);
+    // Make sure the fetched code can run fine
+    String miscTestCode = tests.stream()
+        .filter(t -> t.getTestName().equals("misc"))
+        .findFirst().orElseThrow(() -> new RuntimeException("")).getCode();
+    run(new ZwlApi(miscTestCode, DEFAULT_TEST_LISTENERS));
+  }
+  
+  private void run(ZwlApi zwlApi) {
     // set external variable(s) into de only interpreter. It's important to use dev only so that
     // we can detect ambiguities in grammar early, they will be shown at the top of the test
     // result.
@@ -77,5 +96,12 @@ public class ZwlLangTests {
           "Nothing", new NothingZwlValue()
       )));
     });
+  }
+  
+  private void run(String file) throws IOException {
+    // for these tests, we'll just add console and diagnostic listener.
+    ZwlApi zwlApi = new ZwlApi(Paths.get("resources/" + file), Charsets.UTF_8,
+        DEFAULT_TEST_LISTENERS);
+    run(zwlApi);
   }
 }
