@@ -907,6 +907,10 @@
 
 @Test("misc") {
   # Tests advance syntax of ZWL
+  a = 123
+  if a > 200 {
+    assert(false)
+  }
 
   mixed_array = [ "jackson", 345, "was", true, "micheal", "legend", 43.56, [100, 200],
       { city: "noida", country: "india" } ]

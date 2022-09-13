@@ -218,3 +218,10 @@ better and natural way.
 ### Enhancements
 
 1. Added support for parsing and interpreting a zwl file system file.
+
+## v0.6.15
+
+### Bug fixes:
+
+1. Fixed a bug in extracting the code from a .zwl files. Now the code is taken as-is including the
+   space characters.

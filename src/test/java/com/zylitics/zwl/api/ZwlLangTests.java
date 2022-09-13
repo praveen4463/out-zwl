@@ -72,6 +72,7 @@ public class ZwlLangTests {
     String miscTestCode = tests.stream()
         .filter(t -> t.getTestName().equals("misc"))
         .findFirst().orElseThrow(() -> new RuntimeException("")).getCode();
+    // System.out.println(miscTestCode);
     run(new ZwlApi(miscTestCode, DEFAULT_TEST_LISTENERS));
   }
   
