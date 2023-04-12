@@ -225,3 +225,9 @@ better and natural way.
 
 1. Fixed a bug in extracting the code from a .zwl files. Now the code is taken as-is including the
    space characters.
+
+## v0.6.16
+
+### Bug fixes:
+
+1. Fixed a findElemnets timeout exception bug. Now it catches all and sends empty list.

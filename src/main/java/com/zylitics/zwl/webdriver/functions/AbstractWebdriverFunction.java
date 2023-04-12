@@ -321,9 +321,7 @@ public abstract class AbstractWebdriverFunction extends AbstractFunction {
     };
     try {
       return waitOrNot(s, wait, "trying to find elements by: " + by);
-    } catch (TimeoutException timeoutWhileWaiting) {
-      // if waiting and a timeout occurs, findElements should return empty list rather than
-      // exception.
+    } catch (Exception t) {
       return Collections.emptyList();
     }
   }
