@@ -37,11 +37,13 @@ import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.ie.InternetExplorerDriverService;
 import org.openqa.selenium.ie.InternetExplorerOptions;
 import org.openqa.selenium.remote.CapabilityType;
+import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.net.URL;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -271,6 +273,13 @@ public class WebdriverTests {
     }
   }
   
+  @Tag("netassets")
+  @ParameterizedTest
+  @EnumSource(value = Browsers.class)
+  void netAssetsTest(Browsers browser) throws Exception {
+    run(browser, AllWebdriverTests.NET_ASSETS.getFile());
+  }
+  
   @Tag("tabs")
   @ParameterizedTest
   @EnumSource(value = Browsers.class)
@@ -367,6 +376,25 @@ public class WebdriverTests {
         browser.name().equalsIgnoreCase(b) || browser.getName().equalsIgnoreCase(b));
   }
   
+  private RemoteWebDriver getBSDriver() throws Exception {
+    String url = "https://praveentiwari2:R23aUy9qfRJxmECJs4cp@hub.browserstack.com/wd/hub";
+  
+    DesiredCapabilities capabilities = new DesiredCapabilities();
+    capabilities.setCapability("browserName", "chrome");
+    capabilities.setCapability("browserVersion", "latest");
+    capabilities.setCapability("project", "Marketing Website v2");
+    capabilities.setCapability("build", "alpha_0.1.7");
+    //capabilities.setCapability("name", "Home page must have a title");
+  
+    Map<String, Object> browserstackOptions = new HashMap<>();
+    browserstackOptions.put("os", "Windows");
+    browserstackOptions.put("osVersion", "10");
+  
+    capabilities.setCapability("bstack:options", browserstackOptions);
+  
+    return new RemoteWebDriver(new URL(url), capabilities);
+  }
+  
   private void setup(Browsers browser) throws Exception {
     BuildCapability buildCapability = getBuildCapability(browser);
     APICoreProperties.Webdriver wdProps = getDefaultWDProps();
@@ -374,6 +402,7 @@ public class WebdriverTests {
     
     if (browser.equals(Browsers.CHROME)) {
       ChromeOptions chrome = new ChromeOptions();
+      chrome.addArguments("--remote-allow-origins=*");
       chrome.merge(caps);
       if ( Boolean.getBoolean("isMobile")) {
         Map<String, Object> deviceMetrics = new HashMap<>(CollectionUtil.getInitialCapacity(3));
@@ -388,7 +417,11 @@ public class WebdriverTests {
         );
         chrome.setExperimentalOption("mobileEmulation", mobileEmulation);
       }
-      driver = new ChromeDriver(ChromeDriverService.createDefaultService(), chrome);
+      if (Boolean.getBoolean("bs")) {
+        driver = getBSDriver();
+      } else {
+        driver = new ChromeDriver(ChromeDriverService.createDefaultService(), chrome);
+      }
     } else if (browser.equals(Browsers.FIREFOX)) {
       FirefoxOptions ff = new FirefoxOptions();
       String logLevel = System.getProperty("webdriver.firefox.loglevel");
@@ -461,7 +494,7 @@ public class WebdriverTests {
   private BuildCapability getBuildCapability(Browsers browser) {
     BuildCapability b = new BuildCapability();
     b.setWdBrowserName(browser.getName());
-    b.setWdBrowserVersion("11.11"); // any version just to satisfy validation
+    b.setWdBrowserVersion("latest"); // any version just to satisfy validation
     b.setWdPlatformName(System.getProperty("os"));
     // all timeouts in build caps are initialized with -1 in db if no value is given.
     b.setWdTimeoutsPageLoad(-1);

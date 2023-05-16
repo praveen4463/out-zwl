@@ -231,3 +231,10 @@ better and natural way.
 ### Bug fixes:
 
 1. Fixed a findElemnets timeout exception bug. Now it catches all and sends empty list.
+
+## v0.6.17
+
+### Bug fixes:
+
+1. ElementId in the newest version of webdriver seems to have changed now. Removed the check that
+   format of it.

@@ -30,7 +30,8 @@ public enum AllWebdriverTests {
   BUILD_CAPABILITIES_TEST ("BuildCapabilitiesTest.zwl"),
   MISC_TEST("MiscTest.zwl"),
   SNAPSHOT_MATCH_TEST("SnapshotMatchingTest.zwl"),
-  CALL_TEST("CallTest.zwl");
+  CALL_TEST("CallTest.zwl"),
+  NET_ASSETS("NetAssets.zwl");
   
   private final String file;
   

@@ -1,0 +1,253 @@
+/*
+Sums up Net Assets % column data in Top Holdings table and matches with the sum of same data from
+the downloadable CSV.
+@args:
+funds: List
+@returns:
+failedFundsToErrorMsg: Map
+*/
+
+# Due to a bug in zwl, taken 99.8 as 99.79999 (int to double conversion problem)
+# But it's not required on the upper limit cause even if it goes to 101, it still remains larger than
+# 100.99 (it becomes 100.999999) and when it's equal to 100.9, and goes below due to the bug, the condition
+# still pass cause its an upper limit.
+LOWER_RANGE = 99.7999 # 99.8 original value.
+UPPER_RANGE = 101.9999
+NET_ASSETS_CSV_TEXT = '% of Net Assets'
+MARKET_VALUE_PCT_TEXT = 'Market Value (%)'
+NET_ASSETS_SITE_TEXT = 'Net Assets (%)'
+
+setPageLoadTimeout(300 * 1000)
+
+failedFundsToErrorMsg = {}
+funds = [
+            "QYLD",
+            /*"LIT",
+            "PAVE",
+            "PFFD",
+            "BOTZ",
+            "COPX",
+            "DRIV",
+            "URA",
+            "SIL",
+            "MLPA",
+            "BUG",
+            "CLOU",
+            "XYLD",
+            "FINX",
+            "SDIV",
+            "RYLD",
+            "MLPX",
+            "DIV",
+            "KRMA",
+            "CATH",
+            "SNSR",
+            "CHIQ",
+            "SRET",
+            "HERO",
+            "SOCL",
+            "EDOC",
+            "SPFF",
+            "GNOM",
+            "MILN",
+            "AUSF",
+            "AIQ",
+            "EBIZ",
+            "EMBD",
+            "GREK",
+            "RNRG",
+            "ONOF",
+            "CTEC",
+            "PFFV",
+            "BKCH",
+            "CHIX",
+            "GXTG",
+            "POTX",
+            "SDEM",
+            "VPN",
+            "NORW",
+            "GURU",
+            "AGNG",
+            "QYLG",
+            "GOEX",
+            "NGE",
+            "GXG",
+            "DAX",
+            "XYLG",
+            "ALTY",
+            "BFIT",
+            "ASEA",
+            "CHIK",
+            "CHII",
+            "ARGT",
+            "HYDR",
+            "QDIV",
+            "EMFM",
+            "PAK",
+            "XRMI",
+            "QRMI",
+            "BOSS",
+            "CHIH",
+            "CHIS",
+            "EFAS",
+            "CHIM",
+            "CHIC",
+            "CHIE",
+            "PGAL",
+            "AQWA",
+            "BITS",
+            "CHIR",
+            "RAYS",
+            "EDUT",
+            "KROP",
+            "CEFA",
+            "WNDY",
+            "QCLR",
+            "EWEB",
+            "CHB",
+            "VNAM",
+            "KEJI",
+            "XTR",
+            "XCLR",
+            "QTR",
+            "CHIU",
+            "DMAT",
+            "DJIA",
+            "VR",
+            "IRVH",
+            "RATE",
+            "RYLG",
+            "GRNR",
+            "HYLG",
+            "FYLG",
+            "TYLG",
+            "QYLE",
+            "XYLE",*/
+            "PTEC"
+        ]
+for fund in funds {
+  errors = []
+  printF("Processing fund: %s", fund)
+  start = instant()
+  try {
+    openUrl(format('https://www.globalxetfs.com/funds/%s/?%s', fund, 'OUTOMATED=1'))
+
+    # 1. First get the sum from site's table
+    topHoldingsContainer = findElement('holdings', by.id)
+    topHoldingsTable = findElementFromElement(topHoldingsContainer, 'table#top-ten', by.cssSelector)
+    scroll(topHoldingsTable, 0, -150)
+    tableHeaders = findElementsFromElement(topHoldingsTable, 'thead th', by.cssSelector)
+
+    showAlls = findElementsFromElement(topHoldingsContainer, 'Show All', by.text, true)
+    if nonEmpty(showAlls) {
+      click(showAlls[0])
+    }
+
+    # Assume the location of intended column to save the time required in iterating thru
+    # available cols (save multiple getElementText calls).
+    marketValueTypeFund = (fund == 'BITS')
+    targetColIndex = 0 # Index of the column we need to take data from
+    if marketValueTypeFund {
+      # Make sure last column is market value %
+      targetColIndex = length(tableHeaders) - 1
+      col = getElementText(tableHeaders[targetColIndex])
+      assertEqual('Market Value (%)', col,
+          format("Expected last column on site to be %s, aborting...", 'Market Value (%)'))
+    } else {
+      # Make sure first column is net asset %
+      targetColIndex = 0
+      col = getElementText(tableHeaders[targetColIndex])
+      assertEqual('Net Assets (%)', col,
+          format("Expected last column on site to be %s, aborting...", 'Net Assets (%)'))
+    }
+
+    dataCells = findElementsFromElement(topHoldingsTable,
+        format('tbody tr td:nth-child(%s)', targetColIndex + 1),
+        by.cssSelector)
+    siteTotal = 0
+    for cell in dataCells {
+      cellText = trim(getElementText(cell))
+      if nonEmpty(cellText) {
+        try {
+          siteTotal = siteTotal + parseNum(cellText)
+        } catch {}
+      }
+    }
+
+    if !(siteTotal >= LOWER_RANGE && siteTotal <= UPPER_RANGE) {
+      addTo(errors, format("Unexpectedly the sum on the site is %s", siteTotal))
+    }
+
+    # 2. Now get the sum from CSV
+    csvLink = findElementFromElement(topHoldingsContainer, 'Full Holdings (.csv)', by.text)
+    # Add a QS to the url so that it gets rendered to the browser instead of downloading
+    csvLinkHrefTransformed = getElementAttribute(csvLink, 'href') + '&OUTOMATED=1'
+    openUrl(csvLinkHrefTransformed)
+    rawData = untilTextNonEmpty(findElement('pre', by.tagName))
+    lines = split('\n', rawData)
+    totalLines = length(lines)
+
+    # Get the start index of the line contains real data so we skip everything else
+    startIndex = 0
+    headerFound = false
+    while !headerFound && startIndex < totalLines {
+      line = lines[startIndex]
+      if containsString(line, NET_ASSETS_CSV_TEXT)
+          || containsString(line, MARKET_VALUE_PCT_TEXT) {
+        if marketValueTypeFund {
+          # Make sure last column is market value %
+          col = substring(line, lastIndexOf(line, ',') + 1)
+          assertEqual(format('"%s"', MARKET_VALUE_PCT_TEXT), col,
+              format("Expected last column in csv to be %s, aborting...", MARKET_VALUE_PCT_TEXT))
+        } else {
+          # Make sure first column is net asset %
+          col = substring(line, 0, indexOf(line, ','))
+          assertEqual(format('"%s"', NET_ASSETS_CSV_TEXT), col,
+              format("Expected first column in csv to be %s, aborting...", NET_ASSETS_SITE_TEXT))
+        }
+        headerFound = true
+      }
+      startIndex++
+    }
+
+    assertTrue(headerFound, "Couldn't find a header in the CSV, aborting...")
+
+    csvTotal = 0
+    for i = startIndex to totalLines - 1 {
+      line = lines[i]
+      # TODO: For now we're not converting the data into json as the data may also contain commas or so.
+      # Currently the faster is to just get last index of comma when getting the last column because we
+      # know last column is a number. Later try working on csv-json conversion and do it properly.
+      dataCol = ''
+      if marketValueTypeFund {
+        dataCol = substring(line, lastIndexOf(line, ',') + 1)
+      } else {
+        dataCol = substring(line, 0, indexOf(line, ','))
+      }
+      normalizedText = trim(dataCol)
+      if nonEmpty(normalizedText) {
+        try {
+          csvTotal = csvTotal + parseNum(normalizedText)
+        } catch {}
+      }
+    }
+
+    if !(csvTotal >= LOWER_RANGE && csvTotal <= UPPER_RANGE) {
+      addTo(errors, format("Unexpectedly the sum on the CSV is %s", csvTotal))
+    }
+  } catch (ex) {
+    addTo(errors, ex)
+  } finally {
+    printF("took %s", elapsed(start))
+  }
+  if nonEmpty(errors) {
+    putIn(failedFundsToErrorMsg, fund, join('\n', errors))
+  }
+}
+if length(failedFundsToErrorMsg) > 0 {
+  result = ''
+  for key, val in failedFundsToErrorMsg {
+    result = result + format("%s-->%s%n%n", key, val)
+  }
+  assertTrue(false, result)
+}

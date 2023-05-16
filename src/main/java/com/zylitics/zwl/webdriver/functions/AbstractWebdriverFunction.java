@@ -195,8 +195,10 @@ public abstract class AbstractWebdriverFunction extends AbstractFunction {
   }
   
   protected boolean isValidElemInternalId(String elemInternalId) {
-    return elemInternalId
-        .matches("[a-zA-Z0-9]{8}-?[a-zA-Z0-9]{4}-?[a-zA-Z0-9]{4}-?[a-zA-Z0-9]{4}-?[a-zA-Z0-9]{12}");
+    // Removed the format check for now
+    // TODO: The current format is like '4A189F81B2C0EEFB562397B5AAEF11F6_element_36'. Think whether
+    //  we really need to check it.
+    return true;
   }
   
   protected boolean isValidElementId(ZwlValue elementId) {
