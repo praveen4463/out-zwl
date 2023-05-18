@@ -31,7 +31,8 @@ public enum AllWebdriverTests {
   MISC_TEST("MiscTest.zwl"),
   SNAPSHOT_MATCH_TEST("SnapshotMatchingTest.zwl"),
   CALL_TEST("CallTest.zwl"),
-  NET_ASSETS("NetAssets.zwl");
+  NET_ASSETS("NetAssets.zwl"),
+  DEBUGGING("Debugging.zwl");
   
   private final String file;
   

@@ -280,6 +280,13 @@ public class WebdriverTests {
     run(browser, AllWebdriverTests.NET_ASSETS.getFile());
   }
   
+  @Tag("debugging")
+  @ParameterizedTest
+  @EnumSource(value = Browsers.class)
+  void debugging(Browsers browser) throws Exception {
+    run(browser, AllWebdriverTests.DEBUGGING.getFile());
+  }
+  
   @Tag("tabs")
   @ParameterizedTest
   @EnumSource(value = Browsers.class)

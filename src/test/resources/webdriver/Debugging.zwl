@@ -1,0 +1,50 @@
+openUrl('https://command.dev01.infinigis.com')
+u = ''
+p = ''
+type(findElement('Username', by.placeholderText), u, keys.tab, p, keys.enter)
+
+acceptTerms = findElements('accept-terms', by.tagName)
+if nonEmpty(acceptTerms) && isElementDisplayed(acceptTerms[0]) {
+  click(findElementFromElement(acceptTerms[0], 'Accept', by.text))
+}
+click(findElementsFromElement(
+    findElement('#sidebar-wrapper', by.cssSelector),
+    'MainMenu-Records-Customers',
+    by.testId))
+
+fname = 'Outomated-99511'
+mainSection = findElement('.dataTables_wrapper', by.cssSelector)
+record = findElementFromElement(
+    mainSection,
+    fname,
+    by.text)
+performAction(move(record), doubleClick())
+editModal = findElement('dialog-form', by.tagName)
+
+tabList = findElementFromElement(editModal, 'tablist', by.role)
+click(findElementFromElement(tabList, 'Time Windows', by.text))
+sleep(5 * 1000)
+timeWinContainer = findElementFromElement(editModal,
+    '.tab-pane.active', by.cssSelector)
+
+timeWin1Start = '05:00'
+timeWin1End = '20:00'
+
+timeWinEditor = findElementFromElement(
+    timeWinContainer,
+    'TimeWindow0',
+    by.testId)
+
+timeStart = findElementFromElement(timeWinEditor, '.tw-editor-start', by.cssSelector)
+timeEnd = findElementFromElement(timeWinEditor, '.tw-editor-end', by.cssSelector)
+
+timePickerSelectionScript = `
+const elm = arguments[0];
+const evInput = new Event('input')
+const evChange = new Event('change')
+elm.value = arguments[1];
+elm.dispatchEvent(evInput);
+elm.dispatchEvent(evChange);
+`
+executeScript(timePickerSelectionScript, timeStart, timeWin1Start)
+executeScript(timePickerSelectionScript, timeEnd, timeWin1End)

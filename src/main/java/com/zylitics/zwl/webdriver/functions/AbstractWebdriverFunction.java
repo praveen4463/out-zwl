@@ -195,10 +195,10 @@ public abstract class AbstractWebdriverFunction extends AbstractFunction {
   }
   
   protected boolean isValidElemInternalId(String elemInternalId) {
-    // Removed the format check for now
-    // TODO: The current format is like '4A189F81B2C0EEFB562397B5AAEF11F6_element_36'. Think whether
-    //  we really need to check it.
-    return true;
+    // Either 72BDB3367CEFA9029FF357CFF54B920A_element_51 or 4a572a82-4134-43ee-9f4d-9db24fa83bb4
+    return elemInternalId.matches("[a-zA-Z0-9]{32}_element_[0-9]+")
+        || elemInternalId
+        .matches("[a-zA-Z0-9]{8}-?[a-zA-Z0-9]{4}-?[a-zA-Z0-9]{4}-?[a-zA-Z0-9]{4}-?[a-zA-Z0-9]{12}");
   }
   
   protected boolean isValidElementId(ZwlValue elementId) {

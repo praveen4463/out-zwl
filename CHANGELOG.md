@@ -238,3 +238,10 @@ better and natural way.
 
 1. ElementId in the newest version of webdriver seems to have changed now. Removed the check that
    format of it.
+
+## v0.6.18
+
+### Bug fixes:
+
+1. Applied the format check and covered all possible elementIds as this was required to separate non
+   elements from real elements.
